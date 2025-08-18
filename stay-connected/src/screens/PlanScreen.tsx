@@ -8,9 +8,15 @@ import {
   Pressable,
   Alert,
   ActivityIndicator,
+  Share,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import * as Calendar from "expo-calendar";
+// @ts-ignore - may be unavailable during development
+import * as FileSystem from "expo-file-system";
+// @ts-ignore - may be unavailable during development
+import * as Sharing from "expo-sharing";
 import { useStore, Goober } from "../state/store";
 
 const IOS_WHEEL_HEIGHT = 220;
@@ -18,6 +24,127 @@ const iosWheelProps =
   Platform.OS === "ios"
     ? ({ themeVariant: "light", textColor: "#111827" } as const)
     : ({} as const);
+
+const toStartEnd = (date: Date, time: Date, durationMin: number) => {
+  const start = new Date(date);
+  start.setHours(time.getHours(), time.getMinutes(), 0, 0);
+  const end = new Date(start.getTime() + durationMin * 60 * 1000);
+  return { start, end };
+};
+
+const fmtDate = (d: Date) => d.toLocaleDateString();
+const fmtTime = (d: Date) =>
+  d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+async function ensureCalendarPermissions(): Promise<boolean> {
+  const { status } = await Calendar.requestCalendarPermissionsAsync();
+  if (Platform.OS === "android") {
+    try {
+      await Calendar.requestRemindersPermissionsAsync();
+    } catch {
+      /* ignore */
+    }
+  }
+  return status === "granted";
+}
+
+async function getWritableCalendarId(): Promise<string | null> {
+  const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+  const modifiable = calendars.find(c => c.allowsModifications);
+  return modifiable?.id ?? calendars[0]?.id ?? null;
+}
+
+async function createCalendarEvent({
+  title,
+  notes,
+  startDate,
+  endDate,
+  location,
+}: {
+  title: string;
+  notes?: string;
+  startDate: Date;
+  endDate: Date;
+  location?: string;
+}): Promise<string | null> {
+  const ok = await ensureCalendarPermissions();
+  if (!ok) {
+    Alert.alert("Calendar permission denied");
+    return null;
+  }
+  const calId = await getWritableCalendarId();
+  if (!calId) {
+    Alert.alert("No calendar found");
+    return null;
+  }
+  const eventId = await Calendar.createEventAsync(calId, {
+    title,
+    notes,
+    startDate,
+    endDate,
+    location,
+    timeZone: undefined,
+  });
+  return eventId;
+}
+
+function buildInviteMessage({
+  personName,
+  start,
+  end,
+  includeAppTag = true,
+}: {
+  personName: string;
+  start: Date;
+  end: Date;
+  includeAppTag?: boolean;
+}) {
+  const dateStr = fmtDate(start);
+  const timeStr = fmtTime(start);
+  const durationMin = Math.round((end.getTime() - start.getTime()) / 60000);
+  const lines = [
+    `Hey ${personName}, want to meet up?`,
+    `🗓️ ${dateStr} at ${timeStr} (${durationMin} min)`,
+    includeAppTag ? `— sent via Stay Connected` : undefined,
+  ].filter(Boolean);
+  return lines.join("\n");
+}
+
+function toICS({
+  title,
+  start,
+  end,
+  description,
+}: {
+  title: string;
+  start: Date;
+  end: Date;
+  description?: string;
+}) {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const toUTC = (d: Date) =>
+    `${d.getUTCFullYear()}${pad(d.getUTCMonth() + 1)}${pad(d.getUTCDate())}T${pad(
+      d.getUTCHours()
+    )}${pad(d.getUTCMinutes())}00Z`;
+  const dtStart = toUTC(start);
+  const dtEnd = toUTC(end);
+  const uid = `${Date.now()}@stayconnected`;
+  return [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Stay Connected//EN",
+    "BEGIN:VEVENT",
+    `UID:${uid}`,
+    `DTSTAMP:${dtStart}`,
+    `DTSTART:${dtStart}`,
+    `DTEND:${dtEnd}`,
+    `SUMMARY:${title}`,
+    description ? `DESCRIPTION:${description.replace(/\n/g, "\\n")}` : "",
+    "END:VEVENT",
+    "END:VCALENDAR",
+    "",
+  ].join("\r\n");
+}
 
 function FieldButton({
   label,
@@ -139,9 +266,7 @@ export default function PlanScreen() {
         return;
       }
       setSaving(true);
-      const start = new Date(date);
-      start.setHours(time.getHours(), time.getMinutes(), 0, 0);
-      const end = new Date(start.getTime() + durationMin * 60 * 1000);
+      const { start, end } = toStartEnd(date, time, durationMin);
 
       const id = Math.random().toString(36).slice(2);
       addEvent({
@@ -152,27 +277,6 @@ export default function PlanScreen() {
         end: end.toISOString(),
       });
 
-      try {
-        const Calendar = await import("expo-calendar");
-        const { status } = await Calendar.requestCalendarPermissionsAsync();
-        if (status === "granted") {
-          const cals = await Calendar.getCalendarsAsync(
-            Calendar.EntityTypes.EVENT
-          );
-          const calId = cals.find((c: any) => c.allowsModifications)?.id ?? cals[0]?.id;
-          if (calId) {
-            await Calendar.createEventAsync(calId, {
-              title: `Plan with ${personName}`,
-              startDate: start,
-              endDate: end,
-              notes: "Created from Stay Connected",
-            });
-          }
-        }
-      } catch {
-        // expo-calendar not installed or failed; ignore
-      }
-
       Alert.alert("Plan created");
     } catch (e: any) {
       Alert.alert("Could not create plan", e?.message ?? String(e));
@@ -180,6 +284,58 @@ export default function PlanScreen() {
       setSaving(false);
     }
   }, [personId, personName, date, time, durationMin, addEvent]);
+
+  const onCreateCalendar = async () => {
+    try {
+      const { start, end } = toStartEnd(date, time, durationMin);
+      const title = `Plan with ${personName}`;
+      const notes = "Created from Stay Connected";
+      const eventId = await createCalendarEvent({
+        title,
+        notes,
+        startDate: start,
+        endDate: end,
+      });
+      if (eventId) Alert.alert("Calendar event created");
+    } catch {
+      Alert.alert("Could not create calendar event");
+    }
+  };
+
+  const onShareInvite = async () => {
+    const { start, end } = toStartEnd(date, time, durationMin);
+    const message = buildInviteMessage({ personName, start, end });
+    try {
+      await Share.share({ message });
+    } catch {
+      Alert.alert("Could not open share sheet");
+    }
+  };
+
+  const onShareInviteWithICS = async () => {
+    try {
+      const { start, end } = toStartEnd(date, time, durationMin);
+      const title = `Plan with ${personName}`;
+      const message = buildInviteMessage({ personName, start, end });
+      const ics = toICS({ title, start, end, description: message });
+      const path = `${FileSystem.cacheDirectory}invite-${Date.now()}.ics`;
+      await FileSystem.writeAsStringAsync(path, ics, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(path, {
+          mimeType: "text/calendar",
+          dialogTitle: "Share invite",
+          UTI: "public.ics",
+        });
+      } else {
+        await Share.share({ message });
+      }
+    } catch {
+      Alert.alert("Could not share invite");
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
@@ -323,6 +479,56 @@ export default function PlanScreen() {
             </Text>
           )}
         </Pressable>
+
+        <View style={{ gap: 10, marginTop: 12 }}>
+          <Pressable
+            onPress={onCreateCalendar}
+            accessibilityRole="button"
+            accessibilityLabel="Add to Calendar"
+            style={{
+              backgroundColor: "#16a34a",
+              paddingVertical: 14,
+              borderRadius: 12,
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>
+              Add to Calendar
+            </Text>
+          </Pressable>
+
+          <Pressable
+            onPress={onShareInvite}
+            accessibilityRole="button"
+            accessibilityLabel="Share Invite (Text)"
+            style={{
+              backgroundColor: "#2563eb",
+              paddingVertical: 14,
+              borderRadius: 12,
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>
+              Share Invite (Text)
+            </Text>
+          </Pressable>
+
+          <Pressable
+            onPress={onShareInviteWithICS}
+            accessibilityRole="button"
+            accessibilityLabel="Share Invite with ICS"
+            style={{
+              backgroundColor: "#334155",
+              paddingVertical: 14,
+              borderRadius: 12,
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>
+              Share Invite (.ics)
+            </Text>
+          </Pressable>
+        </View>
       </View>
     </SafeAreaView>
   );
