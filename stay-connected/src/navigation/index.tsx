@@ -8,11 +8,13 @@ import PlanScreen from '../screens/PlanScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import { RootStackParamList, TabParamList } from './types';
+import { useStore } from '../state/store';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<TabParamList>();
 
 function Tabs() {
+  const count = useStore(s => s.goobers.length);
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -27,7 +29,11 @@ function Tabs() {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Contacts" component={ContactsScreen} />
+      <Tab.Screen
+        name="Contacts"
+        component={ContactsScreen}
+        options={{ title: `Contacts (${count})` }}
+      />
       <Tab.Screen name="Plan" component={PlanScreen} />
       <Tab.Screen name="History" component={HistoryScreen} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
