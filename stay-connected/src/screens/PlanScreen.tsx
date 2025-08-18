@@ -1,246 +1,183 @@
-import React, { useState } from 'react';
-import {
-  Text,
-  Button,
-  TextInput,
-  Alert,
-  Share,
-  StyleSheet,
-  Platform,
-} from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import DateTimePicker, {
-  DateTimePickerEvent,
-} from '@react-native-community/datetimepicker';
-import { Section } from '../components/Section';
-import { spacing } from '../theme/spacing';
-import {
-  requestCalendarPermissions,
-  getDefaultCalendarId,
-  findConflicts,
-  createEventInDefaultCalendar,
-  deleteEventById as deleteCalendarEvent,
-} from '../services/calendar';
-import { useStore } from '../state/store';
+// app/screens/PlanScreen.tsx
+import React, { useMemo, useState } from "react";
+import { Platform, SafeAreaView, View, Text, Modal, Pressable } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
-function roundToNext30(d: Date = new Date()) {
-  const date = new Date(d);
-  date.setMinutes(date.getMinutes() + 30 - (date.getMinutes() % 30), 0, 0);
-  return date;
-}
+type Person = { id: string; name: string };
+
+// TODO: replace with your contacts data
+const MOCK_PEOPLE: Person[] = [
+  { id: "1", name: "Alice" },
+  { id: "2", name: "Brandon" },
+  { id: "3", name: "Carla" },
+];
 
 export default function PlanScreen() {
-  const { goobers, addOrUpdateEvent, events } = useStore(s => ({
-    goobers: s.goobers,
-    addOrUpdateEvent: s.addOrUpdateEvent,
-    events: s.events,
-  }));
+  const [personId, setPersonId] = useState<string>(MOCK_PEOPLE[0]?.id ?? "");
+  const [date, setDate] = useState<Date>(new Date());
+  const [time, setTime] = useState<Date>(new Date());
+  const [durationMin, setDurationMin] = useState<number>(60);
 
-  const [gooberId, setGooberId] = useState<string | undefined>();
-  const [date, setDate] = useState(new Date());
-  const [time, setTime] = useState(roundToNext30());
-  const [activity, setActivity] = useState('');
-  const [location, setLocation] = useState('');
-  const [duration, setDuration] = useState(60);
-  const [eventId, setEventId] = useState<string | null>(null);
+  // UI state for iOS modals
+  const [showDate, setShowDate] = useState(false);
+  const [showTime, setShowTime] = useState(false);
 
-  const goober = goobers.find(g => g.id === gooberId);
-  const gooberName = goober?.nickname || goober?.name || '';
+  const durationOptions = useMemo(() => {
+    // 15–240 minutes, step 15
+    return Array.from({ length: 16 }, (_, i) => (i + 1) * 15);
+  }, []);
 
-  const buildTitle = () => `${gooberName} — ${activity || 'Meetup'}`;
-  const buildStart = () => {
-    const start = new Date(date);
-    start.setHours(time.getHours(), time.getMinutes(), 0, 0);
-    return start;
-  };
-  const inviteText = () => {
-    const start = buildStart();
-    const when = start.toLocaleString([], {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-    });
-    return `${buildTitle()} at ${when}${location ? ' @ ' + location : ''}`;
-  };
-
-  const planEvent = async (overwrite: boolean, start: Date, end: Date) => {
-    if (overwrite && eventId) {
-      const existing = events.find(e => e.id === eventId);
-      if (existing?.calendarEventId) {
-        await deleteCalendarEvent(existing.calendarEventId);
-      }
-    }
-    const calendarEventId = await createEventInDefaultCalendar({
-      title: buildTitle(),
-      startDate: start,
-      endDate: end,
-      location: location || undefined,
-    });
-    const id = eventId ?? Date.now().toString();
-    addOrUpdateEvent({
-      id,
-      gooberId: gooberId!,
-      title: buildTitle(),
-      start: start.toISOString(),
-      end: end.toISOString(),
-      location: location || undefined,
-      calendarEventId,
-    });
-    setEventId(id);
-    Alert.alert('Success', `Event ${calendarEventId}`);
-  };
-
-  const suggestTimes = (overwrite: boolean, base: Date) => {
-    Alert.alert('Choose time', '', [
-      { text: '+30m', onPress: () => tryOffset(30) },
-      { text: '+60m', onPress: () => tryOffset(60) },
-      { text: '+90m', onPress: () => tryOffset(90) },
-      { text: 'Cancel', style: 'cancel' },
-    ]);
-
-    async function tryOffset(off: number) {
-      const s = new Date(base.getTime() + off * 60000);
-      const e = new Date(s.getTime() + duration * 60000);
-      if (await findConflicts(s, e)) {
-        Alert.alert('Conflict still', 'Pick another time');
-      } else {
-        planEvent(overwrite, s, e);
-      }
-    }
-  };
-
-  const runFlow = async (overwrite: boolean) => {
-    if (!goober) return;
-    const granted = await requestCalendarPermissions();
-    if (!granted) {
-      Alert.alert('Permission denied');
-      return;
-    }
-    const calId = await getDefaultCalendarId();
-    if (!calId) {
-      Alert.alert('No calendar found', 'Enable a calendar account');
-      return;
-    }
-    const start = buildStart();
-    const end = new Date(start.getTime() + duration * 60000);
-    if (await findConflicts(start, end)) {
-      Alert.alert('Conflict', 'Event overlaps', [
-        { text: 'Overwrite', onPress: () => planEvent(true, start, end) },
-        {
-          text: 'Choose different time',
-          onPress: () => suggestTimes(overwrite, start),
-        },
-        { text: 'Keep both', onPress: () => planEvent(false, start, end) },
-        { text: 'Cancel', style: 'cancel' },
-      ]);
-    } else {
-      planEvent(overwrite, start, end);
-    }
-  };
-
-  const onDateChange = (_: DateTimePickerEvent, d?: Date) => {
-    if (d) setDate(d);
-  };
-  const onTimeChange = (_: DateTimePickerEvent, d?: Date) => {
-    if (d) setTime(d);
-  };
-  const onGooberChange = (v: string) => {
-    setGooberId(v || undefined);
-  };
+  const selectedPerson = useMemo(
+    () => MOCK_PEOPLE.find(p => p.id === personId)?.name ?? "Select",
+    [personId]
+  );
 
   return (
-    <Section title="Plan">
-      <Text>Person</Text>
-      <Picker
-        selectedValue={gooberId ?? ''}
-        onValueChange={onGooberChange}
-        enabled={goobers.length > 0}
-      >
-        {goobers.length === 0 ? (
-          <Picker.Item label="Add contacts first" value="" />
-        ) : (
-          <>
-            <Picker.Item label="Select person" value="" />
-            {goobers.map(g => (
-              <Picker.Item
-                key={g.id}
-                label={g.nickname || g.name}
-                value={g.id}
-              />
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 10 }}>
+        <Text style={{ fontSize: 28, fontWeight: "700", marginBottom: 10 }}>Plan</Text>
+
+        {/* Person (wheel on iOS, dropdown on Android) */}
+        <Text style={{ fontSize: 16, marginBottom: 8 }}>Person</Text>
+        <View
+          style={{
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: "#e5e7eb",
+            overflow: "hidden",
+            marginBottom: 24,
+            height: Platform.OS === "ios" ? 180 : undefined,
+            justifyContent: "center",
+          }}
+        >
+          <Picker
+            selectedValue={personId}
+            onValueChange={v => setPersonId(String(v))}
+            itemStyle={{ fontSize: 18 }}
+          >
+            {MOCK_PEOPLE.map(p => (
+              <Picker.Item key={p.id} label={p.name} value={p.id} />
             ))}
+          </Picker>
+        </View>
+
+        {/* Date (spinner wheel on iOS; native calendar on Android) */}
+        <Text style={{ fontSize: 16, marginBottom: 8 }}>Date</Text>
+        {Platform.OS === "ios" ? (
+          <>
+            <Pressable
+              onPress={() => setShowDate(true)}
+              style={{
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: "#e5e7eb",
+                padding: 16,
+                marginBottom: 24,
+              }}
+            >
+              <Text style={{ fontSize: 16 }}>
+                {date.toLocaleDateString()}
+              </Text>
+            </Pressable>
+            <Modal visible={showDate} animationType="slide" transparent>
+              <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.25)", justifyContent: "flex-end" }}>
+                <View style={{ backgroundColor: "white", borderTopLeftRadius: 16, borderTopRightRadius: 16, paddingBottom: 16 }}>
+                  <View style={{ flexDirection: "row", justifyContent: "space-between", padding: 12 }}>
+                    <Pressable onPress={() => setShowDate(false)}><Text style={{ fontSize: 16 }}>Done</Text></Pressable>
+                  </View>
+                  <DateTimePicker
+                    value={date}
+                    mode="date"
+                    display="spinner"
+                    onChange={(_, d) => d && setDate(d)}
+                    style={{ height: 200 }}
+                  />
+                </View>
+              </View>
+            </Modal>
           </>
+        ) : (
+          <View style={{ marginBottom: 24 }}>
+            <DateTimePicker
+              value={date}
+              mode="date"
+              display="default"
+              onChange={(_, d) => d && setDate(d)}
+            />
+          </View>
         )}
-      </Picker>
 
-      <Text>Date</Text>
-      <DateTimePicker
-        value={date}
-        mode="date"
-        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-        onChange={onDateChange}
-      />
+        {/* Time */}
+        <Text style={{ fontSize: 16, marginBottom: 8 }}>Time</Text>
+        {Platform.OS === "ios" ? (
+          <>
+            <Pressable
+              onPress={() => setShowTime(true)}
+              style={{
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: "#e5e7eb",
+                padding: 16,
+                marginBottom: 24,
+              }}
+            >
+              <Text style={{ fontSize: 16 }}>
+                {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+              </Text>
+            </Pressable>
+            <Modal visible={showTime} animationType="slide" transparent>
+              <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.25)", justifyContent: "flex-end" }}>
+                <View style={{ backgroundColor: "white", borderTopLeftRadius: 16, borderTopRightRadius: 16, paddingBottom: 16 }}>
+                  <View style={{ flexDirection: "row", justifyContent: "space-between", padding: 12 }}>
+                    <Pressable onPress={() => setShowTime(false)}><Text style={{ fontSize: 16 }}>Done</Text></Pressable>
+                  </View>
+                  <DateTimePicker
+                    value={time}
+                    mode="time"
+                    display="spinner"
+                    onChange={(_, d) => d && setTime(d)}
+                    style={{ height: 200 }}
+                  />
+                </View>
+              </View>
+            </Modal>
+          </>
+        ) : (
+          <View style={{ marginBottom: 24 }}>
+            <DateTimePicker
+              value={time}
+              mode="time"
+              display="default"
+              onChange={(_, d) => d && setTime(d)}
+            />
+          </View>
+        )}
 
-      <Text>Time</Text>
-      <DateTimePicker
-        value={time}
-        mode="time"
-        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-        onChange={onTimeChange}
-      />
-
-      <Text>Duration (min)</Text>
-      <Picker selectedValue={duration} onValueChange={setDuration}>
-        {[30, 60, 90, 120].map(dur => (
-          <Picker.Item key={dur} label={`${dur}`} value={dur} />
-        ))}
-      </Picker>
-
-      <TextInput
-        placeholder="Activity/Place"
-        value={activity}
-        onChangeText={setActivity}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Location"
-        value={location}
-        onChangeText={setLocation}
-        style={styles.input}
-      />
-
-      {!goober && (
-        <Text style={styles.hint}>Select a person to enable actions</Text>
-      )}
-
-      <Button
-        title="Preview Invite"
-        onPress={() => Alert.alert('Invite', inviteText())}
-        disabled={!goober}
-      />
-      <Button
-        title="Share Invite"
-        onPress={() => Share.share({ message: inviteText() })}
-        disabled={!goober}
-      />
-      <Button
-        title="Add to Calendar"
-        onPress={() => runFlow(false)}
-        disabled={!goober}
-      />
-      <Button
-        title="Update Calendar"
-        onPress={() => runFlow(true)}
-        disabled={!goober}
-      />
-    </Section>
+        {/* Duration (wheel) */}
+        <Text style={{ fontSize: 16, marginBottom: 8 }}>Duration (min)</Text>
+        <View
+          style={{
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: "#e5e7eb",
+            overflow: "hidden",
+            marginBottom: 40,
+            height: Platform.OS === "ios" ? 180 : undefined,
+            justifyContent: "center",
+          }}
+        >
+          <Picker
+            selectedValue={durationMin}
+            onValueChange={(v) => setDurationMin(Number(v))}
+            itemStyle={{ fontSize: 18 }}
+          >
+            {durationOptions.map(m => (
+              <Picker.Item key={m} label={`${m}`} value={m} />
+            ))}
+          </Picker>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  input: {
-    borderWidth: 1,
-    padding: spacing.sm,
-    marginVertical: spacing.sm,
-  },
-  hint: { marginVertical: spacing.sm },
-});
-
