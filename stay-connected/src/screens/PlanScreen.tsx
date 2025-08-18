@@ -1,185 +1,205 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  Button,
-  TextInput,
-  Alert,
-  Share,
-  StyleSheet,
-} from 'react-native';
-import { Section } from '../components/Section';
-import { spacing } from '../theme/spacing';
-import {
-  requestCalendarPermissions,
-  getDefaultCalendarId,
-  findConflicts,
-  createEventInDefaultCalendar,
-  deleteEventById as deleteCalendarEvent,
-} from '../services/calendar';
-import { useStore } from '../state/store';
+import React, { useMemo, useState } from "react";
+import { Platform, SafeAreaView, View, Text, Modal, Pressable } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
-const people = ['Alice', 'Bob', 'Charlie'];
-const times = ['09:00', '12:00', '15:00'];
+type Person = { id: string; name: string };
 
-export default function PlanScreen() {
-  const { addOrUpdateEvent, events } = useStore(s => ({
-    addOrUpdateEvent: s.addOrUpdateEvent,
-    events: s.events,
-  }));
-  const [person, setPerson] = useState<string | null>(null);
-  const [time, setTime] = useState<string | null>(null);
-  const [activity, setActivity] = useState('');
-  const [location, setLocation] = useState('');
-  const [duration, setDuration] = useState(60);
-  const [eventId, setEventId] = useState<string | null>(null);
+// TODO: replace with real contacts from your store if present.
+const MOCK_PEOPLE: Person[] = [
+  { id: "1", name: "Alice" },
+  { id: "2", name: "Brandon" },
+  { id: "3", name: "Carla" },
+];
 
-  const buildTitle = () => `${person} — ${activity || 'Meetup'}`;
-  const inviteText = () =>
-    `${buildTitle()} at ${time}${location ? ' @ ' + location : ''}`;
-
-  const buildStart = () => {
-    const [h, m] = (time ?? '00:00').split(':').map(Number);
-    const d = new Date();
-    d.setHours(h, m, 0, 0);
-    return d;
-  };
-
-  const planEvent = async (overwrite: boolean, start: Date, end: Date) => {
-    if (overwrite && eventId) {
-      const existing = events.find(e => e.id === eventId);
-      if (existing?.calendarEventId) {
-        await deleteCalendarEvent(existing.calendarEventId);
-      }
-    }
-    const calendarEventId = await createEventInDefaultCalendar({
-      title: buildTitle(),
-      startDate: start,
-      endDate: end,
-      location: location || undefined,
-    });
-    const id = eventId ?? Date.now().toString();
-    addOrUpdateEvent({
-      id,
-      gooberId: person!,
-      title: buildTitle(),
-      start: start.toISOString(),
-      end: end.toISOString(),
-      location: location || undefined,
-      calendarEventId,
-    });
-    setEventId(id);
-    Alert.alert('Success', `Event ${calendarEventId}`);
-  };
-
-  const suggestTimes = (overwrite: boolean, base: Date) => {
-    Alert.alert('Choose time', '', [
-      { text: '+30m', onPress: () => tryOffset(30) },
-      { text: '+60m', onPress: () => tryOffset(60) },
-      { text: '+90m', onPress: () => tryOffset(90) },
-      { text: 'Cancel', style: 'cancel' },
-    ]);
-
-    async function tryOffset(off: number) {
-      const s = new Date(base.getTime() + off * 60000);
-      const e = new Date(s.getTime() + duration * 60000);
-      if (await findConflicts(s, e)) {
-        Alert.alert('Conflict still', 'Pick another time');
-      } else {
-        planEvent(overwrite, s, e);
-      }
-    }
-  };
-
-  const runFlow = async (overwrite: boolean) => {
-    if (!person || !time) return;
-    const granted = await requestCalendarPermissions();
-    if (!granted) {
-      Alert.alert('Permission denied');
-      return;
-    }
-    const calId = await getDefaultCalendarId();
-    if (!calId) {
-      Alert.alert('No calendar found', 'Enable a calendar account');
-      return;
-    }
-    const start = buildStart();
-    const end = new Date(start.getTime() + duration * 60000);
-    if (await findConflicts(start, end)) {
-      Alert.alert('Conflict', 'Event overlaps', [
-        { text: 'Overwrite', onPress: () => planEvent(true, start, end) },
-        {
-          text: 'Choose different time',
-          onPress: () => suggestTimes(overwrite, start),
-        },
-        { text: 'Keep both', onPress: () => planEvent(false, start, end) },
-        { text: 'Cancel', style: 'cancel' },
-      ]);
-    } else {
-      planEvent(overwrite, start, end);
-    }
-  };
-
+function FieldButton({
+  label,
+  value,
+  onPress,
+}: { label: string; value: string; onPress: () => void }) {
   return (
-    <Section title="Plan">
-      <Text>Select Person:</Text>
-      {people.map(p => (
-        <Button key={p} title={p} onPress={() => setPerson(p)} />
-      ))}
-      <Text style={{ marginTop: spacing.md }}>Select Time:</Text>
-      {times.map(t => (
-        <Button key={t} title={t} onPress={() => setTime(t)} />
-      ))}
-      <TextInput
-        placeholder="Activity/Place"
-        value={activity}
-        onChangeText={setActivity}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Location"
-        value={location}
-        onChangeText={setLocation}
-        style={styles.input}
-      />
-      <View style={styles.row}>
-        {[30, 60, 90].map(d => (
-          <Button key={d} title={`${d}`} onPress={() => setDuration(d)} />
-        ))}
-      </View>
-      {person && time && (
-        <>
-          <Button
-            title="Preview Invite"
-            onPress={() => Alert.alert('Invite', inviteText())}
-          />
-          <Button
-            title="Share Invite"
-            onPress={() => Share.share({ message: inviteText() })}
-          />
-          <Button
-            title="Add to Calendar"
-            onPress={() => runFlow(false)}
-          />
-          <Button
-            title="Update Calendar"
-            onPress={() => runFlow(true)}
-          />
-        </>
-      )}
-    </Section>
+    <View style={{ marginBottom: 24 }}>
+      <Text style={{ fontSize: 16, marginBottom: 8 }}>{label}</Text>
+      <Pressable
+        onPress={onPress}
+        style={{
+          borderRadius: 16,
+          borderWidth: 1,
+          borderColor: "#e5e7eb",
+          paddingVertical: 16,
+          paddingHorizontal: 16,
+        }}
+      >
+        <Text style={{ fontSize: 16 }}>{value}</Text>
+      </Pressable>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  input: {
-    borderWidth: 1,
-    padding: spacing.sm,
-    marginVertical: spacing.sm,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginVertical: spacing.sm,
-  },
-});
+function PickerModal<T extends string | number>({
+  title = "Done",
+  visible,
+  onClose,
+  selectedValue,
+  onChange,
+  children,
+}: {
+  title?: string;
+  visible: boolean;
+  onClose: () => void;
+  selectedValue: T;
+  onChange: (v: T) => void;
+  children: React.ReactNode; // Picker.Item elements
+}) {
+  return Platform.OS === "ios" ? (
+    <Modal visible={visible} animationType="slide" transparent>
+      <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.25)", justifyContent: "flex-end" }}>
+        <View style={{ backgroundColor: "white", borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
+          <View style={{ flexDirection: "row", justifyContent: "flex-end", padding: 12 }}>
+            <Pressable onPress={onClose}><Text style={{ fontSize: 16 }}>{title}</Text></Pressable>
+          </View>
+          <Picker
+            selectedValue={selectedValue}
+            onValueChange={(v: any) => onChange(v as T)}
+            style={{ height: 220, backgroundColor: "white" }}
+            itemStyle={{ fontSize: 22, color: "#111827" }}
+          >
+            {children}
+          </Picker>
+        </View>
+      </View>
+    </Modal>
+  ) : (
+    // On Android we can just render an inline Picker when "visible" is true.
+    visible ? (
+      <View style={{ borderRadius: 12, borderWidth: 1, borderColor: "#e5e7eb", marginBottom: 12 }}>
+        <Picker selectedValue={selectedValue} onValueChange={(v: any) => onChange(v as T)}>
+          {children}
+        </Picker>
+      </View>
+    ) : null
+  );
+}
+
+export default function PlanScreen() {
+  // Wire to your contacts if available; otherwise use mock.
+  const people: Person[] = MOCK_PEOPLE;
+
+  const [personId, setPersonId] = useState<string>(people[0]?.id ?? "");
+  const [date, setDate] = useState<Date>(new Date());
+  const [time, setTime] = useState<Date>(new Date());
+  const [durationMin, setDurationMin] = useState<number>(60);
+
+  const [showPerson, setShowPerson] = useState(false);
+  const [showDuration, setShowDuration] = useState(false);
+  const [showDate, setShowDate] = useState(false);
+  const [showTime, setShowTime] = useState(false);
+
+  const durationOptions = useMemo(
+    () => Array.from({ length: 16 }, (_, i) => (i + 1) * 15), // 15..240
+    []
+  );
+
+  const personName = people.find(p => p.id === personId)?.name ?? "Select person";
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 10 }}>
+        <Text style={{ fontSize: 32, fontWeight: "800", marginBottom: 10 }}>Plan</Text>
+
+        {/* Person */}
+        <FieldButton label="Person" value={personName} onPress={() => setShowPerson(true)} />
+        <PickerModal
+          visible={showPerson}
+          onClose={() => setShowPerson(false)}
+          selectedValue={personId}
+          onChange={(v) => setPersonId(String(v))}
+        >
+          {people.length === 0
+            ? <Picker.Item label="No contacts found" value="" color="#6b7280" />
+            : people.map(p => <Picker.Item key={p.id} label={p.name} value={p.id} />)}
+        </PickerModal>
+
+        {/* Date */}
+        <FieldButton label="Date" value={date.toLocaleDateString()} onPress={() => setShowDate(true)} />
+        {Platform.OS === "ios" ? (
+          <Modal visible={showDate} animationType="slide" transparent>
+            <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.25)", justifyContent: "flex-end" }}>
+              <View style={{ backgroundColor: "white", borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
+                <View style={{ flexDirection: "row", justifyContent: "flex-end", padding: 12 }}>
+                  <Pressable onPress={() => setShowDate(false)}><Text style={{ fontSize: 16 }}>Done</Text></Pressable>
+                </View>
+                <DateTimePicker
+                  value={date}
+                  mode="date"
+                  display="spinner"
+                  onChange={(_: any, d?: Date) => d && setDate(d)}
+                  style={{ height: 220 }}
+                />
+              </View>
+            </View>
+          </Modal>
+        ) : (
+          showDate && (
+            <DateTimePicker
+              value={date}
+              mode="date"
+              onChange={(_: any, d?: Date) => {
+                setShowDate(false);
+                if (d) setDate(d);
+              }}
+            />
+          )
+        )}
+
+        {/* Time */}
+        <FieldButton
+          label="Time"
+          value={time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          onPress={() => setShowTime(true)}
+        />
+        {Platform.OS === "ios" ? (
+          <Modal visible={showTime} animationType="slide" transparent>
+            <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.25)", justifyContent: "flex-end" }}>
+              <View style={{ backgroundColor: "white", borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
+                <View style={{ flexDirection: "row", justifyContent: "flex-end", padding: 12 }}>
+                  <Pressable onPress={() => setShowTime(false)}><Text style={{ fontSize: 16 }}>Done</Text></Pressable>
+                </View>
+                <DateTimePicker
+                  value={time}
+                  mode="time"
+                  display="spinner"
+                  onChange={(_: any, d?: Date) => d && setTime(d)}
+                  style={{ height: 220 }}
+                />
+              </View>
+            </View>
+          </Modal>
+        ) : (
+          showTime && (
+            <DateTimePicker
+              value={time}
+              mode="time"
+              onChange={(_: any, d?: Date) => {
+                setShowTime(false);
+                if (d) setTime(d);
+              }}
+            />
+          )
+        )}
+
+        {/* Duration */}
+        <FieldButton label="Duration (min)" value={`${durationMin}`} onPress={() => setShowDuration(true)} />
+        <PickerModal
+          visible={showDuration}
+          onClose={() => setShowDuration(false)}
+          selectedValue={durationMin}
+          onChange={(v) => setDurationMin(Number(v))}
+        >
+          {durationOptions.map(m => <Picker.Item key={m} label={`${m}`} value={m} />)}
+        </PickerModal>
+      </View>
+    </SafeAreaView>
+  );
+}
+
