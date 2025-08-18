@@ -7,11 +7,11 @@ import ContactsScreen from '../screens/ContactsScreen';
 import PlanScreen from '../screens/PlanScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import { RootStackParamList, TabParamList } from './types';
+import GooberDetailScreen from '../screens/GooberDetailScreen';
 import { useStore } from '../state/store';
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
-const Tab = createBottomTabNavigator<TabParamList>();
+const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
 
 function Tabs() {
   const count = useStore(s => s.goobers.length);
@@ -45,6 +45,7 @@ export default function Navigation() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Root" component={Tabs} options={{ headerShown: false }} />
+      <Stack.Screen name="GooberDetail" component={GooberDetailScreen} options={{ title: 'Goober' }} />
     </Stack.Navigator>
   );
 }

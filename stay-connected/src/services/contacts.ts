@@ -30,7 +30,7 @@ export async function pickContacts(): Promise<Goober[]> {
       birthday,
       phone,
       email,
-      relationship_type: 'Friends',
+      relationship_type: 'Friends' as const,
     };
   });
 }

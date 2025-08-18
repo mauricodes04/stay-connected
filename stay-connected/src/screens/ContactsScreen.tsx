@@ -8,12 +8,16 @@ import {
   Pressable,
   StyleSheet,
 } from 'react-native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { Section } from '../components/Section';
 import { spacing } from '../theme/spacing';
 import { requestContactsPermission, pickContacts } from '../services/contacts';
 import { useStore, Goober } from '../state/store';
 
+type Nav = NavigationProp<{ GooberDetail: { gooberId: string } }>;
+
 export default function ContactsScreen() {
+  const navigation = useNavigation<Nav>();
   const goobers = useStore(s => s.goobers);
   const addGoobers = useStore(s => s.addGoobers);
   const clearGoobers = useStore(s => s.clearGoobers);
@@ -22,6 +26,7 @@ export default function ContactsScreen() {
   const [contacts, setContacts] = useState<Goober[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [denied, setDenied] = useState(false);
+  const [info, setInfo] = useState<{ added: number; skipped: number } | null>(null);
 
   const importContacts = async () => {
     const granted = await requestContactsPermission();
@@ -44,9 +49,15 @@ export default function ContactsScreen() {
 
   const addSelected = () => {
     const chosen = contacts.filter(c => selected.has(c.id));
-    addGoobers(chosen);
+    const result = addGoobers(chosen, { dedupe: true });
+    setInfo(result);
     setContacts([]);
     setSelected(new Set());
+  };
+
+  const clearAll = () => {
+    clearGoobers();
+    setInfo(null);
   };
 
   const filtered = contacts.filter(c =>
@@ -57,8 +68,13 @@ export default function ContactsScreen() {
     <Section title="Contacts">
       <View style={styles.buttons}>
         <Button title="Import from device" onPress={importContacts} />
-        <Button title="Clear imported" onPress={clearGoobers} />
+        <Button title="Clear imported" onPress={clearAll} />
       </View>
+      {info && (info.added > 0 || info.skipped > 0) && (
+        <Text style={styles.info}>
+          Imported {info.added}, skipped {info.skipped} duplicates
+        </Text>
+      )}
       {denied && (
         <View style={styles.denied}>
           <Text>Permission denied.</Text>
@@ -88,7 +104,14 @@ export default function ContactsScreen() {
       <FlatList
         data={goobers}
         keyExtractor={g => g.id}
-        renderItem={({ item }) => <Text>{item.name}</Text>}
+        renderItem={({ item }) => (
+          <Pressable
+            onPress={() => navigation.navigate('GooberDetail', { gooberId: item.id })}
+            style={styles.item}
+          >
+            <Text>{item.name}</Text>
+          </Pressable>
+        )}
         ListHeaderComponent={<Text style={styles.listTitle}>Stored Goobers</Text>}
       />
     </Section>
@@ -105,4 +128,5 @@ const styles = StyleSheet.create({
   item: { paddingVertical: spacing.sm },
   listTitle: { marginTop: spacing.lg, fontWeight: 'bold' },
   denied: { marginVertical: spacing.md },
+  info: { marginVertical: spacing.sm },
 });
