@@ -1,4 +1,3 @@
-// app/screens/PlanScreen.tsx
 import React, { useMemo, useState } from "react";
 import { Platform, SafeAreaView, View, Text, Modal, Pressable } from "react-native";
 import { Picker } from "@react-native-picker/picker";
@@ -6,178 +5,201 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 
 type Person = { id: string; name: string };
 
-// TODO: replace with your contacts data
+// TODO: replace with real contacts from your store if present.
 const MOCK_PEOPLE: Person[] = [
   { id: "1", name: "Alice" },
   { id: "2", name: "Brandon" },
   { id: "3", name: "Carla" },
 ];
 
+function FieldButton({
+  label,
+  value,
+  onPress,
+}: { label: string; value: string; onPress: () => void }) {
+  return (
+    <View style={{ marginBottom: 24 }}>
+      <Text style={{ fontSize: 16, marginBottom: 8 }}>{label}</Text>
+      <Pressable
+        onPress={onPress}
+        style={{
+          borderRadius: 16,
+          borderWidth: 1,
+          borderColor: "#e5e7eb",
+          paddingVertical: 16,
+          paddingHorizontal: 16,
+        }}
+      >
+        <Text style={{ fontSize: 16 }}>{value}</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+function PickerModal<T extends string | number>({
+  title = "Done",
+  visible,
+  onClose,
+  selectedValue,
+  onChange,
+  children,
+}: {
+  title?: string;
+  visible: boolean;
+  onClose: () => void;
+  selectedValue: T;
+  onChange: (v: T) => void;
+  children: React.ReactNode; // Picker.Item elements
+}) {
+  return Platform.OS === "ios" ? (
+    <Modal visible={visible} animationType="slide" transparent>
+      <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.25)", justifyContent: "flex-end" }}>
+        <View style={{ backgroundColor: "white", borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
+          <View style={{ flexDirection: "row", justifyContent: "flex-end", padding: 12 }}>
+            <Pressable onPress={onClose}><Text style={{ fontSize: 16 }}>{title}</Text></Pressable>
+          </View>
+          <Picker
+            selectedValue={selectedValue}
+            onValueChange={(v: any) => onChange(v as T)}
+            style={{ height: 220, backgroundColor: "white" }}
+            itemStyle={{ fontSize: 22, color: "#111827" }}
+          >
+            {children}
+          </Picker>
+        </View>
+      </View>
+    </Modal>
+  ) : (
+    // On Android we can just render an inline Picker when "visible" is true.
+    visible ? (
+      <View style={{ borderRadius: 12, borderWidth: 1, borderColor: "#e5e7eb", marginBottom: 12 }}>
+        <Picker selectedValue={selectedValue} onValueChange={(v: any) => onChange(v as T)}>
+          {children}
+        </Picker>
+      </View>
+    ) : null
+  );
+}
+
 export default function PlanScreen() {
-  const [personId, setPersonId] = useState<string>(MOCK_PEOPLE[0]?.id ?? "");
+  // Wire to your contacts if available; otherwise use mock.
+  const people: Person[] = MOCK_PEOPLE;
+
+  const [personId, setPersonId] = useState<string>(people[0]?.id ?? "");
   const [date, setDate] = useState<Date>(new Date());
   const [time, setTime] = useState<Date>(new Date());
   const [durationMin, setDurationMin] = useState<number>(60);
 
-  // UI state for iOS modals
+  const [showPerson, setShowPerson] = useState(false);
+  const [showDuration, setShowDuration] = useState(false);
   const [showDate, setShowDate] = useState(false);
   const [showTime, setShowTime] = useState(false);
 
-  const durationOptions = useMemo(() => {
-    // 15–240 minutes, step 15
-    return Array.from({ length: 16 }, (_, i) => (i + 1) * 15);
-  }, []);
-
-  const selectedPerson = useMemo(
-    () => MOCK_PEOPLE.find(p => p.id === personId)?.name ?? "Select",
-    [personId]
+  const durationOptions = useMemo(
+    () => Array.from({ length: 16 }, (_, i) => (i + 1) * 15), // 15..240
+    []
   );
+
+  const personName = people.find(p => p.id === personId)?.name ?? "Select person";
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <View style={{ paddingHorizontal: 20, paddingTop: 10 }}>
-        <Text style={{ fontSize: 28, fontWeight: "700", marginBottom: 10 }}>Plan</Text>
+        <Text style={{ fontSize: 32, fontWeight: "800", marginBottom: 10 }}>Plan</Text>
 
-        {/* Person (wheel on iOS, dropdown on Android) */}
-        <Text style={{ fontSize: 16, marginBottom: 8 }}>Person</Text>
-        <View
-          style={{
-            borderRadius: 12,
-            borderWidth: 1,
-            borderColor: "#e5e7eb",
-            overflow: "hidden",
-            marginBottom: 24,
-            height: Platform.OS === "ios" ? 180 : undefined,
-            justifyContent: "center",
-          }}
+        {/* Person */}
+        <FieldButton label="Person" value={personName} onPress={() => setShowPerson(true)} />
+        <PickerModal
+          visible={showPerson}
+          onClose={() => setShowPerson(false)}
+          selectedValue={personId}
+          onChange={(v) => setPersonId(String(v))}
         >
-          <Picker
-            selectedValue={personId}
-            onValueChange={v => setPersonId(String(v))}
-            itemStyle={{ fontSize: 18 }}
-          >
-            {MOCK_PEOPLE.map(p => (
-              <Picker.Item key={p.id} label={p.name} value={p.id} />
-            ))}
-          </Picker>
-        </View>
+          {people.length === 0
+            ? <Picker.Item label="No contacts found" value="" color="#6b7280" />
+            : people.map(p => <Picker.Item key={p.id} label={p.name} value={p.id} />)}
+        </PickerModal>
 
-        {/* Date (spinner wheel on iOS; native calendar on Android) */}
-        <Text style={{ fontSize: 16, marginBottom: 8 }}>Date</Text>
+        {/* Date */}
+        <FieldButton label="Date" value={date.toLocaleDateString()} onPress={() => setShowDate(true)} />
         {Platform.OS === "ios" ? (
-          <>
-            <Pressable
-              onPress={() => setShowDate(true)}
-              style={{
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: "#e5e7eb",
-                padding: 16,
-                marginBottom: 24,
-              }}
-            >
-              <Text style={{ fontSize: 16 }}>
-                {date.toLocaleDateString()}
-              </Text>
-            </Pressable>
-            <Modal visible={showDate} animationType="slide" transparent>
-              <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.25)", justifyContent: "flex-end" }}>
-                <View style={{ backgroundColor: "white", borderTopLeftRadius: 16, borderTopRightRadius: 16, paddingBottom: 16 }}>
-                  <View style={{ flexDirection: "row", justifyContent: "space-between", padding: 12 }}>
-                    <Pressable onPress={() => setShowDate(false)}><Text style={{ fontSize: 16 }}>Done</Text></Pressable>
-                  </View>
-                  <DateTimePicker
-                    value={date}
-                    mode="date"
-                    display="spinner"
-                    onChange={(_, d) => d && setDate(d)}
-                    style={{ height: 200 }}
-                  />
+          <Modal visible={showDate} animationType="slide" transparent>
+            <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.25)", justifyContent: "flex-end" }}>
+              <View style={{ backgroundColor: "white", borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
+                <View style={{ flexDirection: "row", justifyContent: "flex-end", padding: 12 }}>
+                  <Pressable onPress={() => setShowDate(false)}><Text style={{ fontSize: 16 }}>Done</Text></Pressable>
                 </View>
+                <DateTimePicker
+                  value={date}
+                  mode="date"
+                  display="spinner"
+                  onChange={(_: any, d?: Date) => d && setDate(d)}
+                  style={{ height: 220 }}
+                />
               </View>
-            </Modal>
-          </>
+            </View>
+          </Modal>
         ) : (
-          <View style={{ marginBottom: 24 }}>
+          showDate && (
             <DateTimePicker
               value={date}
               mode="date"
-              display="default"
-              onChange={(_, d) => d && setDate(d)}
+              onChange={(_: any, d?: Date) => {
+                setShowDate(false);
+                if (d) setDate(d);
+              }}
             />
-          </View>
+          )
         )}
 
         {/* Time */}
-        <Text style={{ fontSize: 16, marginBottom: 8 }}>Time</Text>
+        <FieldButton
+          label="Time"
+          value={time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          onPress={() => setShowTime(true)}
+        />
         {Platform.OS === "ios" ? (
-          <>
-            <Pressable
-              onPress={() => setShowTime(true)}
-              style={{
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: "#e5e7eb",
-                padding: 16,
-                marginBottom: 24,
-              }}
-            >
-              <Text style={{ fontSize: 16 }}>
-                {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-              </Text>
-            </Pressable>
-            <Modal visible={showTime} animationType="slide" transparent>
-              <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.25)", justifyContent: "flex-end" }}>
-                <View style={{ backgroundColor: "white", borderTopLeftRadius: 16, borderTopRightRadius: 16, paddingBottom: 16 }}>
-                  <View style={{ flexDirection: "row", justifyContent: "space-between", padding: 12 }}>
-                    <Pressable onPress={() => setShowTime(false)}><Text style={{ fontSize: 16 }}>Done</Text></Pressable>
-                  </View>
-                  <DateTimePicker
-                    value={time}
-                    mode="time"
-                    display="spinner"
-                    onChange={(_, d) => d && setTime(d)}
-                    style={{ height: 200 }}
-                  />
+          <Modal visible={showTime} animationType="slide" transparent>
+            <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.25)", justifyContent: "flex-end" }}>
+              <View style={{ backgroundColor: "white", borderTopLeftRadius: 16, borderTopRightRadius: 16 }}>
+                <View style={{ flexDirection: "row", justifyContent: "flex-end", padding: 12 }}>
+                  <Pressable onPress={() => setShowTime(false)}><Text style={{ fontSize: 16 }}>Done</Text></Pressable>
                 </View>
+                <DateTimePicker
+                  value={time}
+                  mode="time"
+                  display="spinner"
+                  onChange={(_: any, d?: Date) => d && setTime(d)}
+                  style={{ height: 220 }}
+                />
               </View>
-            </Modal>
-          </>
+            </View>
+          </Modal>
         ) : (
-          <View style={{ marginBottom: 24 }}>
+          showTime && (
             <DateTimePicker
               value={time}
               mode="time"
-              display="default"
-              onChange={(_, d) => d && setTime(d)}
+              onChange={(_: any, d?: Date) => {
+                setShowTime(false);
+                if (d) setTime(d);
+              }}
             />
-          </View>
+          )
         )}
 
-        {/* Duration (wheel) */}
-        <Text style={{ fontSize: 16, marginBottom: 8 }}>Duration (min)</Text>
-        <View
-          style={{
-            borderRadius: 12,
-            borderWidth: 1,
-            borderColor: "#e5e7eb",
-            overflow: "hidden",
-            marginBottom: 40,
-            height: Platform.OS === "ios" ? 180 : undefined,
-            justifyContent: "center",
-          }}
+        {/* Duration */}
+        <FieldButton label="Duration (min)" value={`${durationMin}`} onPress={() => setShowDuration(true)} />
+        <PickerModal
+          visible={showDuration}
+          onClose={() => setShowDuration(false)}
+          selectedValue={durationMin}
+          onChange={(v) => setDurationMin(Number(v))}
         >
-          <Picker
-            selectedValue={durationMin}
-            onValueChange={(v) => setDurationMin(Number(v))}
-            itemStyle={{ fontSize: 18 }}
-          >
-            {durationOptions.map(m => (
-              <Picker.Item key={m} label={`${m}`} value={m} />
-            ))}
-          </Picker>
-        </View>
+          {durationOptions.map(m => <Picker.Item key={m} label={`${m}`} value={m} />)}
+        </PickerModal>
       </View>
     </SafeAreaView>
   );
 }
+
