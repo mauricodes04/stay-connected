@@ -12,6 +12,16 @@ export type Goober = {
   notes?: string;
 };
 
+export type EventItem = {
+  id: string;
+  gooberId: string;
+  title: string;
+  start: string;
+  end: string;
+  location?: string;
+  calendarEventId?: string;
+};
+
 function normalizePhone(p?: string) {
   return (p ?? '').replace(/\D/g, '');
 }
@@ -39,6 +49,10 @@ type State = {
   getGooberById: (id: string) => Goober | undefined;
   updateGoober: (id: string, patch: Partial<Goober>) => void;
   deleteGoober: (id: string) => void;
+  events: EventItem[];
+  addOrUpdateEvent: (e: EventItem) => void;
+  updateEventById: (id: string, patch: Partial<EventItem>) => void;
+  deleteEventById: (id: string) => void;
 };
 
 let keySet = new Set<string>();
@@ -105,4 +119,23 @@ export const useStore = create<State>((set, get) => ({
       const gooberKeys = s.gooberKeys.filter((_, i) => i !== idx);
       return { goobers, gooberKeys };
     }),
+  events: [],
+  addOrUpdateEvent: e =>
+    set(s => {
+      const idx = s.events.findIndex(ev => ev.id === e.id);
+      if (idx === -1) return { events: [...s.events, e] };
+      const events = [...s.events];
+      events[idx] = e;
+      return { events };
+    }),
+  updateEventById: (id, patch) =>
+    set(s => {
+      const idx = s.events.findIndex(ev => ev.id === id);
+      if (idx === -1) return {};
+      const events = [...s.events];
+      events[idx] = { ...events[idx], ...patch };
+      return { events };
+    }),
+  deleteEventById: id =>
+    set(s => ({ events: s.events.filter(ev => ev.id !== id) })),
 }));
