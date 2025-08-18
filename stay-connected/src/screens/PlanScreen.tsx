@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 import {
-  View,
   Text,
   Button,
   TextInput,
   Alert,
   Share,
   StyleSheet,
+  Platform,
 } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import DateTimePicker, {
+  DateTimePickerEvent,
+} from '@react-native-community/datetimepicker';
 import { Section } from '../components/Section';
 import { spacing } from '../theme/spacing';
 import {
@@ -19,30 +23,43 @@ import {
 } from '../services/calendar';
 import { useStore } from '../state/store';
 
-const people = ['Alice', 'Bob', 'Charlie'];
-const times = ['09:00', '12:00', '15:00'];
+function roundToNext30(d: Date = new Date()) {
+  const date = new Date(d);
+  date.setMinutes(date.getMinutes() + 30 - (date.getMinutes() % 30), 0, 0);
+  return date;
+}
 
 export default function PlanScreen() {
-  const { addOrUpdateEvent, events } = useStore(s => ({
+  const { goobers, addOrUpdateEvent, events } = useStore(s => ({
+    goobers: s.goobers,
     addOrUpdateEvent: s.addOrUpdateEvent,
     events: s.events,
   }));
-  const [person, setPerson] = useState<string | null>(null);
-  const [time, setTime] = useState<string | null>(null);
+
+  const [gooberId, setGooberId] = useState<string | undefined>();
+  const [date, setDate] = useState(new Date());
+  const [time, setTime] = useState(roundToNext30());
   const [activity, setActivity] = useState('');
   const [location, setLocation] = useState('');
   const [duration, setDuration] = useState(60);
   const [eventId, setEventId] = useState<string | null>(null);
 
-  const buildTitle = () => `${person} — ${activity || 'Meetup'}`;
-  const inviteText = () =>
-    `${buildTitle()} at ${time}${location ? ' @ ' + location : ''}`;
+  const goober = goobers.find(g => g.id === gooberId);
+  const gooberName = goober?.nickname || goober?.name || '';
 
+  const buildTitle = () => `${gooberName} — ${activity || 'Meetup'}`;
   const buildStart = () => {
-    const [h, m] = (time ?? '00:00').split(':').map(Number);
-    const d = new Date();
-    d.setHours(h, m, 0, 0);
-    return d;
+    const start = new Date(date);
+    start.setHours(time.getHours(), time.getMinutes(), 0, 0);
+    return start;
+  };
+  const inviteText = () => {
+    const start = buildStart();
+    const when = start.toLocaleString([], {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
+    return `${buildTitle()} at ${when}${location ? ' @ ' + location : ''}`;
   };
 
   const planEvent = async (overwrite: boolean, start: Date, end: Date) => {
@@ -61,7 +78,7 @@ export default function PlanScreen() {
     const id = eventId ?? Date.now().toString();
     addOrUpdateEvent({
       id,
-      gooberId: person!,
+      gooberId: gooberId!,
       title: buildTitle(),
       start: start.toISOString(),
       end: end.toISOString(),
@@ -92,7 +109,7 @@ export default function PlanScreen() {
   };
 
   const runFlow = async (overwrite: boolean) => {
-    if (!person || !time) return;
+    if (!goober) return;
     const granted = await requestCalendarPermissions();
     if (!granted) {
       Alert.alert('Permission denied');
@@ -120,16 +137,63 @@ export default function PlanScreen() {
     }
   };
 
+  const onDateChange = (_: DateTimePickerEvent, d?: Date) => {
+    if (d) setDate(d);
+  };
+  const onTimeChange = (_: DateTimePickerEvent, d?: Date) => {
+    if (d) setTime(d);
+  };
+  const onGooberChange = (v: string) => {
+    setGooberId(v || undefined);
+  };
+
   return (
     <Section title="Plan">
-      <Text>Select Person:</Text>
-      {people.map(p => (
-        <Button key={p} title={p} onPress={() => setPerson(p)} />
-      ))}
-      <Text style={{ marginTop: spacing.md }}>Select Time:</Text>
-      {times.map(t => (
-        <Button key={t} title={t} onPress={() => setTime(t)} />
-      ))}
+      <Text>Person</Text>
+      <Picker
+        selectedValue={gooberId ?? ''}
+        onValueChange={onGooberChange}
+        enabled={goobers.length > 0}
+      >
+        {goobers.length === 0 ? (
+          <Picker.Item label="Add contacts first" value="" />
+        ) : (
+          <>
+            <Picker.Item label="Select person" value="" />
+            {goobers.map(g => (
+              <Picker.Item
+                key={g.id}
+                label={g.nickname || g.name}
+                value={g.id}
+              />
+            ))}
+          </>
+        )}
+      </Picker>
+
+      <Text>Date</Text>
+      <DateTimePicker
+        value={date}
+        mode="date"
+        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+        onChange={onDateChange}
+      />
+
+      <Text>Time</Text>
+      <DateTimePicker
+        value={time}
+        mode="time"
+        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+        onChange={onTimeChange}
+      />
+
+      <Text>Duration (min)</Text>
+      <Picker selectedValue={duration} onValueChange={setDuration}>
+        {[30, 60, 90, 120].map(dur => (
+          <Picker.Item key={dur} label={`${dur}`} value={dur} />
+        ))}
+      </Picker>
+
       <TextInput
         placeholder="Activity/Place"
         value={activity}
@@ -142,31 +206,31 @@ export default function PlanScreen() {
         onChangeText={setLocation}
         style={styles.input}
       />
-      <View style={styles.row}>
-        {[30, 60, 90].map(d => (
-          <Button key={d} title={`${d}`} onPress={() => setDuration(d)} />
-        ))}
-      </View>
-      {person && time && (
-        <>
-          <Button
-            title="Preview Invite"
-            onPress={() => Alert.alert('Invite', inviteText())}
-          />
-          <Button
-            title="Share Invite"
-            onPress={() => Share.share({ message: inviteText() })}
-          />
-          <Button
-            title="Add to Calendar"
-            onPress={() => runFlow(false)}
-          />
-          <Button
-            title="Update Calendar"
-            onPress={() => runFlow(true)}
-          />
-        </>
+
+      {!goober && (
+        <Text style={styles.hint}>Select a person to enable actions</Text>
       )}
+
+      <Button
+        title="Preview Invite"
+        onPress={() => Alert.alert('Invite', inviteText())}
+        disabled={!goober}
+      />
+      <Button
+        title="Share Invite"
+        onPress={() => Share.share({ message: inviteText() })}
+        disabled={!goober}
+      />
+      <Button
+        title="Add to Calendar"
+        onPress={() => runFlow(false)}
+        disabled={!goober}
+      />
+      <Button
+        title="Update Calendar"
+        onPress={() => runFlow(true)}
+        disabled={!goober}
+      />
     </Section>
   );
 }
@@ -177,9 +241,6 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
     marginVertical: spacing.sm,
   },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginVertical: spacing.sm,
-  },
+  hint: { marginVertical: spacing.sm },
 });
+
