@@ -1,23 +1,51 @@
-import React from 'react';
-import { Text, Button, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Text } from 'react-native';
 import { Section } from '../components/Section';
-import { spacing } from '../theme/spacing';
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { useAuth } from '@/lib/auth';
 
-const history = [
-  { id: '1', title: 'Coffee with Alice', date: '2024-01-01' },
-  { id: '2', title: 'Lunch with Bob', date: '2024-02-10' },
-  { id: '3', title: 'Call with Charlie', date: '2024-03-15' },
-];
+type Plan = {
+  id: string;
+  personName: string;
+  startAt: string;
+  endAt: string;
+  durationMin: number;
+  status?: string;
+};
 
 export default function HistoryScreen() {
+  const { uid } = useAuth();
+  const [plans, setPlans] = useState<Plan[]>([]);
+
+  useEffect(() => {
+    if (!uid) return;
+    const q = query(
+      collection(db, 'users', uid, 'plans'),
+      orderBy('startAt', 'desc')
+    );
+    return onSnapshot(q, snap => {
+      setPlans(snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })));
+    });
+  }, [uid]);
+
   return (
     <Section title="History">
-      {history.map(item => (
-        <Text key={item.id}>{`${item.title} - ${item.date}`}</Text>
-      ))}
-      <View style={{ marginTop: spacing.md }}>
-        <Button title="Refresh" onPress={() => {}} />
-      </View>
+      {plans.map(p => {
+        const start = new Date(p.startAt);
+        const dateStr = start.toLocaleDateString(undefined, {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+        });
+        const timeStr = start.toLocaleTimeString([], {
+          hour: 'numeric',
+          minute: '2-digit',
+        });
+        return (
+          <Text key={p.id}>{`${dateStr} • ${timeStr} • ${p.durationMin} min — Plan with ${p.personName}`}</Text>
+        );
+      })}
     </Section>
   );
 }

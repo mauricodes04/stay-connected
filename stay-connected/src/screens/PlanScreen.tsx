@@ -9,6 +9,7 @@ import {
   Alert,
   ActivityIndicator,
   Share,
+  Linking,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -17,7 +18,10 @@ import * as Calendar from "expo-calendar";
 import * as FileSystem from "expo-file-system";
 // @ts-ignore - may be unavailable during development
 import * as Sharing from "expo-sharing";
-import { useStore, Goober } from "../state/store";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { useAuth } from "@/lib/auth";
+import { usePeople } from "@/hooks/usePeople";
 
 const IOS_WHEEL_HEIGHT = 220;
 const iosWheelProps =
@@ -36,57 +40,18 @@ const fmtDate = (d: Date) => d.toLocaleDateString();
 const fmtTime = (d: Date) =>
   d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-async function ensureCalendarPermissions(): Promise<boolean> {
-  const { status } = await Calendar.requestCalendarPermissionsAsync();
-  if (Platform.OS === "android") {
-    try {
-      await Calendar.requestRemindersPermissionsAsync();
-    } catch {
-      /* ignore */
-    }
-  }
-  return status === "granted";
-}
+const fmtWeekday = (d: Date) =>
+  d.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
 
-async function getWritableCalendarId(): Promise<string | null> {
-  const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-  const modifiable = calendars.find(c => c.allowsModifications);
-  return modifiable?.id ?? calendars[0]?.id ?? null;
-}
-
-async function createCalendarEvent({
-  title,
-  notes,
-  startDate,
-  endDate,
-  location,
-}: {
-  title: string;
-  notes?: string;
-  startDate: Date;
-  endDate: Date;
-  location?: string;
-}): Promise<string | null> {
-  const ok = await ensureCalendarPermissions();
-  if (!ok) {
-    Alert.alert("Calendar permission denied");
-    return null;
+const openNativeCalendarAt = async (when: Date) => {
+  const ms = when.getTime();
+  if (Platform.OS === "ios") {
+    const secs = Math.floor(ms / 1000);
+    await Linking.openURL(`calshow:${secs}`);
+  } else {
+    await Linking.openURL(`content://com.android.calendar/time/${ms}`);
   }
-  const calId = await getWritableCalendarId();
-  if (!calId) {
-    Alert.alert("No calendar found");
-    return null;
-  }
-  const eventId = await Calendar.createEventAsync(calId, {
-    title,
-    notes,
-    startDate,
-    endDate,
-    location,
-    timeZone: undefined,
-  });
-  return eventId;
-}
+};
 
 function buildInviteMessage({
   personName,
@@ -230,8 +195,8 @@ function PickerModal<T extends string | number>({
 }
 
 export default function PlanScreen() {
-  const people: Goober[] = useStore(s => s.goobers);
-  const addEvent = useStore(s => s.addOrUpdateEvent);
+  const people = usePeople();
+  const { uid } = useAuth();
 
   const [personId, setPersonId] = useState<string>("");
   const [date, setDate] = useState<Date>(new Date());
@@ -253,28 +218,25 @@ export default function PlanScreen() {
     []
   );
 
-  const personName = people.find(p => p.id === personId)?.name ?? "Select person";
+  const personName =
+    people.find(p => p.id === personId)?.displayName ?? "Select person";
 
   const onCreatePlan = useCallback(async () => {
     try {
-      if (!personId) {
-        Alert.alert("Pick a person");
-        return;
-      }
-      if (!durationMin) {
-        Alert.alert("Pick a duration");
-        return;
-      }
+      if (!uid) return Alert.alert("Not signed in");
+      if (!personId) return Alert.alert("Pick a person");
+      if (!durationMin) return Alert.alert("Pick a duration");
       setSaving(true);
       const { start, end } = toStartEnd(date, time, durationMin);
 
-      const id = Math.random().toString(36).slice(2);
-      addEvent({
-        id,
-        gooberId: personId,
-        title: `Plan with ${personName}`,
-        start: start.toISOString(),
-        end: end.toISOString(),
+      await addDoc(collection(db, "users", uid, "plans"), {
+        personId,
+        personName,
+        startAt: start.toISOString(),
+        endAt: end.toISOString(),
+        durationMin,
+        createdAt: serverTimestamp(),
+        status: "scheduled",
       });
 
       Alert.alert("Plan created");
@@ -283,22 +245,31 @@ export default function PlanScreen() {
     } finally {
       setSaving(false);
     }
-  }, [personId, personName, date, time, durationMin, addEvent]);
+  }, [uid, personId, personName, date, time, durationMin]);
 
-  const onCreateCalendar = async () => {
+  const onAddToCalendar = async () => {
     try {
       const { start, end } = toStartEnd(date, time, durationMin);
-      const title = `Plan with ${personName}`;
-      const notes = "Created from Stay Connected";
-      const eventId = await createCalendarEvent({
-        title,
-        notes,
+      const { status } = await Calendar.requestCalendarPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Calendar permission denied");
+        return;
+      }
+      const cals = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+      const calId = cals.find(c => c.allowsModifications)?.id ?? cals[0]?.id;
+      if (!calId) {
+        Alert.alert("No calendar found");
+        return;
+      }
+      await Calendar.createEventAsync(calId, {
+        title: `Plan with ${personName}`,
         startDate: start,
         endDate: end,
+        notes: "Created from Stay Connected",
       });
-      if (eventId) Alert.alert("Calendar event created");
-    } catch {
-      Alert.alert("Could not create calendar event");
+      await openNativeCalendarAt(start);
+    } catch (e: any) {
+      Alert.alert("Could not add calendar event", e?.message ?? String(e));
     }
   };
 
@@ -353,7 +324,7 @@ export default function PlanScreen() {
           {people.length === 0 ? (
             <Picker.Item label="No contacts found" value="" color="#6b7280" />
           ) : (
-            people.map(p => <Picker.Item key={p.id} label={p.name} value={p.id} />)
+            people.map(p => <Picker.Item key={p.id} label={p.displayName} value={p.id} />)
           )}
         </PickerModal>
 
@@ -363,6 +334,9 @@ export default function PlanScreen() {
           value={date.toLocaleDateString()}
           onPress={() => setShowDate(true)}
         />
+        <Text style={{ marginTop: 6, marginBottom: 18, color: "#6b7280" }}>
+          {fmtWeekday(date)}
+        </Text>
         {Platform.OS === "ios" ? (
           <Modal visible={showDate} animationType="slide" transparent>
             <View
@@ -482,7 +456,7 @@ export default function PlanScreen() {
 
         <View style={{ gap: 10, marginTop: 12 }}>
           <Pressable
-            onPress={onCreateCalendar}
+            onPress={onAddToCalendar}
             accessibilityRole="button"
             accessibilityLabel="Add to Calendar"
             style={{
