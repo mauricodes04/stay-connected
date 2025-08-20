@@ -1,3 +1,4 @@
+// screens/PlanScreen.tsx
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Platform,
@@ -18,7 +19,7 @@ import * as Calendar from "expo-calendar";
 import * as FileSystem from "expo-file-system";
 // @ts-ignore - may be unavailable during development
 import * as Sharing from "expo-sharing";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp, Timestamp } from "firebase/firestore"; // ⬅️ add Timestamp
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/lib/auth";
 import { usePeople } from "@/hooks/usePeople";
@@ -232,8 +233,8 @@ export default function PlanScreen() {
       await addDoc(collection(db, "users", uid, "plans"), {
         personId,
         personName,
-        startAt: start.toISOString(),
-        endAt: end.toISOString(),
+        startAt: Timestamp.fromDate(start), // ✅ use Firestore Timestamp
+        endAt: Timestamp.fromDate(end),     // ✅ use Firestore Timestamp
         durationMin,
         createdAt: serverTimestamp(),
         status: "scheduled",
@@ -507,4 +508,3 @@ export default function PlanScreen() {
     </SafeAreaView>
   );
 }
-
