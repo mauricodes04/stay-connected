@@ -3,7 +3,7 @@
 // Always: import { auth, db } from "@/lib/firebase";
 
 import { getApps, getApp, initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, setLogLevel } from 'firebase/firestore';
 import { initializeAuth, getReactNativePersistence, getAuth } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirebaseEnv } from '@/lib/env';
@@ -29,3 +29,4 @@ if (!globalThis.__STAY_CONNECTED_AUTH_INIT__) {
 
 export const auth = authInstance;
 export const db = getFirestore(app);
+setLogLevel('debug'); // TODO: remove debug logs
