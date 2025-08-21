@@ -1,10 +1,38 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    /* --- Strictness & safety --- */
     "strict": true,
+
+    /* --- Path alias for clean imports --- */
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
-    }
-  }
+    },
+
+    /* --- Useful for lint + IDE --- */
+    "jsx": "react-native",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+
+    /* --- For ESLint & tooling --- */
+    "noEmit": true
+  },
+  "include": [
+    "src",
+    "App.tsx",
+    "app.config.ts",
+    "eslint.config.cjs"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    ".expo",
+    "android",
+    "ios"
+  ]
 }

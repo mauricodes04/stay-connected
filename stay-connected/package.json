@@ -6,7 +6,9 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "scan:auth": "node -e \"const fs=require('fs');const gl=require('glob');const files=gl.sync('**/*.{ts,tsx}',{ignore:['node_modules/**']});let bad=[];for(const f of files){const s=fs.readFileSync(f,'utf8');if(/firebase\\/auth\\/react-native/i.test(s)) bad.push(f);if(/\\bgetAuth\\s*\\(/.test(s)&&f!=='src/lib/firebase.ts') bad.push(f);if(/\\binitializeAuth\\s*\\(/.test(s)&&f!=='src/lib/firebase.ts') bad.push(f);}if(bad.length){console.error('Banned auth init found in:',bad);process.exit(1);}console.log('Auth scan clean');\""
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
@@ -17,6 +19,7 @@
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",
     "@types/react": "~19.0.10",
+    "eslint": "^9.33.0",
     "expo": "53.0.20",
     "expo-calendar": "~14.1.4",
     "expo-contacts": "~14.2.5",
@@ -31,9 +34,16 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "@typescript-eslint/eslint-plugin": "^8.40.0",
+    "@typescript-eslint/parser": "^8.40.0",
     "babel-plugin-module-resolver": "^5.0.0",
     "dotenv": "^17.2.1",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-native": "^5.0.0",
     "firebase": "^10.14.1",
-    "typescript": "~5.8.3"
+    "glob": "^11.0.3",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.40.0"
   }
 }
