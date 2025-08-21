@@ -21,7 +21,7 @@ import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import { addDoc, collection, serverTimestamp, Timestamp } from "firebase/firestore"; // ⬅️ add Timestamp
 import { db } from "@/lib/firebase";
-import { useAuth } from "@/lib/auth";
+import { ensureSignedIn } from "@/lib/ensureAuth";
 import { usePeople } from "@/hooks/usePeople";
 
 const IOS_WHEEL_HEIGHT = 220;
@@ -44,11 +44,16 @@ const fmtTime = (d: Date) =>
 const fmtWeekday = (d: Date) =>
   d.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
 
+// Seconds between Unix epoch (1970-01-01) and Cocoa epoch (2001-01-01)
+const COCOA_UNIX_OFFSET_SEC = 978307200; // 31 years in seconds, incl. leap years
+
 const openNativeCalendarAt = async (when: Date) => {
   const ms = when.getTime();
   if (Platform.OS === "ios") {
-    const secs = Math.floor(ms / 1000);
-    await Linking.openURL(`calshow:${secs}`);
+    // calshow expects seconds since 2001-01-01 00:00:00 GMT
+    const secsSinceUnix = Math.floor(ms / 1000);
+    const cocoaSecs = secsSinceUnix - COCOA_UNIX_OFFSET_SEC;
+    await Linking.openURL(`calshow:${cocoaSecs}`);
   } else {
     await Linking.openURL(`content://com.android.calendar/time/${ms}`);
   }
@@ -197,7 +202,6 @@ function PickerModal<T extends string | number>({
 
 export default function PlanScreen() {
   const people = usePeople();
-  const { uid } = useAuth();
 
   const [personId, setPersonId] = useState<string>("");
   const [date, setDate] = useState<Date>(new Date());
@@ -209,6 +213,7 @@ export default function PlanScreen() {
   const [showDuration, setShowDuration] = useState(false);
   const [showDate, setShowDate] = useState(false);
   const [showTime, setShowTime] = useState(false);
+  const [confirmCalVisible, setConfirmCalVisible] = useState(false);
 
   useEffect(() => {
     if (!personId && people.length) setPersonId(people[0].id);
@@ -224,10 +229,11 @@ export default function PlanScreen() {
 
   const onCreatePlan = useCallback(async () => {
     try {
-      if (!uid) return Alert.alert("Not signed in");
+      setSaving(true);
+      const uid = await ensureSignedIn(); // 🔒 ensure auth first
+
       if (!personId) return Alert.alert("Pick a person");
       if (!durationMin) return Alert.alert("Pick a duration");
-      setSaving(true);
       const { start, end } = toStartEnd(date, time, durationMin);
 
       await addDoc(collection(db, "users", uid, "plans"), {
@@ -246,10 +252,13 @@ export default function PlanScreen() {
     } finally {
       setSaving(false);
     }
-  }, [uid, personId, personName, date, time, durationMin]);
+  }, [personId, personName, date, time, durationMin]);
 
-  const onAddToCalendar = async () => {
+  const onRequestAddToCalendar = () => setConfirmCalVisible(true);
+
+  const onConfirmAddToCalendar = async () => {
     try {
+      setConfirmCalVisible(false);
       const { start, end } = toStartEnd(date, time, durationMin);
       const { status } = await Calendar.requestCalendarPermissionsAsync();
       if (status !== "granted") {
@@ -457,7 +466,7 @@ export default function PlanScreen() {
 
         <View style={{ gap: 10, marginTop: 12 }}>
           <Pressable
-            onPress={onAddToCalendar}
+            onPress={onRequestAddToCalendar}
             accessibilityRole="button"
             accessibilityLabel="Add to Calendar"
             style={{
@@ -504,6 +513,36 @@ export default function PlanScreen() {
             </Text>
           </Pressable>
         </View>
+
+        <Modal visible={confirmCalVisible} transparent animationType="fade">
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: "rgba(0,0,0,0.35)",
+              justifyContent: "center",
+              padding: 20,
+            }}
+          >
+            <View style={{ backgroundColor: "white", borderRadius: 16, padding: 20 }}>
+              <Text style={{ fontSize: 18, fontWeight: "700", marginBottom: 8 }}>
+                Add to Calendar?
+              </Text>
+              <Text style={{ marginBottom: 4 }}>Person: {personName}</Text>
+              <Text style={{ marginBottom: 4 }}>Date: {date.toLocaleDateString()}</Text>
+              <Text style={{ marginBottom: 12 }}>
+                Time: {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} • {durationMin} min
+              </Text>
+              <View style={{ flexDirection: "row", justifyContent: "flex-end", gap: 12 }}>
+                <Pressable onPress={() => setConfirmCalVisible(false)}>
+                  <Text style={{ fontSize: 16 }}>Cancel</Text>
+                </Pressable>
+                <Pressable onPress={onConfirmAddToCalendar}>
+                  <Text style={{ fontSize: 16, color: "#2563eb", fontWeight: "600" }}>Add</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     </SafeAreaView>
   );

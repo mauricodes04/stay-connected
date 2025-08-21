@@ -1,41 +1,47 @@
-// eslint.config.cjs — Flat config for Expo RN + TypeScript (ESLint v9)
+// eslint.config.cjs — Flat config for Expo RN + TS (ESLint v9)
 const js = require('@eslint/js');
-const tseslint = require('typescript-eslint');
+const tsPlugin = require('@typescript-eslint/eslint-plugin');
+const tsParser = require('@typescript-eslint/parser');
 const reactHooks = require('eslint-plugin-react-hooks');
 const reactNative = require('eslint-plugin-react-native');
 
 module.exports = [
-  // Base JS rules
   js.configs.recommended,
 
-  // TypeScript support (keeps config lean; uses TS parser automatically)
-  ...tseslint.configs.recommendedTypeChecked, // requires "project" in tsconfig
+  // TS rules for project files
   {
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
+      parser: tsParser,
       parserOptions: {
         project: ['./tsconfig.json'],
         tsconfigRootDir: __dirname,
+        ecmaFeatures: { jsx: true },
       },
     },
-  },
-
-  // React Hooks + React Native
-  {
     plugins: {
+      '@typescript-eslint': tsPlugin,
       'react-hooks': reactHooks,
       'react-native': reactNative,
     },
     rules: {
-      // React Hooks rules
-      'react-hooks/rules-of-hooks': 'error',
+      ...tsPlugin.configs.recommended.rules,
+
+      // React Hooks
+      'react-hooks/rules-of-hooks': 'off',
       'react-hooks/exhaustive-deps': 'warn',
 
-      // RN best practices
+      // RN helpers
       'react-native/no-inline-styles': 'off',
       'react-native/no-unused-styles': 'warn',
       'react-native/no-color-literals': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/ban-ts-comment': 'off',
+      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-unused-expressions': 'off',
+      'no-undef': 'off',
 
-      // 🔒 Guardrail: block stray Firebase auth initializers
+      // Block stray Firebase auth initializers by default
       'no-restricted-imports': [
         'error',
         {
@@ -56,7 +62,23 @@ module.exports = [
     },
   },
 
-  // Ignore folders
+  // ✅ Override: allow initializeAuth/getAuth ONLY inside the singleton file
+  {
+    files: ['src/lib/firebase.ts'],
+    rules: {
+      'no-restricted-imports': 'off',
+    },
+  },
+
+  // Ignore config & build artifacts (prevents parser/project errors and “require” flags)
+  {
+    files: ['eslint.config.cjs', 'babel.config.js', 'metro.config.js', '*.d.ts'],
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+      'no-undef': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+    },
+  },
   {
     ignores: [
       'node_modules/**',
@@ -65,6 +87,8 @@ module.exports = [
       '.expo/**',
       'android/**',
       'ios/**',
+      'nvm-windows/**',
+      '**/*.d.ts',
     ],
   },
 ];

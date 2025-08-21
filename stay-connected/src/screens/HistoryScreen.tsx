@@ -3,7 +3,7 @@ import { Text } from 'react-native';
 import { Section } from '../components/Section';
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { useAuth } from '@/lib/auth';
+import { ensureSignedIn } from '@/lib/ensureAuth';
 
 type Plan = {
   id: string;
@@ -15,19 +15,39 @@ type Plan = {
 };
 
 export default function HistoryScreen() {
-  const { uid } = useAuth();
   const [plans, setPlans] = useState<Plan[]>([]);
 
   useEffect(() => {
-    if (!uid) return;
-    const q = query(
-      collection(db, 'users', uid, 'plans'),
-      orderBy('startAt', 'desc')
-    );
-    return onSnapshot(q, snap => {
-      setPlans(snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })));
-    });
-  }, [uid]);
+    let unsub: undefined | (() => void);
+    let canceled = false;
+
+    (async () => {
+      try {
+        const uid = await ensureSignedIn();
+        if (canceled) return;
+        const q = query(
+          collection(db, 'users', uid, 'plans'),
+          orderBy('startAt', 'desc')
+        );
+        unsub = onSnapshot(
+          q,
+          snap => {
+            setPlans(snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })));
+          },
+          err => {
+            console.warn('History listener error:', err);
+          }
+        );
+      } catch (e) {
+        console.warn('ensureSignedIn failed:', e);
+      }
+    })();
+
+    return () => {
+      canceled = true;
+      if (unsub) unsub();
+    };
+  }, []);
 
   return (
     <Section title="History">
