@@ -201,7 +201,7 @@ function PickerModal<T extends string | number>({
 }
 
 export default function PlanScreen() {
-  const people = usePeople();
+  const { people } = usePeople();
 
   const [personId, setPersonId] = useState<string>("");
   const [date, setDate] = useState<Date>(new Date());

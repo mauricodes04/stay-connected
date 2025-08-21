@@ -1,15 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { Text } from 'react-native';
 import { Section } from '../components/Section';
-import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { collection, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { ensureSignedIn } from '@/lib/ensureAuth';
+
+type FireDate = Timestamp | string;
+const toJsDate = (v: FireDate): Date | null => {
+  if (!v) return null;
+  // @ts-expect-error loose check for Firestore Timestamp
+  if (v?.toDate && typeof v.toDate === 'function') {
+    try {
+      return (v as Timestamp).toDate();
+    } catch {
+      /* ignore */
+    }
+  }
+  if (typeof v === 'string') {
+    const d = new Date(v);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  return null;
+};
 
 type Plan = {
   id: string;
   personName: string;
-  startAt: string;
-  endAt: string;
+  startAt: FireDate;
+  endAt: FireDate;
   durationMin: number;
   status?: string;
 };
@@ -52,7 +70,8 @@ export default function HistoryScreen() {
   return (
     <Section title="History">
       {plans.map(p => {
-        const start = new Date(p.startAt);
+        const start = toJsDate(p.startAt);
+        if (!start) return null;
         const dateStr = start.toLocaleDateString(undefined, {
           weekday: 'short',
           month: 'short',

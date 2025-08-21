@@ -14,7 +14,7 @@ export function getFirebaseEnv(): Required<FirebaseEnv> {
   const fb: FirebaseEnv = extra.firebase || {};
 
   const missing = Object.entries(fb)
-    .filter(([_, v]) => !v)
+    .filter(([, v]) => !v)
     .map(([k]) => k);
 
   if (missing.length) {

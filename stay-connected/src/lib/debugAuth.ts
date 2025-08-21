@@ -5,7 +5,7 @@ import { Platform } from 'react-native';
 
 export function logAuthPersistence(tag = 'auth-persistence') {
   try {
-    const a = getAuth(); // will use the already-initialized instance
+    getAuth(); // will use the already-initialized instance
     console.log(
       `[${tag}] Platform=${Platform.OS} — Auth initialized. ` +
         `Expect RN AsyncStorage persistence in native apps.`
