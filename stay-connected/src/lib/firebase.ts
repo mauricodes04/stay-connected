@@ -1,27 +1,31 @@
 // src/lib/firebase.ts
+// SINGLETON: Do not import getAuth/initializeAuth anywhere else.
+// Always: import { auth, db } from "@/lib/firebase";
+
 import { getApps, getApp, initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { initializeAuth, getReactNativePersistence, getAuth } from 'firebase/auth'; // ← use 'firebase/auth'
+import { initializeAuth, getReactNativePersistence, getAuth } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getFirebaseEnv } from './env';
+import { getFirebaseEnv } from '@/lib/env';
 
-// Read config from expo-constants extra (provided by app.config.ts)
 const firebaseCfg = getFirebaseEnv();
-
-// Initialize (idempotent across reloads)
 const app = getApps().length ? getApp() : initializeApp(firebaseCfg);
 
-// Auth: On RN/Expo we must use AsyncStorage persistence.
-// If Auth is already initialized (Fast Refresh), reuse it.
-let _auth;
-try {
-  // initializeAuth throws if called twice — so we catch and fallback to getAuth
-  _auth = initializeAuth(app, {
-    persistence: getReactNativePersistence(AsyncStorage),
-  });
-} catch {
-  _auth = getAuth(app);
+// global flag to avoid duplicate init on Fast Refresh
+declare global {
+  var __STAY_CONNECTED_AUTH_INIT__: boolean | undefined;
 }
 
-export const auth = _auth;
+let authInstance;
+
+if (!globalThis.__STAY_CONNECTED_AUTH_INIT__) {
+  authInstance = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage),
+  });
+  globalThis.__STAY_CONNECTED_AUTH_INIT__ = true;
+} else {
+  authInstance = getAuth(app);
+}
+
+export const auth = authInstance;
 export const db = getFirestore(app);
