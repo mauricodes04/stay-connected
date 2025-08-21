@@ -12,15 +12,14 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { Section } from '../components/Section';
 import { spacing } from '../theme/spacing';
 import { requestContactsPermission, pickContacts } from '../services/contacts';
-import { useStore, Goober } from '../state/store';
+import type { Goober } from '../state/store';
+import { usePeople } from '@/hooks/usePeople';
 
 type Nav = NavigationProp<{ GooberDetail: { gooberId: string } }>;
 
 export default function ContactsScreen() {
   const navigation = useNavigation<Nav>();
-  const goobers = useStore(s => s.goobers);
-  const addGoobers = useStore(s => s.addGoobers);
-  const clearGoobers = useStore(s => s.clearGoobers);
+  const { people, upsertPerson } = usePeople();
 
   const [query, setQuery] = useState('');
   const [contacts, setContacts] = useState<Goober[]>([]);
@@ -47,17 +46,32 @@ export default function ContactsScreen() {
     });
   };
 
-  const addSelected = () => {
+  const addSelected = async () => {
     const chosen = contacts.filter(c => selected.has(c.id));
-    const result = addGoobers(chosen, { dedupe: true });
-    setInfo(result);
+    let added = 0;
+    let skipped = 0;
+    const existingIds = new Set(people.map(p => p.id));
+    for (const c of chosen) {
+      const key =
+        c.email?.toLowerCase() ||
+        c.phone?.replace(/\D+/g, "") ||
+        c.name;
+      if (existingIds.has(key)) {
+        skipped++;
+      } else {
+        added++;
+      }
+      existingIds.add(key);
+      await upsertPerson({
+        name: c.name,
+        nickname: c.nickname,
+        phone: c.phone,
+        email: c.email,
+      });
+    }
+    setInfo({ added, skipped });
     setContacts([]);
     setSelected(new Set());
-  };
-
-  const clearAll = () => {
-    clearGoobers();
-    setInfo(null);
   };
 
   const filtered = contacts.filter(c =>
@@ -68,7 +82,6 @@ export default function ContactsScreen() {
     <Section title="Contacts">
       <View style={styles.buttons}>
         <Button title="Import from device" onPress={importContacts} />
-        <Button title="Clear imported" onPress={clearAll} />
       </View>
       {info && (info.added > 0 || info.skipped > 0) && (
         <Text style={styles.info}>
@@ -102,14 +115,14 @@ export default function ContactsScreen() {
         </>
       )}
       <FlatList
-        data={goobers}
+        data={people}
         keyExtractor={g => g.id}
         renderItem={({ item }) => (
           <Pressable
             onPress={() => navigation.navigate('GooberDetail', { gooberId: item.id })}
             style={styles.item}
           >
-            <Text>{item.name}</Text>
+            <Text>{item.displayName}</Text>
           </Pressable>
         )}
         ListHeaderComponent={<Text style={styles.listTitle}>Stored Goobers</Text>}

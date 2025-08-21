@@ -10,7 +10,10 @@ import {
   StyleSheet,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { useStore } from '../state/store';
+import { usePeople } from '@/hooks/usePeople';
+import { ensureSignedIn } from '@/lib/ensureAuth';
+import { db } from '@/lib/firebase';
+import { doc, deleteDoc } from 'firebase/firestore';
 import { RELATIONSHIPS } from '../types';
 import { spacing } from '../theme/spacing';
 
@@ -19,9 +22,8 @@ type RouteParams = { GooberDetail: { gooberId: string } };
 export default function GooberDetailScreen() {
   const navigation = useNavigation();
   const { params } = useRoute<RouteProp<RouteParams, 'GooberDetail'>>();
-  const goober = useStore(s => s.getGooberById(params.gooberId));
-  const updateGoober = useStore(s => s.updateGoober);
-  const deleteGoober = useStore(s => s.deleteGoober);
+  const { people, upsertPerson } = usePeople();
+  const goober = people.find(p => p.id === params.gooberId);
 
   if (!goober) {
     return (
@@ -35,8 +37,8 @@ export default function GooberDetailScreen() {
   const [relationship, setRelationship] = useState(goober.relationship_type);
   const [notes, setNotes] = useState(goober.notes ?? '');
 
-  const save = () => {
-    if (!goober.name) {
+  const save = async () => {
+    if (!goober?.name) {
       Alert.alert('Name is required');
       return;
     }
@@ -44,10 +46,14 @@ export default function GooberDetailScreen() {
       Alert.alert('Notes too long');
       return;
     }
-    updateGoober(goober.id, {
+    await upsertPerson({
+      id: goober.id,
+      name: goober.name,
       nickname,
       relationship_type: relationship,
       notes,
+      phone: goober.phone,
+      email: goober.email,
     });
     navigation.goBack();
   };
@@ -59,8 +65,15 @@ export default function GooberDetailScreen() {
         text: 'Delete',
         style: 'destructive',
         onPress: () => {
-          deleteGoober(goober.id);
-          navigation.goBack();
+          (async () => {
+            try {
+              const uid = await ensureSignedIn();
+              await deleteDoc(doc(db, 'users', uid, 'contacts', goober.id));
+            } catch (e) {
+              console.warn('delete failed', e);
+            }
+            navigation.goBack();
+          })();
         },
       },
     ]);

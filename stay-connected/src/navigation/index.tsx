@@ -8,13 +8,14 @@ import PlanScreen from '../screens/PlanScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import GooberDetailScreen from '../screens/GooberDetailScreen';
-import { useStore } from '../state/store';
+import { usePeople } from '@/hooks/usePeople';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function Tabs() {
-  const count = useStore(s => s.goobers.length);
+  const { people } = usePeople();
+  const count = people.length;
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
