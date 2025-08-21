@@ -29,4 +29,8 @@ if (!globalThis.__STAY_CONNECTED_AUTH_INIT__) {
 
 export const auth = authInstance;
 export const db = getFirestore(app);
-setLogLevel('debug'); // TODO: remove debug logs
+if (__DEV__) {
+  setLogLevel('debug');
+} else {
+  setLogLevel('error');
+}

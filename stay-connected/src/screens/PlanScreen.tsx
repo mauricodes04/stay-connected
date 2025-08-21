@@ -237,8 +237,7 @@ export default function PlanScreen() {
       const { start, end } = toStartEnd(date, time, durationMin);
 
       const col = collection(db, "users", uid, "plans");
-      console.log("[plans] collection =", col.path); // TODO: remove debug logs
-      const ref = await addDoc(col, {
+      await addDoc(col, {
         personId,
         personName,
         startAt: Timestamp.fromDate(start), // ✅ use Firestore Timestamp
@@ -247,11 +246,9 @@ export default function PlanScreen() {
         createdAt: serverTimestamp(),
         status: "scheduled",
       });
-      console.log("[plans] created ref =", ref.path); // TODO: remove debug logs
 
       Alert.alert("Plan created");
     } catch (e: any) {
-      console.warn("Create plan failed", { code: e.code, msg: e.message, stack: e.stack }); // TODO: remove debug logs
       Alert.alert("Could not create plan", e?.message ?? String(e));
     } finally {
       setSaving(false);

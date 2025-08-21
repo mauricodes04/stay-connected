@@ -44,19 +44,12 @@ export default function HistoryScreen() {
         const uid = await ensureSignedIn();
         if (canceled) return;
         const col = collection(db, 'users', uid, 'plans');
-        console.log('[history] listening to', col.path); // TODO: remove debug logs
         const q = query(col, orderBy('startAt', 'desc'));
-        unsub = onSnapshot(
-          q,
-          snap => {
-            setPlans(snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })));
-          },
-          err => {
-            console.warn('History listener error', { code: err.code, msg: err.message, stack: err.stack }); // TODO: remove debug logs
-          }
-        );
-      } catch (e: any) {
-        console.warn('ensureSignedIn failed', { code: e.code, msg: e.message, stack: e.stack }); // TODO: remove debug logs
+        unsub = onSnapshot(q, snap => {
+          setPlans(snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })));
+        });
+      } catch {
+        // no-op
       }
     })();
 
