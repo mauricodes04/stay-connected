@@ -46,32 +46,58 @@ export default function ContactsScreen() {
     });
   };
 
+  const normEmail = (e?: string) => e?.trim().toLowerCase() || undefined;
+  const normPhone = (p?: string) => (p ? p.replace(/\D+/g, '') : undefined);
+  const hash = (s: string) => {
+    let h = 0;
+    for (let i = 0; i < s.length; i++) {
+      h = (h << 5) - h + s.charCodeAt(i);
+      h |= 0;
+    }
+    return Math.abs(h).toString(36);
+  };
+  const stableIdFor = (c: { id?: string; email?: string; phone?: string; name: string }) => {
+    const e = normEmail(c.email);
+    const ph = normPhone(c.phone);
+    if (c.id && c.id.trim()) return c.id.trim();
+    if (e) return `email:${e}`;
+    if (ph) return `phone:${ph}`;
+    return `name:${hash(c.name.trim())}`;
+  };
+
   const addSelected = async () => {
-    const chosen = contacts.filter(c => selected.has(c.id));
+    const chosen = contacts.filter((c) => selected.has(c.id));
+    if (!chosen.length) return;
     let added = 0;
     let skipped = 0;
-    const existingIds = new Set(people.map(p => p.id));
+    const existingIds = new Set(people.map((p) => p.id));
+    const ops: Promise<void>[] = [];
     for (const c of chosen) {
-      const key =
-        c.email?.toLowerCase() ||
-        c.phone?.replace(/\D+/g, "") ||
-        c.name;
-      if (existingIds.has(key)) {
+      const contactId = stableIdFor({ email: c.email, phone: c.phone, name: c.name });
+      if (existingIds.has(contactId)) {
         skipped++;
       } else {
         added++;
       }
-      existingIds.add(key);
-      await upsertPerson({
-        name: c.name,
-        nickname: c.nickname,
-        phone: c.phone,
-        email: c.email,
-      });
+      existingIds.add(contactId);
+      ops.push(
+        upsertPerson({
+          id: contactId,
+          name: c.name,
+          nickname: c.nickname,
+          phone: c.phone,
+          email: c.email,
+        })
+      );
     }
-    setInfo({ added, skipped });
-    setContacts([]);
-    setSelected(new Set());
+    try {
+      await Promise.all(ops);
+      setInfo({ added, skipped });
+      setContacts([]);
+      setSelected(new Set());
+    } catch (e: any) {
+      console.warn('Add selected failed:', e);
+    }
   };
 
   const filtered = contacts.filter(c =>
