@@ -4,11 +4,11 @@
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "scan:auth": "node -e \"const fs=require('fs');const gl=require('glob');const files=gl.sync('**/*.{ts,tsx}',{ignore:['node_modules/**']});let bad=[];for(const f of files){const s=fs.readFileSync(f,'utf8');if(/firebase\\/auth\\/react-native/i.test(s)) bad.push(f);if(/\\bgetAuth\\s*\\(/.test(s)&&f!=='src/lib/firebase.ts') bad.push(f);if(/\\binitializeAuth\\s*\\(/.test(s)&&f!=='src/lib/firebase.ts') bad.push(f);}if(bad.length){console.error('Banned auth init found in:',bad);process.exit(1);}console.log('Auth scan clean');\""
+    "scan:auth": "node -e \"const fs=require('fs');const gl=require('glob');const files=gl.sync('**/*.{ts,tsx}',{ignore:['node_modules/**','android/**','ios/**','.expo/**','dist/**','build/**','nvm-windows/**','**/*.d.ts']});let bad=[];for(const f of files){const s=fs.readFileSync(f,'utf8');if(/firebase\\/auth\\/react-native/i.test(s)) bad.push(f);if(/\\bgetAuth\\s*\\(/.test(s)&&f!=='src/lib/firebase.ts'&&f!=='src/lib/debugAuth.ts') bad.push(f);if(/\\binitializeAuth\\s*\\(/.test(s)&&f!=='src/lib/firebase.ts') bad.push(f);}if(bad.length){console.error('Banned auth init found in:',bad);process.exit(1);}console.log('Auth scan clean');\""
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",

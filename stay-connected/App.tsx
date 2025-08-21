@@ -7,9 +7,14 @@ import { useStore } from './src/state/store';
 // Surface Firebase config errors early
 try {
   // Lazy import to avoid tree-shaking removing the check
-  require('./src/lib/firebase');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require('@/lib/firebase');
 } catch (e) {
   console.warn(String(e));
+}
+
+if (__DEV__) {
+  import('@/lib/debugAuth').then(m => m.logAuthPersistence());
 }
 
 export default function App() {
