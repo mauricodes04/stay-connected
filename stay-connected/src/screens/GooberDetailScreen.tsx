@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-unused-styles */
 import React, { useState } from 'react';
 import {
   ScrollView,
@@ -15,7 +16,7 @@ import { ensureSignedIn } from '@/lib/ensureAuth';
 import { db } from '@/lib/firebase';
 import { doc, deleteDoc } from 'firebase/firestore';
 import { RELATIONSHIPS } from '../types';
-import { spacing } from '../theme/spacing';
+import { useTheme } from '../theme';
 
 type RouteParams = { GooberDetail: { gooberId: string } };
 
@@ -23,6 +24,28 @@ export default function GooberDetailScreen() {
   const navigation = useNavigation();
   const { params } = useRoute<RouteProp<RouteParams, 'GooberDetail'>>();
   const { people, upsertPerson } = usePeople();
+  const { spacing, colors } = useTheme();
+  const styles = React.useMemo(
+    () =>
+      StyleSheet.create({
+        container: { padding: spacing.m },
+        label: { marginTop: spacing.m, fontWeight: 'bold' },
+        value: { marginTop: spacing.s / 2 },
+        input: { borderWidth: 1, padding: spacing.s, marginTop: spacing.s / 2 },
+        notes: { height: 100 },
+        rels: { flexDirection: 'row', flexWrap: 'wrap', marginVertical: spacing.s },
+        rel: {
+          borderWidth: 1,
+          paddingHorizontal: spacing.s,
+          paddingVertical: spacing.s / 2,
+          borderRadius: 4,
+          margin: spacing.s / 2,
+        },
+        relActive: { backgroundColor: colors.background.elevated },
+        center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+      }),
+    [spacing, colors]
+  );
   const goober = people.find(p => p.id === params.gooberId);
 
   if (!goober) {
@@ -127,24 +150,3 @@ export default function GooberDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { padding: spacing.md },
-  label: { marginTop: spacing.md, fontWeight: 'bold' },
-  value: { marginTop: spacing.sm / 2 },
-  input: {
-    borderWidth: 1,
-    padding: spacing.sm,
-    marginTop: spacing.sm / 2,
-  },
-  notes: { height: 100 },
-  rels: { flexDirection: 'row', flexWrap: 'wrap', marginVertical: spacing.sm },
-  rel: {
-    borderWidth: 1,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.sm / 2,
-    borderRadius: 4,
-    margin: spacing.sm / 2,
-  },
-  relActive: { backgroundColor: '#ddd' },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-});
