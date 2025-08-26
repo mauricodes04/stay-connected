@@ -3,6 +3,7 @@ import React from 'react';
 import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import Navigation from './src/navigation';
 import { useStore } from './src/state/store';
+import { ThemeProvider } from './src/theme';
 
 // Surface Firebase config errors early
 try {
@@ -20,8 +21,10 @@ if (__DEV__) {
 export default function App() {
   const darkMode = useStore(state => state.darkMode);
   return (
-    <NavigationContainer theme={darkMode ? DarkTheme : DefaultTheme}>
-      <Navigation />
-    </NavigationContainer>
+    <ThemeProvider mode={darkMode ? 'dark' : 'light'}>
+      <NavigationContainer theme={darkMode ? DarkTheme : DefaultTheme}>
+        <Navigation />
+      </NavigationContainer>
+    </ThemeProvider>
   );
 }

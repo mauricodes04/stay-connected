@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-unused-styles */
 import React, { useState } from 'react';
 import {
   View,
@@ -10,7 +11,7 @@ import {
 } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { Section } from '../components/Section';
-import { spacing } from '../theme/spacing';
+import { useTheme } from '../theme';
 import { requestContactsPermission, pickContacts } from '../services/contacts';
 import type { Goober } from '../state/store';
 import { usePeople } from '@/hooks/usePeople';
@@ -20,6 +21,19 @@ type Nav = NavigationProp<{ GooberDetail: { gooberId: string } }>;
 export default function ContactsScreen() {
   const navigation = useNavigation<Nav>();
   const { people, upsertPerson } = usePeople();
+  const { spacing } = useTheme();
+  const styles = React.useMemo(
+    () =>
+      StyleSheet.create({
+        buttons: { flexDirection: 'row', justifyContent: 'space-between' },
+        input: { borderWidth: 1, padding: spacing.s, marginVertical: spacing.m },
+        item: { paddingVertical: spacing.s },
+        listTitle: { marginTop: spacing.l, fontWeight: 'bold' },
+        denied: { marginVertical: spacing.m },
+        info: { marginVertical: spacing.s },
+      }),
+    [spacing]
+  );
 
   const [query, setQuery] = useState('');
   const [contacts, setContacts] = useState<Goober[]>([]);
@@ -157,15 +171,3 @@ export default function ContactsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  buttons: { flexDirection: 'row', justifyContent: 'space-between' },
-  input: {
-    borderWidth: 1,
-    padding: spacing.sm,
-    marginVertical: spacing.md,
-  },
-  item: { paddingVertical: spacing.sm },
-  listTitle: { marginTop: spacing.lg, fontWeight: 'bold' },
-  denied: { marginVertical: spacing.md },
-  info: { marginVertical: spacing.sm },
-});
