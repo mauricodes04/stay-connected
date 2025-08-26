@@ -1,9 +1,9 @@
 /* eslint-disable react-native/no-unused-styles */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Animated,
   Modal,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -25,7 +25,7 @@ export default function GooberDetailScreen() {
   const navigation = useNavigation();
   const { params } = useRoute<RouteProp<RouteParams, 'GooberDetail'>>();
   const { people, upsertPerson } = usePeople();
-  const { colors, spacing, radii } = useTheme();
+  const { colors, spacing, radii, motion } = useTheme();
 
   const [nickname, setNickname] = useState('');
   const [relationship, setRelationship] = useState<string>(RELATIONSHIPS[0]);
@@ -80,6 +80,15 @@ export default function GooberDetailScreen() {
     [colors, spacing, radii]
   );
 
+  const opacity = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: motion.durations.base,
+      useNativeDriver: true,
+    }).start();
+  }, [opacity, motion.durations.base]);
+
   const save = async () => {
     if (!goober?.name) return;
     if (notes.length > 1000) return;
@@ -107,7 +116,7 @@ export default function GooberDetailScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <Animated.ScrollView style={[{ opacity }]} contentContainerStyle={styles.container}>
       {!goober && (
         <View style={styles.center}>
           <ActivityIndicator color={colors.accent.primary} />
@@ -160,7 +169,6 @@ export default function GooberDetailScreen() {
           </View>
         </View>
       </Modal>
-    </ScrollView>
+    </Animated.ScrollView>
   );
 }
-

@@ -6,10 +6,9 @@ import {
   Pressable,
   StyleSheet,
   Text,
+  ViewStyle,
 } from 'react-native';
 import { useTheme } from '@/theme';
-
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 type Variant = 'primary' | 'secondary' | 'destructive';
 
@@ -20,7 +19,7 @@ type Props = {
   disabled?: boolean;
   loading?: boolean;
   accessibilityLabel?: string;
-  style?: any;
+  style?: ViewStyle | ViewStyle[];
 };
 
 export const Button: React.FC<Props> = ({
@@ -32,26 +31,24 @@ export const Button: React.FC<Props> = ({
   accessibilityLabel,
   style,
 }) => {
-  const { colors, spacing, radii } = useTheme();
+  const { colors, spacing, radii, motion } = useTheme();
   const scale = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
     if (Platform.OS !== 'android') {
-      Animated.spring(scale, {
+      Animated.timing(scale, {
         toValue: 0.97,
+        duration: motion.durations.fast,
         useNativeDriver: true,
-        speed: 40,
-        bounciness: 0,
       }).start();
     }
   };
   const handlePressOut = () => {
     if (Platform.OS !== 'android') {
-      Animated.spring(scale, {
+      Animated.timing(scale, {
         toValue: 1,
+        duration: motion.durations.base,
         useNativeDriver: true,
-        speed: 40,
-        bounciness: 0,
       }).start();
     }
   };
@@ -68,36 +65,35 @@ export const Button: React.FC<Props> = ({
       : colors.accent.primary;
   const borderColor = variant === 'secondary' ? colors.accent.primary : 'transparent';
 
+  const containerStyle: ViewStyle = {
+    backgroundColor: bg,
+    borderColor,
+    borderWidth: variant === 'secondary' ? 1 : 0,
+    opacity: disabled ? 0.5 : 1,
+    paddingVertical: spacing.m,
+    paddingHorizontal: spacing.l,
+    borderRadius: radii.md,
+  };
+
   return (
-    <AnimatedPressable
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel || title}
-      android_ripple={{ color: colors.text.inverse }}
-      disabled={disabled || loading}
-      onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      style={[
-        styles.base,
-        {
-          backgroundColor: bg,
-          borderColor,
-          borderWidth: variant === 'secondary' ? 1 : 0,
-          opacity: disabled ? 0.5 : 1,
-          paddingVertical: spacing.m,
-          paddingHorizontal: spacing.l,
-          borderRadius: radii.md,
-          transform: [{ scale }],
-        },
-        style,
-      ]}
-    >
-      {loading ? (
-        <ActivityIndicator color={textColor} />
-      ) : (
-        <Text style={[styles.label, { color: textColor }]}>{title}</Text>
-      )}
-    </AnimatedPressable>
+    <Animated.View style={[{ transform: [{ scale }] }, containerStyle, style]}>  
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel || title}
+        android_ripple={{ color: colors.text.inverse }}
+        disabled={disabled || loading}
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        style={[styles.base, { borderRadius: radii.md }]}
+      >
+        {loading ? (
+          <ActivityIndicator color={textColor} />
+        ) : (
+          <Text style={[styles.label, { color: textColor }]}>{title}</Text>
+        )}
+      </Pressable>
+    </Animated.View>
   );
 };
 
@@ -114,4 +110,3 @@ const styles = StyleSheet.create({
 });
 
 export default Button;
-

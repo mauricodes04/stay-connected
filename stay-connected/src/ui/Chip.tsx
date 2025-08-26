@@ -9,16 +9,16 @@ type Props = {
 };
 
 export const Chip: React.FC<Props> = ({ label, selected = false, onPress }) => {
-  const { colors, spacing, radii } = useTheme();
-  const anim = useRef(new Animated.Value(selected ? 1 : 0)).current;
+  const { colors, spacing, radii, motion } = useTheme();
+  const anim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.timing(anim, {
       toValue: selected ? 1 : 0,
-      duration: 200,
+      duration: motion.durations.base,
       useNativeDriver: false,
     }).start();
-  }, [selected, anim]);
+  }, [selected, anim, motion.durations.base]);
 
   const backgroundColor = anim.interpolate({
     inputRange: [0, 1],
@@ -63,4 +63,3 @@ const styles = StyleSheet.create({
 });
 
 export default Chip;
-
