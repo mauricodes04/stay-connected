@@ -42,12 +42,22 @@ export const Chip: React.FC<Props> = ({ label, selected = false, onPress }) => {
             paddingHorizontal: spacing.m,
             paddingVertical: spacing.s,
             borderRadius: radii.full,
-            backgroundColor,
+            // Keep Pressable styles non-animated to avoid mutating frozen inputs
             opacity: pressed ? 0.8 : 1,
           },
         ]}
       >
-        <Animated.Text style={{ color: textColor }}>{label}</Animated.Text>
+        <Animated.View
+          // Apply animated background on an Animated.View child instead of Pressable
+          style={{
+            backgroundColor,
+            borderRadius: radii.full,
+            paddingHorizontal: spacing.m,
+            paddingVertical: spacing.s,
+          }}
+        >
+          <Animated.Text style={{ color: textColor }}>{label}</Animated.Text>
+        </Animated.View>
       </Pressable>
     </Animated.View>
   );

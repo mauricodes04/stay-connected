@@ -16,6 +16,7 @@ import { doc, deleteDoc } from 'firebase/firestore';
 import { useTheme } from '@/theme';
 import { Button } from '@/ui/Button';
 import EditGooberForm from './components/EditGooberForm';
+import { Avatar } from '@/ui/Avatar';
 
 import { RELATIONSHIPS } from '@/types';
 
@@ -38,7 +39,7 @@ export default function GooberDetailScreen() {
   useEffect(() => {
     if (goober) {
       setNickname(goober.nickname ?? '');
-      setRelationship(goober.relationship_type);
+      setRelationship(goober.relationship_type || RELATIONSHIPS[0]);
       setNotes(goober.notes ?? '');
     }
   }, [goober]);
@@ -58,6 +59,7 @@ export default function GooberDetailScreen() {
           borderRadius: radii.md,
           padding: spacing.m,
         },
+        avatarWrap: { alignItems: 'center', marginBottom: spacing.m },
         center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
         editBtn: { marginTop: spacing.l },
         modalBackdrop: {
@@ -124,11 +126,11 @@ export default function GooberDetailScreen() {
       )}
       {goober && !editMode && (
         <View style={styles.card}>
+          <View style={styles.avatarWrap}>
+            <Avatar name={goober.name} />
+          </View>
           <Text style={styles.label}>Name</Text>
           <Text style={styles.value}>{goober.name}</Text>
-          {goober.birthday && (
-            <Text style={styles.value}>Birthday: {goober.birthday}</Text>
-          )}
           {goober.phone && (
             <Text style={styles.value}>Phone: {goober.phone}</Text>
           )}
