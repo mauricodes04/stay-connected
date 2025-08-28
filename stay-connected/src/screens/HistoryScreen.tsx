@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Text } from 'react-native';
+import { View } from 'react-native';
 import { Section } from '../components/Section';
 import { collection, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { ensureSignedIn } from '@/lib/ensureAuth';
+import { useTheme } from '@/theme';
+import PlanCard from '@/ui/PlanCard';
+import EmptyState from '@/ui/EmptyState';
 
 type FireDate = Timestamp | string;
 const toJsDate = (v: FireDate): Date | null => {
@@ -34,6 +37,7 @@ type Plan = {
 
 export default function HistoryScreen() {
   const [plans, setPlans] = useState<Plan[]>([]);
+  const { spacing } = useTheme();
 
   useEffect(() => {
     let unsub: undefined | (() => void);
@@ -60,23 +64,32 @@ export default function HistoryScreen() {
   }, []);
 
   return (
-    <Section title="History">
-      {plans.map(p => {
-        const start = toJsDate(p.startAt);
-        if (!start) return null;
-        const dateStr = start.toLocaleDateString(undefined, {
-          weekday: 'short',
-          month: 'short',
-          day: 'numeric',
-        });
-        const timeStr = start.toLocaleTimeString([], {
-          hour: 'numeric',
-          minute: '2-digit',
-        });
-        return (
-          <Text key={p.id}>{`${dateStr} • ${timeStr} • ${p.durationMin} min — Plan with ${p.personName}`}</Text>
-        );
-      })}
+    <Section title="Plan History">
+      {plans.length === 0 ? (
+        <EmptyState title="No history yet" caption="Create your first plan from Home" />
+      ) : (
+        <View style={{ gap: spacing.s }}>
+          {plans.map(p => {
+            const start = toJsDate(p.startAt);
+            if (!start) return null;
+            const dateStr = start.toLocaleDateString(undefined, {
+              weekday: 'short', month: 'short', day: 'numeric'
+            });
+            const timeStr = start.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+            const status = (p.status === 'completed' ? 'completed' : p.status === 'pending' ? 'pending' : 'scheduled') as 'pending'|'completed'|'scheduled';
+            return (
+              <PlanCard
+                key={p.id}
+                title={`Plan with ${p.personName}`}
+                personName={p.personName}
+                dateLabel={`${dateStr} • ${timeStr}`}
+                durationMin={p.durationMin}
+                status={status}
+              />
+            );
+          })}
+        </View>
+      )}
     </Section>
   );
 }

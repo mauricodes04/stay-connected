@@ -5,7 +5,6 @@ import {
   SafeAreaView,
   View,
   Text,
-  Modal,
   Pressable,
   Alert,
   ActivityIndicator,
@@ -23,6 +22,9 @@ import { addDoc, collection, serverTimestamp, Timestamp } from "firebase/firesto
 import { db } from "@/lib/firebase";
 import { ensureSignedIn } from "@/lib/ensureAuth";
 import { usePeople } from "@/hooks/usePeople";
+import { useTheme } from "@/theme";
+import Button from "@/ui/Button";
+import ModalSheet from "@/ui/ModalSheet";
 
 const IOS_WHEEL_HEIGHT = 220;
 const iosWheelProps =
@@ -126,20 +128,21 @@ function FieldButton({
   value: string;
   onPress: () => void;
 }) {
+  const { colors, spacing, radii, typography } = useTheme();
   return (
-    <View style={{ marginBottom: 24 }}>
-      <Text style={{ fontSize: 16, marginBottom: 8 }}>{label}</Text>
+    <View style={{ marginBottom: spacing.m }}>
+      <Text style={{ fontSize: typography.label.fontSize, fontWeight: typography.label.fontWeight, color: colors.text.secondary, marginBottom: spacing.xs }}>{label}</Text>
       <Pressable
         onPress={onPress}
         style={{
-          borderRadius: 16,
+          borderRadius: radii.lg,
           borderWidth: 1,
-          borderColor: "#e5e7eb",
-          paddingVertical: 16,
-          paddingHorizontal: 16,
+          borderColor: colors.background.elevated,
+          paddingVertical: spacing.m,
+          paddingHorizontal: spacing.m,
         }}
       >
-        <Text style={{ fontSize: 16 }}>{value}</Text>
+        <Text style={{ fontSize: typography.body.fontSize, color: colors.text.primary }}>{value}</Text>
       </Pressable>
     </View>
   );
@@ -160,36 +163,24 @@ function PickerModal<T extends string | number>({
   onChange: (v: T) => void;
   children: React.ReactNode;
 }) {
+  const { colors, radii } = useTheme();
   return Platform.OS === "ios" ? (
-    <Modal visible={visible} animationType="slide" transparent>
-      <View
-        style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.25)", justifyContent: "flex-end" }}
+    <ModalSheet visible={visible} onClose={onClose} title={title}>
+      <Picker
+        selectedValue={selectedValue}
+        onValueChange={(v: any) => onChange(v as T)}
+        style={{ height: IOS_WHEEL_HEIGHT }}
+        itemStyle={{ fontSize: 22 }}
       >
-        <View
-          style={{ backgroundColor: "white", borderTopLeftRadius: 16, borderTopRightRadius: 16 }}
-        >
-          <View style={{ flexDirection: "row", justifyContent: "flex-end", padding: 12 }}>
-            <Pressable onPress={onClose}>
-              <Text style={{ fontSize: 16 }}>{title}</Text>
-            </Pressable>
-          </View>
-          <Picker
-            selectedValue={selectedValue}
-            onValueChange={(v: any) => onChange(v as T)}
-            style={{ height: IOS_WHEEL_HEIGHT, backgroundColor: "white" }}
-            itemStyle={{ fontSize: 22, color: "#111827" }}
-          >
-            {children}
-          </Picker>
-        </View>
-      </View>
-    </Modal>
+        {children}
+      </Picker>
+    </ModalSheet>
   ) : visible ? (
     <View
       style={{
-        borderRadius: 12,
+        borderRadius: radii.md,
         borderWidth: 1,
-        borderColor: "#e5e7eb",
+        borderColor: colors.background.elevated,
         marginBottom: 12,
       }}
     >
@@ -202,6 +193,7 @@ function PickerModal<T extends string | number>({
 
 export default function PlanScreen() {
   const { people } = usePeople();
+  const { colors, spacing, typography } = useTheme();
 
   const [personId, setPersonId] = useState<string>("");
   const [date, setDate] = useState<Date>(new Date());
@@ -320,9 +312,9 @@ export default function PlanScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      <View style={{ paddingHorizontal: 20, paddingTop: 10 }}>
-        <Text style={{ fontSize: 32, fontWeight: "800", marginBottom: 10 }}>Plan</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background.app }}>
+      <View style={{ paddingHorizontal: spacing.m, paddingTop: spacing.s }}>
+        <Text style={{ fontSize: typography.h1.fontSize, fontWeight: typography.h1.fontWeight as any, marginBottom: spacing.s, color: colors.text.primary }}>Plan</Text>
 
         {/* Person */}
         <FieldButton label="Person" value={personName} onPress={() => setShowPerson(true)} />
@@ -345,33 +337,20 @@ export default function PlanScreen() {
           value={date.toLocaleDateString()}
           onPress={() => setShowDate(true)}
         />
-        <Text style={{ marginTop: 6, marginBottom: 18, color: "#6b7280" }}>
+        <Text style={{ marginTop: 6, marginBottom: 18, color: colors.text.secondary }}>
           {fmtWeekday(date)}
         </Text>
         {Platform.OS === "ios" ? (
-          <Modal visible={showDate} animationType="slide" transparent>
-            <View
-              style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.25)", justifyContent: "flex-end" }}
-            >
-              <View
-                style={{ backgroundColor: "white", borderTopLeftRadius: 16, borderTopRightRadius: 16 }}
-              >
-                <View style={{ flexDirection: "row", justifyContent: "flex-end", padding: 12 }}>
-                  <Pressable onPress={() => setShowDate(false)}>
-                    <Text style={{ fontSize: 16 }}>Done</Text>
-                  </Pressable>
-                </View>
-                <DateTimePicker
-                  value={date}
-                  mode="date"
-                  display="spinner"
-                  onChange={(_: any, d?: Date) => d && setDate(d)}
-                  style={{ height: IOS_WHEEL_HEIGHT, backgroundColor: "white" }}
-                  {...iosWheelProps}
-                />
-              </View>
-            </View>
-          </Modal>
+          <ModalSheet visible={showDate} onClose={() => setShowDate(false)} title="Done">
+            <DateTimePicker
+              value={date}
+              mode="date"
+              display="spinner"
+              onChange={(_: any, d?: Date) => d && setDate(d)}
+              style={{ height: IOS_WHEEL_HEIGHT }}
+              {...iosWheelProps}
+            />
+          </ModalSheet>
         ) : (
           showDate && (
             <DateTimePicker
@@ -392,29 +371,16 @@ export default function PlanScreen() {
           onPress={() => setShowTime(true)}
         />
         {Platform.OS === "ios" ? (
-          <Modal visible={showTime} animationType="slide" transparent>
-            <View
-              style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.25)", justifyContent: "flex-end" }}
-            >
-              <View
-                style={{ backgroundColor: "white", borderTopLeftRadius: 16, borderTopRightRadius: 16 }}
-              >
-                <View style={{ flexDirection: "row", justifyContent: "flex-end", padding: 12 }}>
-                  <Pressable onPress={() => setShowTime(false)}>
-                    <Text style={{ fontSize: 16 }}>Done</Text>
-                  </Pressable>
-                </View>
-                <DateTimePicker
-                  value={time}
-                  mode="time"
-                  display="spinner"
-                  onChange={(_: any, d?: Date) => d && setTime(d)}
-                  style={{ height: IOS_WHEEL_HEIGHT, backgroundColor: "white" }}
-                  {...iosWheelProps}
-                />
-              </View>
-            </View>
-          </Modal>
+          <ModalSheet visible={showTime} onClose={() => setShowTime(false)} title="Done">
+            <DateTimePicker
+              value={time}
+              mode="time"
+              display="spinner"
+              onChange={(_: any, d?: Date) => d && setTime(d)}
+              style={{ height: IOS_WHEEL_HEIGHT }}
+              {...iosWheelProps}
+            />
+          </ModalSheet>
         ) : (
           showTime && (
             <DateTimePicker
@@ -445,105 +411,36 @@ export default function PlanScreen() {
           ))}
         </PickerModal>
 
-        <Pressable
+        <Button
+          title={saving ? "Creating..." : "Create Plan"}
           onPress={onCreatePlan}
           disabled={saving}
-          style={{
-            backgroundColor: saving ? "#9ca3af" : "#2563eb",
-            paddingVertical: 14,
-            borderRadius: 12,
-            alignItems: "center",
-            marginTop: 8,
-          }}
-        >
-          {saving ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>
-              Create Plan
-            </Text>
-          )}
-        </Pressable>
+          loading={saving}
+          style={{ marginTop: spacing.s }}
+        />
 
         <View style={{ gap: 10, marginTop: 12 }}>
-          <Pressable
-            onPress={onRequestAddToCalendar}
-            accessibilityRole="button"
-            accessibilityLabel="Add to Calendar"
-            style={{
-              backgroundColor: "#16a34a",
-              paddingVertical: 14,
-              borderRadius: 12,
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>
-              Add to Calendar
-            </Text>
-          </Pressable>
+          <Button title="Add to Calendar" onPress={onRequestAddToCalendar} />
 
-          <Pressable
-            onPress={onShareInvite}
-            accessibilityRole="button"
-            accessibilityLabel="Share Invite (Text)"
-            style={{
-              backgroundColor: "#2563eb",
-              paddingVertical: 14,
-              borderRadius: 12,
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>
-              Share Invite (Text)
-            </Text>
-          </Pressable>
+          <Button title="Share Invite (Text)" onPress={onShareInvite} />
 
-          <Pressable
-            onPress={onShareInviteWithICS}
-            accessibilityRole="button"
-            accessibilityLabel="Share Invite with ICS"
-            style={{
-              backgroundColor: "#334155",
-              paddingVertical: 14,
-              borderRadius: 12,
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: "white", fontSize: 16, fontWeight: "600" }}>
-              Share Invite (.ics)
-            </Text>
-          </Pressable>
+          <Button title="Share Invite (.ics)" onPress={onShareInviteWithICS} variant="secondary" />
         </View>
 
-        <Modal visible={confirmCalVisible} transparent animationType="fade">
-          <View
-            style={{
-              flex: 1,
-              backgroundColor: "rgba(0,0,0,0.35)",
-              justifyContent: "center",
-              padding: 20,
-            }}
-          >
-            <View style={{ backgroundColor: "white", borderRadius: 16, padding: 20 }}>
-              <Text style={{ fontSize: 18, fontWeight: "700", marginBottom: 8 }}>
-                Add to Calendar?
-              </Text>
-              <Text style={{ marginBottom: 4 }}>Person: {personName}</Text>
-              <Text style={{ marginBottom: 4 }}>Date: {date.toLocaleDateString()}</Text>
-              <Text style={{ marginBottom: 12 }}>
-                Time: {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} • {durationMin} min
-              </Text>
-              <View style={{ flexDirection: "row", justifyContent: "flex-end", gap: 12 }}>
-                <Pressable onPress={() => setConfirmCalVisible(false)}>
-                  <Text style={{ fontSize: 16 }}>Cancel</Text>
-                </Pressable>
-                <Pressable onPress={onConfirmAddToCalendar}>
-                  <Text style={{ fontSize: 16, color: "#2563eb", fontWeight: "600" }}>Add</Text>
-                </Pressable>
-              </View>
+        <ModalSheet visible={confirmCalVisible} onClose={() => setConfirmCalVisible(false)} title="Add to Calendar?"
+          footer={
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: spacing.s }}>
+              <Button title="Cancel" variant="secondary" onPress={() => setConfirmCalVisible(false)} />
+              <Button title="Add" onPress={onConfirmAddToCalendar} />
             </View>
-          </View>
-        </Modal>
+          }
+        >
+          <Text style={{ marginBottom: spacing.xs, color: colors.text.primary }}>Person: {personName}</Text>
+          <Text style={{ marginBottom: spacing.xs, color: colors.text.primary }}>Date: {date.toLocaleDateString()}</Text>
+          <Text style={{ color: colors.text.secondary }}>
+            Time: {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} • {durationMin} min
+          </Text>
+        </ModalSheet>
       </View>
     </SafeAreaView>
   );

@@ -44,7 +44,14 @@ function Tabs() {
 
 export default function Navigation() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        animation: 'slide_from_right',
+        headerShadowVisible: false,
+        gestureEnabled: true,
+        headerTitleAlign: 'center',
+      }}
+    >
       <Stack.Screen name="Root" component={Tabs} options={{ headerShown: false }} />
       <Stack.Screen name="GooberDetail" component={GooberDetailScreen} options={{ title: 'Goober' }} />
     </Stack.Navigator>

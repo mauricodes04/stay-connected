@@ -7,11 +7,10 @@ const config: ExpoConfig = {
   scheme: 'stayconnected',
   version: '1.0.0',
   orientation: 'portrait',
-  // icon removed to silence missing asset warnings
   userInterfaceStyle: 'automatic',
-  splash: { image: './assets/splash.png', resizeMode: 'contain', backgroundColor: '#ffffff' },
+  // Splash and adaptive icon assets removed (no assets/ directory present)
   ios: { supportsTablet: true },
-  android: { adaptiveIcon: { foregroundImage: './assets/adaptive-icon.png', backgroundColor: '#ffffff' } },
+  android: { adaptiveIcon: { backgroundColor: '#ffffff' } },
   web: { bundler: 'metro' },
 
   extra: {

@@ -1,8 +1,7 @@
+/* eslint-disable react-native/no-unused-styles */
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useStore } from '../state/store';
-import { colors } from '../theme/colors';
-import { spacing } from '../theme/spacing';
+import { useTheme } from '../theme';
 
 type Props = {
   title?: string;
@@ -10,24 +9,30 @@ type Props = {
 };
 
 export function Section({ title, children }: Props) {
-  const darkMode = useStore(state => state.darkMode);
-  const theme = darkMode ? colors.dark : colors.light;
+  const { colors, spacing } = useTheme();
+  const styles = React.useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          padding: spacing.m,
+          flex: 1,
+          backgroundColor: colors.background.app,
+        },
+        title: {
+          fontSize: 18,
+          fontWeight: '600',
+          marginBottom: spacing.s,
+          color: colors.text.primary,
+        },
+      }),
+    [colors, spacing]
+  );
+
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}> 
-      {title && <Text style={[styles.title, { color: theme.text }]}>{title}</Text>}
+    <View style={styles.container}>
+      {title && <Text style={styles.title}>{title}</Text>}
       {children}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    padding: spacing.md,
-    flex: 1,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: spacing.sm,
-  },
-});

@@ -1,25 +1,34 @@
+/* eslint-disable react-native/no-unused-styles */
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  Button,
-  FlatList,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { Section } from '../components/Section';
-import { spacing } from '../theme/spacing';
+import { useTheme } from '../theme';
 import { requestContactsPermission, pickContacts } from '../services/contacts';
 import type { Goober } from '../state/store';
 import { usePeople } from '@/hooks/usePeople';
+import { Field } from '@/ui/Field';
+import { ListItem } from '@/ui/ListItem';
+import { Avatar } from '@/ui/Avatar';
 
 type Nav = NavigationProp<{ GooberDetail: { gooberId: string } }>;
 
 export default function ContactsScreen() {
   const navigation = useNavigation<Nav>();
   const { people, upsertPerson } = usePeople();
+  const { spacing } = useTheme();
+  const styles = React.useMemo(
+    () =>
+      StyleSheet.create({
+        buttons: { flexDirection: 'row', justifyContent: 'space-between' },
+        input: { borderWidth: 1, padding: spacing.s, marginVertical: spacing.m },
+        item: { paddingVertical: spacing.s },
+        listTitle: { marginTop: spacing.l, fontWeight: 'bold' },
+        denied: { marginVertical: spacing.m },
+        info: { marginVertical: spacing.s },
+      }),
+    [spacing]
+  );
 
   const [query, setQuery] = useState('');
   const [contacts, setContacts] = useState<Goober[]>([]);
@@ -122,19 +131,19 @@ export default function ContactsScreen() {
       )}
       {contacts.length > 0 && (
         <>
-          <TextInput
-            placeholder="Search"
-            value={query}
-            onChangeText={setQuery}
-            style={styles.input}
-          />
+          <Field label="Search" value={query} onChangeText={setQuery} />
           <FlatList
             data={filtered}
             keyExtractor={item => item.id}
             renderItem={({ item }) => (
-              <Pressable onPress={() => toggle(item.id)} style={styles.item}>
-                <Text>{selected.has(item.id) ? '☑' : '☐'} {item.name}</Text>
-              </Pressable>
+              <ListItem
+                leading={<Avatar name={item.name} />}
+                title={item.name}
+                subtitle={item.email || item.phone}
+                onPress={() => toggle(item.id)}
+                meta={<Text>{selected.has(item.id) ? 'Selected' : 'Tap to select'}</Text>}
+                style={styles.item}
+              />
             )}
           />
           <Button title="Add selected" onPress={addSelected} />
@@ -144,12 +153,13 @@ export default function ContactsScreen() {
         data={people}
         keyExtractor={g => g.id}
         renderItem={({ item }) => (
-          <Pressable
+          <ListItem
+            leading={<Avatar name={item.displayName} />}
+            title={item.displayName}
+            subtitle={item.email || item.phone}
             onPress={() => navigation.navigate('GooberDetail', { gooberId: item.id })}
             style={styles.item}
-          >
-            <Text>{item.displayName}</Text>
-          </Pressable>
+          />
         )}
         ListHeaderComponent={<Text style={styles.listTitle}>Stored Goobers</Text>}
       />
@@ -157,15 +167,3 @@ export default function ContactsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  buttons: { flexDirection: 'row', justifyContent: 'space-between' },
-  input: {
-    borderWidth: 1,
-    padding: spacing.sm,
-    marginVertical: spacing.md,
-  },
-  item: { paddingVertical: spacing.sm },
-  listTitle: { marginTop: spacing.lg, fontWeight: 'bold' },
-  denied: { marginVertical: spacing.md },
-  info: { marginVertical: spacing.sm },
-});

@@ -1,21 +1,24 @@
-import React, { useState } from 'react';
+/* eslint-disable react-native/no-unused-styles */
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  ScrollView,
-  View,
-  Text,
-  TextInput,
-  Button,
-  Pressable,
-  Alert,
+  ActivityIndicator,
+  Animated,
+  Modal,
   StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { usePeople } from '@/hooks/usePeople';
 import { ensureSignedIn } from '@/lib/ensureAuth';
 import { db } from '@/lib/firebase';
 import { doc, deleteDoc } from 'firebase/firestore';
-import { RELATIONSHIPS } from '../types';
-import { spacing } from '../theme/spacing';
+import { useTheme } from '@/theme';
+import { Button } from '@/ui/Button';
+import EditGooberForm from './components/EditGooberForm';
+import { Avatar } from '@/ui/Avatar';
+
+import { RELATIONSHIPS } from '@/types';
 
 type RouteParams = { GooberDetail: { gooberId: string } };
 
@@ -23,29 +26,74 @@ export default function GooberDetailScreen() {
   const navigation = useNavigation();
   const { params } = useRoute<RouteProp<RouteParams, 'GooberDetail'>>();
   const { people, upsertPerson } = usePeople();
+  const { colors, spacing, radii, motion } = useTheme();
+
+  const [nickname, setNickname] = useState('');
+  const [relationship, setRelationship] = useState<string>(RELATIONSHIPS[0]);
+  const [notes, setNotes] = useState('');
+  const [editMode, setEditMode] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+
   const goober = people.find(p => p.id === params.gooberId);
 
-  if (!goober) {
-    return (
-      <View style={styles.center}> 
-        <Text>Goober not found</Text>
-      </View>
-    );
-  }
+  useEffect(() => {
+    if (goober) {
+      setNickname(goober.nickname ?? '');
+      setRelationship(goober.relationship_type || RELATIONSHIPS[0]);
+      setNotes(goober.notes ?? '');
+    }
+  }, [goober]);
 
-  const [nickname, setNickname] = useState(goober.nickname ?? '');
-  const [relationship, setRelationship] = useState(goober.relationship_type);
-  const [notes, setNotes] = useState(goober.notes ?? '');
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          padding: spacing.m,
+          backgroundColor: colors.background.app,
+          flexGrow: 1,
+        },
+        label: { marginTop: spacing.m, fontWeight: 'bold', color: colors.text.secondary },
+        value: { marginTop: spacing.s / 2, color: colors.text.primary },
+        card: {
+          backgroundColor: colors.background.surface,
+          borderRadius: radii.md,
+          padding: spacing.m,
+        },
+        avatarWrap: { alignItems: 'center', marginBottom: spacing.m },
+        center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+        editBtn: { marginTop: spacing.l },
+        modalBackdrop: {
+          flex: 1,
+          justifyContent: 'flex-end',
+          backgroundColor: `${colors.text.primary}88`,
+        },
+        modalSheet: {
+          backgroundColor: colors.background.surface,
+          padding: spacing.m,
+          borderTopLeftRadius: radii.lg,
+          borderTopRightRadius: radii.lg,
+        },
+        modalActions: {
+          flexDirection: 'row',
+          justifyContent: 'flex-end',
+          marginTop: spacing.m,
+        },
+      }),
+    [colors, spacing, radii]
+  );
+
+  const opacity = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: motion.durations.base,
+      useNativeDriver: true,
+    }).start();
+  }, [opacity, motion.durations.base]);
 
   const save = async () => {
-    if (!goober?.name) {
-      Alert.alert('Name is required');
-      return;
-    }
-    if (notes.length > 1000) {
-      Alert.alert('Notes too long');
-      return;
-    }
+    if (!goober?.name) return;
+    if (notes.length > 1000) return;
     await upsertPerson({
       id: goober.id,
       name: goober.name,
@@ -55,96 +103,74 @@ export default function GooberDetailScreen() {
       phone: goober.phone,
       email: goober.email,
     });
+    setEditMode(false);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      const uid = await ensureSignedIn();
+      await deleteDoc(doc(db, 'users', uid, 'contacts', params.gooberId));
+    } catch (e) {
+      console.warn('delete failed', e);
+    }
+    setShowDelete(false);
     navigation.goBack();
   };
 
-  const del = () => {
-    Alert.alert('Delete Goober?', 'Are you sure?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () => {
-          (async () => {
-            try {
-              const uid = await ensureSignedIn();
-              await deleteDoc(doc(db, 'users', uid, 'contacts', goober.id));
-            } catch (e) {
-              console.warn('delete failed', e);
-            }
-            navigation.goBack();
-          })();
-        },
-      },
-    ]);
-  };
-
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.label}>Name</Text>
-      <Text style={styles.value}>{goober.name}</Text>
-      {goober.birthday && (
-        <Text style={styles.value}>Birthday: {goober.birthday}</Text>
+    <Animated.ScrollView style={[{ opacity }]} contentContainerStyle={styles.container}>
+      {!goober && (
+        <View style={styles.center}>
+          <ActivityIndicator color={colors.accent.primary} />
+        </View>
       )}
-      {goober.phone && (
-        <Text style={styles.value}>Phone: {goober.phone}</Text>
+      {goober && !editMode && (
+        <View style={styles.card}>
+          <View style={styles.avatarWrap}>
+            <Avatar name={goober.name} />
+          </View>
+          <Text style={styles.label}>Name</Text>
+          <Text style={styles.value}>{goober.name}</Text>
+          {goober.phone && (
+            <Text style={styles.value}>Phone: {goober.phone}</Text>
+          )}
+          {goober.email && (
+            <Text style={styles.value}>Email: {goober.email}</Text>
+          )}
+          <Button title="Edit" onPress={() => setEditMode(true)} style={styles.editBtn} />
+        </View>
       )}
-      {goober.email && (
-        <Text style={styles.value}>Email: {goober.email}</Text>
+      {goober && editMode && (
+        <EditGooberForm
+          nickname={nickname}
+          relationship={relationship}
+          notes={notes}
+          onChangeNickname={setNickname}
+          onChangeRelationship={setRelationship}
+          onChangeNotes={setNotes}
+          onSave={save}
+          onCancel={() => setEditMode(false)}
+          onDelete={() => setShowDelete(true)}
+        />
       )}
-
-      <Text style={styles.label}>Nickname</Text>
-      <TextInput
-        value={nickname}
-        onChangeText={setNickname}
-        style={styles.input}
-      />
-
-      <Text style={styles.label}>Relationship</Text>
-      <View style={styles.rels}>
-        {RELATIONSHIPS.map(r => (
-          <Pressable
-            key={r}
-            onPress={() => setRelationship(r)}
-            style={[styles.rel, relationship === r && styles.relActive]}
-          >
-            <Text>{r}</Text>
-          </Pressable>
-        ))}
-      </View>
-
-      <Text style={styles.label}>Notes</Text>
-      <TextInput
-        value={notes}
-        onChangeText={setNotes}
-        style={[styles.input, styles.notes]}
-        multiline
-      />
-
-      <Button title="Save" onPress={save} />
-      <Button title="Delete" onPress={del} color="red" />
-    </ScrollView>
+      <Modal
+        visible={showDelete}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowDelete(false)}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalSheet}>
+            <Text style={styles.label}>Delete Goober?</Text>
+            <Text style={styles.value}>This cannot be undone.</Text>
+            <View style={styles.modalActions}>
+              <Button title="Cancel" variant="secondary" onPress={() => setShowDelete(false)} />
+              <View style={{ width: spacing.m }} />
+              <Button title="Delete" variant="destructive" onPress={confirmDelete} />
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </Animated.ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { padding: spacing.md },
-  label: { marginTop: spacing.md, fontWeight: 'bold' },
-  value: { marginTop: spacing.sm / 2 },
-  input: {
-    borderWidth: 1,
-    padding: spacing.sm,
-    marginTop: spacing.sm / 2,
-  },
-  notes: { height: 100 },
-  rels: { flexDirection: 'row', flexWrap: 'wrap', marginVertical: spacing.sm },
-  rel: {
-    borderWidth: 1,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.sm / 2,
-    borderRadius: 4,
-    margin: spacing.sm / 2,
-  },
-  relActive: { backgroundColor: '#ddd' },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-});
