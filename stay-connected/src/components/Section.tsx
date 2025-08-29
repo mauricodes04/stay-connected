@@ -1,7 +1,9 @@
 /* eslint-disable react-native/no-unused-styles */
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Animated } from 'react-native';
 import { useTheme } from '../theme';
+import { useIsFocused } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Props = {
   title?: string;
@@ -9,30 +11,51 @@ type Props = {
 };
 
 export function Section({ title, children }: Props) {
-  const { colors, spacing } = useTheme();
+  const { colors, spacing, motion, reducedMotion, typography } = useTheme();
+  const isFocused = useIsFocused();
+  const insets = useSafeAreaInsets();
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(6)).current;
+
+  useEffect(() => {
+    if (!isFocused) return;
+    if (reducedMotion) {
+      opacity.setValue(1);
+      translateY.setValue(0);
+      return;
+    }
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 1, duration: motion.durations.slow, useNativeDriver: true }),
+      Animated.timing(translateY, { toValue: 0, duration: motion.durations.slow, useNativeDriver: true }),
+    ]).start();
+  }, [isFocused, reducedMotion, motion.durations.slow, opacity, translateY]);
   const styles = React.useMemo(
     () =>
       StyleSheet.create({
         container: {
-          padding: spacing.m,
+          paddingHorizontal: spacing.m,
+          paddingTop: insets.top + 12,
+          paddingBottom: insets.bottom + 12,
           flex: 1,
           backgroundColor: colors.background.app,
         },
         title: {
-          fontSize: 18,
-          fontWeight: '600',
+          fontSize: typography.h2.fontSize,
+          lineHeight: typography.h2.lineHeight,
+          fontWeight: typography.h2.fontWeight,
+          fontFamily: 'Poppins_600SemiBold',
           marginBottom: spacing.s,
           color: colors.text.primary,
         },
       }),
-    [colors, spacing]
+    [colors, spacing, insets.top, insets.bottom, typography]
   );
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, { opacity, transform: [{ translateY }] }]}>
       {title && <Text style={styles.title}>{title}</Text>}
       {children}
-    </View>
+    </Animated.View>
   );
 }
 

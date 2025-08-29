@@ -14,11 +14,11 @@ export type Theme = {
   radii: { sm: number; md: number; lg: number; full: number };
   elevation: { none: number; low: number; mid: number; high: number };
   typography: {
-    h1: { fontSize: number; fontWeight: '700' | '800' | '900'; lineHeight: number };
-    h2: { fontSize: number; fontWeight: '700' | '800' | '900'; lineHeight: number };
+    h1: { fontSize: number; fontWeight: '600' | '700' | '800' | '900'; lineHeight: number };
+    h2: { fontSize: number; fontWeight: '600' | '700' | '800' | '900'; lineHeight: number };
     subtitle: { fontSize: number; fontWeight: '500' | '600'; lineHeight: number };
     body: { fontSize: number; fontWeight: '400' | '500'; lineHeight: number };
-    label: { fontSize: number; fontWeight: '600' | '700'; lineHeight: number };
+    label: { fontSize: number; fontWeight: '500' | '600' | '700'; lineHeight: number };
   };
   motion: {
     durations: { fast: number; base: number; slow: number };
@@ -43,23 +43,37 @@ const baseMotion = safeFreeze({
   },
 });
 
+// Light theme values mapped to provided spec
+// Typography mapping:
+//   h1 => display 28/34 semi-bold(600)
+//   h2 => title 22/28 semi-bold(600)
+//   subtitle => section 18/24 medium(500)
+//   body => body 16/22 regular(400)
+//   label => caption 13/18 medium(500)
 const light: Theme = safeFreeze({
   colors: {
-    background: { app: '#ffffff', surface: '#f8f9fa', elevated: '#ffffff' },
-    text: { primary: '#1a1a1a', secondary: '#4d4d4d', tertiary: '#7a7a7a', inverse: '#ffffff' },
-    accent: { primary: '#1e90ff', secondary: '#ff6b81', tertiary: '#4cd137' },
-    feedback: { success: '#2ecc71', warning: '#fbc531', error: '#e74c3c', info: '#00a8ff' },
-    decorative: { hero_a: '#f5deb3', hero_b: '#ffe4e1' },
+    // backgrounds: offWhite/creamBeige as surface tiers
+    background: { app: '#FAFAFA', surface: '#F6F6F6', elevated: '#FFFFFF' },
+    // text tokens
+    text: { primary: '#22346C', secondary: '#4A4A4A', tertiary: '#B8B8B8', inverse: '#FFFFFF' },
+    // accent palette (primary uses skyBlue per CTA policy)
+    accent: { primary: '#6CA6F5', secondary: '#FF7C7C', tertiary: '#4FB7B5' },
+    // feedback
+    feedback: { success: '#4CAF50', warning: '#FFA726', error: '#E57373', info: '#768FFF' },
+    // decorative examples
+    decorative: { hero_a: '#FFD9C7', hero_b: '#9B6FFF' },
   },
-  spacing: { xs: 4, s: 8, m: 16, l: 24, xl: 32 },
-  radii: { sm: 4, md: 8, lg: 16, full: 9999 },
+  // spacing tokens closest to spec: 4,8,12,16,24 (20 available via component overrides)
+  spacing: { xs: 4, s: 8, m: 12, l: 16, xl: 24 },
+  // radii per spec: sm=8, md=12, lg=16, full≈pill
+  radii: { sm: 8, md: 12, lg: 16, full: 9999 },
   elevation: { none: 0, low: 2, mid: 4, high: 8 },
   typography: {
-    h1: { fontSize: 28, fontWeight: '800', lineHeight: 34 },
-    h2: { fontSize: 22, fontWeight: '800', lineHeight: 28 },
-    subtitle: { fontSize: 18, fontWeight: '600', lineHeight: 24 },
+    h1: { fontSize: 28, fontWeight: '600', lineHeight: 34 },
+    h2: { fontSize: 22, fontWeight: '600', lineHeight: 28 },
+    subtitle: { fontSize: 18, fontWeight: '500', lineHeight: 24 },
     body: { fontSize: 16, fontWeight: '400', lineHeight: 22 },
-    label: { fontSize: 12, fontWeight: '700', lineHeight: 16 },
+    label: { fontSize: 13, fontWeight: '500', lineHeight: 18 },
   },
   motion: baseMotion,
   reducedMotion: false,
@@ -68,20 +82,20 @@ const light: Theme = safeFreeze({
 const dark: Theme = safeFreeze({
   colors: {
     background: { app: '#000000', surface: '#121212', elevated: '#1e1e1e' },
-    text: { primary: '#ffffff', secondary: '#d1d1d1', tertiary: '#a1a1a1', inverse: '#000000' },
-    accent: { primary: '#1e90ff', secondary: '#ff6b81', tertiary: '#4cd137' },
-    feedback: { success: '#2ecc71', warning: '#fbc531', error: '#e74c3c', info: '#00a8ff' },
+    text: { primary: '#FFFFFF', secondary: '#D1D1D1', tertiary: '#A1A1A1', inverse: '#000000' },
+    accent: { primary: '#6CA6F5', secondary: '#FF7C7C', tertiary: '#4FB7B5' },
+    feedback: { success: '#4CAF50', warning: '#FFA726', error: '#E57373', info: '#768FFF' },
     decorative: { hero_a: '#3d3d3d', hero_b: '#2d2d2d' },
   },
-  spacing: { xs: 4, s: 8, m: 16, l: 24, xl: 32 },
-  radii: { sm: 4, md: 8, lg: 16, full: 9999 },
+  spacing: { xs: 4, s: 8, m: 12, l: 16, xl: 24 },
+  radii: { sm: 8, md: 12, lg: 16, full: 9999 },
   elevation: { none: 0, low: 2, mid: 4, high: 8 },
   typography: {
-    h1: { fontSize: 28, fontWeight: '800', lineHeight: 34 },
-    h2: { fontSize: 22, fontWeight: '800', lineHeight: 28 },
-    subtitle: { fontSize: 18, fontWeight: '600', lineHeight: 24 },
+    h1: { fontSize: 28, fontWeight: '600', lineHeight: 34 },
+    h2: { fontSize: 22, fontWeight: '600', lineHeight: 28 },
+    subtitle: { fontSize: 18, fontWeight: '500', lineHeight: 24 },
     body: { fontSize: 16, fontWeight: '400', lineHeight: 22 },
-    label: { fontSize: 12, fontWeight: '700', lineHeight: 16 },
+    label: { fontSize: 13, fontWeight: '500', lineHeight: 18 },
   },
   motion: baseMotion,
   reducedMotion: false,

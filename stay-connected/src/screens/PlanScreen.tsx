@@ -10,6 +10,9 @@ import {
   ActivityIndicator,
   Share,
   Linking,
+  Animated,
+  KeyboardAvoidingView,
+  ScrollView,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -24,7 +27,13 @@ import { ensureSignedIn } from "@/lib/ensureAuth";
 import { usePeople } from "@/hooks/usePeople";
 import { useTheme } from "@/theme";
 import Button from "@/ui/Button";
+import Header from "@/ui/Header";
 import ModalSheet from "@/ui/ModalSheet";
+import Dialog from "@/ui/Dialog";
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
+import PlanCard from '@/ui/PlanCard';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const IOS_WHEEL_HEIGHT = 220;
 const iosWheelProps =
@@ -38,6 +47,55 @@ const toStartEnd = (date: Date, time: Date, durationMin: number) => {
   const end = new Date(start.getTime() + durationMin * 60 * 1000);
   return { start, end };
 };
+
+// Small pill component with success animation (green bg + check)
+function Chip({ label, onPress }: { label: string; onPress: () => void | Promise<void>; }) {
+  const { colors } = useTheme();
+  const bg = React.useRef(new Animated.Value(0)).current; // 0=normal,1=success
+  const checkOpacity = React.useRef(new Animated.Value(0)).current;
+  const runSuccess = () => {
+    Animated.parallel([
+      Animated.timing(bg, { toValue: 1, duration: 150, useNativeDriver: false }),
+      Animated.timing(checkOpacity, { toValue: 1, duration: 150, useNativeDriver: true }),
+    ]).start(() => {
+      setTimeout(() => {
+        Animated.parallel([
+          Animated.timing(bg, { toValue: 0, duration: 180, useNativeDriver: false }),
+          Animated.timing(checkOpacity, { toValue: 0, duration: 180, useNativeDriver: true }),
+        ]).start();
+      }, 600);
+    });
+  };
+  const backgroundColor = bg.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['transparent', '#10B981'], // emerald-500
+  });
+  const borderColor = bg.interpolate({
+    inputRange: [0, 1],
+    outputRange: [colors.text.primary + '66', '#10B981'],
+  });
+  const textColor = bg.interpolate({
+    inputRange: [0, 1],
+    outputRange: [colors.text.primary, '#FFFFFF'],
+  });
+  return (
+    <Pressable
+      onPress={async () => {
+        try {
+          await onPress();
+        } finally {
+          runSuccess();
+        }
+      }}
+      style={{ paddingHorizontal: 12, height: 36, borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
+    >
+      <Animated.View style={{ paddingHorizontal: 12, height: 36, borderRadius: 999, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6, backgroundColor, borderColor }}>
+        <Animated.Text style={{ fontFamily: 'Poppins_500Medium', color: textColor }}>{label}</Animated.Text>
+        <Animated.Text style={{ color: '#FFFFFF', opacity: checkOpacity }}>✓</Animated.Text>
+      </Animated.View>
+    </Pressable>
+  );
+}
 
 const fmtDate = (d: Date) => d.toLocaleDateString();
 const fmtTime = (d: Date) =>
@@ -123,33 +181,44 @@ function FieldButton({
   label,
   value,
   onPress,
+  placeholder,
 }: {
   label: string;
   value: string;
   onPress: () => void;
+  placeholder?: boolean;
 }) {
   const { colors, spacing, radii, typography } = useTheme();
   return (
-    <View style={{ marginBottom: spacing.m }}>
-      <Text style={{ fontSize: typography.label.fontSize, fontWeight: typography.label.fontWeight, color: colors.text.secondary, marginBottom: spacing.xs }}>{label}</Text>
+    <View style={{ marginBottom: spacing.s }}>
+      <Text style={{ fontSize: 13, lineHeight: 18, fontFamily: 'Poppins_500Medium', color: colors.text.secondary, marginBottom: spacing.xs }}>{label}</Text>
       <Pressable
         onPress={onPress}
         style={{
           borderRadius: radii.lg,
-          borderWidth: 1,
-          borderColor: colors.background.elevated,
-          paddingVertical: spacing.m,
-          paddingHorizontal: spacing.m,
+          backgroundColor: '#FFFFFF',
+          // shadow.sm
+          shadowColor: '#000',
+          shadowOpacity: 0.08,
+          shadowRadius: 6,
+          shadowOffset: { width: 0, height: 2 },
+          elevation: 2,
+          paddingHorizontal: 16,
+          minHeight: 48,
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
         }}
       >
-        <Text style={{ fontSize: typography.body.fontSize, color: colors.text.primary }}>{value}</Text>
+        <Text style={{ fontSize: 16, lineHeight: 22, fontFamily: 'Poppins_500Medium', color: placeholder ? colors.text.tertiary : colors.text.primary }}>{value}</Text>
+        <Ionicons name="chevron-forward" size={20} color={colors.text.tertiary} />
       </Pressable>
     </View>
   );
 }
 
 function PickerModal<T extends string | number>({
-  title = "Done",
+  title = "Select",
   visible,
   onClose,
   selectedValue,
@@ -159,53 +228,60 @@ function PickerModal<T extends string | number>({
   title?: string;
   visible: boolean;
   onClose: () => void;
-  selectedValue: T;
+  selectedValue: T | undefined;
   onChange: (v: T) => void;
   children: React.ReactNode;
 }) {
-  const { colors, radii } = useTheme();
-  return Platform.OS === "ios" ? (
+  const { colors } = useTheme();
+  return (
     <ModalSheet visible={visible} onClose={onClose} title={title}>
+      <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+        <Pressable
+          accessibilityRole="button"
+          onPress={onClose}
+          style={{ paddingVertical: 6, paddingHorizontal: 12, borderRadius: 9999, borderWidth: 1, borderColor: colors.text.secondary + '33', alignSelf: "flex-end" }}
+        >
+          <Text style={{ color: colors.text.primary, fontFamily: "Poppins_500Medium" }}>Done</Text>
+        </Pressable>
+      </View>
       <Picker
         selectedValue={selectedValue}
         onValueChange={(v: any) => onChange(v as T)}
         style={{ height: IOS_WHEEL_HEIGHT }}
-        itemStyle={{ fontSize: 22 }}
+        itemStyle={{ fontSize: 22, color: colors.text.primary, fontFamily: 'Poppins_500Medium' }}
       >
         {children}
       </Picker>
     </ModalSheet>
-  ) : visible ? (
-    <View
-      style={{
-        borderRadius: radii.md,
-        borderWidth: 1,
-        borderColor: colors.background.elevated,
-        marginBottom: 12,
-      }}
-    >
-      <Picker selectedValue={selectedValue} onValueChange={(v: any) => onChange(v as T)}>
-        {children}
-      </Picker>
-    </View>
-  ) : null;
+  );
 }
 
 export default function PlanScreen() {
   const { people } = usePeople();
   const { colors, spacing, typography } = useTheme();
+  const insets = useSafeAreaInsets();
+  const navigation = useNavigation<any>();
 
   const [personId, setPersonId] = useState<string>("");
   const [date, setDate] = useState<Date>(new Date());
   const [time, setTime] = useState<Date>(new Date());
   const [durationMin, setDurationMin] = useState<number>(60);
   const [saving, setSaving] = useState(false);
+  const [savedOk, setSavedOk] = useState(false);
+  const shakeX = React.useRef(new Animated.Value(0)).current; // -1..1
+  const successScale = React.useRef(new Animated.Value(1)).current;
+  const successOpacity = React.useRef(new Animated.Value(0)).current;
 
   const [showPerson, setShowPerson] = useState(false);
   const [showDuration, setShowDuration] = useState(false);
   const [showDate, setShowDate] = useState(false);
   const [showTime, setShowTime] = useState(false);
+  const [confirmVisible, setConfirmVisible] = useState(false);
+  const [timeGridVisible, setTimeGridVisible] = useState(false);
   const [confirmCalVisible, setConfirmCalVisible] = useState(false);
+  // Inline success preview inside Confirm dialog
+  const [showPreview, setShowPreview] = useState(false);
+  const previewOpacity = React.useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (!personId && people.length) setPersonId(people[0].id);
@@ -219,13 +295,21 @@ export default function PlanScreen() {
   const personName =
     people.find(p => p.id === personId)?.displayName ?? "Select person";
 
-  const onCreatePlan = useCallback(async () => {
+  const onCreatePlan = useCallback(async (): Promise<boolean> => {
     try {
       setSaving(true);
       const uid = await ensureSignedIn(); // 🔒 ensure auth first
 
-      if (!personId) return Alert.alert("Pick a person");
-      if (!durationMin) return Alert.alert("Pick a duration");
+      if (!personId || !durationMin) {
+        // error shake
+        Animated.sequence([
+          Animated.timing(shakeX, { toValue: 1, duration: 50, useNativeDriver: true }),
+          Animated.timing(shakeX, { toValue: -1, duration: 100, useNativeDriver: true }),
+          Animated.timing(shakeX, { toValue: 1, duration: 100, useNativeDriver: true }),
+          Animated.timing(shakeX, { toValue: 0, duration: 50, useNativeDriver: true }),
+        ]).start();
+        return false;
+      }
       const { start, end } = toStartEnd(date, time, durationMin);
 
       const col = collection(db, "users", uid, "plans");
@@ -239,13 +323,26 @@ export default function PlanScreen() {
         status: "scheduled",
       });
 
-      Alert.alert("Plan created");
+      // success morph: show checkmark pulse then revert
+      setSavedOk(true);
+      successOpacity.setValue(0);
+      successScale.setValue(0.8);
+      Animated.parallel([
+        Animated.timing(successOpacity, { toValue: 1, duration: 200, useNativeDriver: true }),
+        Animated.spring(successScale, { toValue: 1, useNativeDriver: true, bounciness: 10 }),
+      ]).start(() => {
+        setTimeout(() => {
+          Animated.timing(successOpacity, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => setSavedOk(false));
+        }, 800);
+      });
+      return true;
     } catch (e: any) {
       Alert.alert("Could not create plan", e?.message ?? String(e));
+      return false;
     } finally {
       setSaving(false);
     }
-  }, [personId, personName, date, time, durationMin]);
+  }, [personId, personName, date, time, durationMin, shakeX, successOpacity, successScale]);
 
   const onRequestAddToCalendar = () => setConfirmCalVisible(true);
 
@@ -274,6 +371,100 @@ export default function PlanScreen() {
     } catch (e: any) {
       Alert.alert("Could not add calendar event", e?.message ?? String(e));
     }
+  };
+
+  // Direct calendar flow used from Confirm dialog without stacking another modal
+  const onCalendarChip = async () => {
+    try {
+      const { start, end } = toStartEnd(date, time, durationMin);
+      const { status } = await Calendar.requestCalendarPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Calendar permission denied');
+        return;
+      }
+      const cals = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+      const calId = cals.find(c => c.allowsModifications)?.id ?? cals[0]?.id;
+      if (!calId) {
+        Alert.alert('No calendar found');
+        return;
+      }
+      await Calendar.createEventAsync(calId, {
+        title: `Plan with ${personName}`,
+        startDate: start,
+        endDate: end,
+        notes: 'Created from Stay Connected',
+      });
+      // Small success animation: show a preview PlanCard fade-in
+      setShowPreview(true);
+      previewOpacity.setValue(0);
+      Animated.timing(previewOpacity, { toValue: 1, duration: 180, useNativeDriver: true }).start(() => {
+        setTimeout(() => {
+          Animated.timing(previewOpacity, { toValue: 0, duration: 180, useNativeDriver: true }).start(() => setShowPreview(false));
+        }, 900);
+      });
+    } catch (e: any) {
+      Alert.alert('Could not add calendar event', e?.message ?? String(e));
+    }
+  };
+
+  // Build a 3-column time grid (every 30 minutes) for the current day
+  const gridTimes = useMemo(() => {
+    const arr: Date[] = [];
+    const base = new Date();
+    base.setHours(0,0,0,0);
+    for (let i = 0; i < 48; i++) {
+      const d = new Date(base.getTime() + i * 30 * 60000);
+      arr.push(d);
+    }
+    return arr;
+  }, []);
+
+  const TimeGridDialog = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
+    const { colors, radii, spacing } = useTheme();
+    return (
+      <Dialog visible={visible} onClose={onClose} title="Select Time">
+        <View style={{ width: 320, maxWidth: '100%', maxHeight: 420 }}>
+          <ScrollView contentContainerStyle={{ paddingBottom: 8 }}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -6 }}>
+              {gridTimes.map((d) => {
+                const isSel = time.getHours() === d.getHours() && time.getMinutes() === d.getMinutes();
+                return (
+                  <Pressable
+                    key={d.getTime()}
+                    accessibilityRole="button"
+                    onPress={() => { setTime(d); onClose(); }}
+                    style={{
+                      width: '33.3333%',
+                      paddingHorizontal: 6,
+                      paddingVertical: 6,
+                    }}
+                  >
+                    <View
+                      style={{
+                        height: 48,
+                        borderRadius: radii.full,
+                        borderWidth: isSel ? 0 : 1.5,
+                        borderColor: colors.text.secondary + '33',
+                        backgroundColor: isSel ? colors.accent.primary : 'transparent',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Text style={{
+                        color: isSel ? '#FFFFFF' : colors.text.primary,
+                        fontFamily: isSel ? 'Poppins_600SemiBold' : 'Poppins_500Medium',
+                      }}>
+                        {d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </Text>
+                    </View>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </ScrollView>
+        </View>
+      </Dialog>
+    );
   };
 
   const onShareInvite = async () => {
@@ -313,11 +504,26 @@ export default function PlanScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background.app }}>
-      <View style={{ paddingHorizontal: spacing.m, paddingTop: spacing.s }}>
-        <Text style={{ fontSize: typography.h1.fontSize, fontWeight: typography.h1.fontWeight as any, marginBottom: spacing.s, color: colors.text.primary }}>Plan</Text>
+      <Header title="Plan" />
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={insets.top + 56} style={{ flex: 1 }}>
+        <ScrollView
+          style={{ flex: 1 }}
+          contentInsetAdjustmentBehavior="automatic"
+          keyboardShouldPersistTaps="handled"
+          automaticallyAdjustKeyboardInsets
+          contentContainerStyle={{
+            paddingTop: 12,
+            paddingBottom: insets.bottom + 24 + 83,
+            minHeight: '100%',
+            paddingHorizontal: spacing.m,
+          }}
+        >
+        <Text style={{ textAlign: 'center', color: colors.text.secondary, fontSize: typography.body.fontSize, lineHeight: typography.body.lineHeight, marginBottom: spacing.m, fontFamily: 'Poppins_400Regular' }}>
+          Build your plan by choosing a person, date, time, and duration.
+        </Text>
 
         {/* Person */}
-        <FieldButton label="Person" value={personName} onPress={() => setShowPerson(true)} />
+        <FieldButton label="Person" value={personName} onPress={() => setShowPerson(true)} placeholder={!personId} />
         <PickerModal
           visible={showPerson}
           onClose={() => setShowPerson(false)}
@@ -327,7 +533,9 @@ export default function PlanScreen() {
           {people.length === 0 ? (
             <Picker.Item label="No contacts found" value="" color="#6b7280" />
           ) : (
-            people.map(p => <Picker.Item key={p.id} label={p.displayName} value={p.id} />)
+            people.map(p => (
+              <Picker.Item key={p.id} label={p.displayName} value={p.id} color={colors.text.primary} />
+            ))
           )}
         </PickerModal>
 
@@ -340,59 +548,33 @@ export default function PlanScreen() {
         <Text style={{ marginTop: 6, marginBottom: 18, color: colors.text.secondary }}>
           {fmtWeekday(date)}
         </Text>
-        {Platform.OS === "ios" ? (
-          <ModalSheet visible={showDate} onClose={() => setShowDate(false)} title="Done">
+        {showDate && (
+          <ModalSheet visible={showDate} onClose={() => setShowDate(false)} title="Select Date">
+            <View style={{ paddingHorizontal: 4, paddingBottom: 8 }}>
+              <View style={{ alignItems: 'flex-end' }}>
+                <Pressable onPress={() => setShowDate(false)} style={{ paddingHorizontal: 14, height: 36, borderRadius: 999, borderWidth: 1.5, borderColor: '#00000022', alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ fontFamily: 'Poppins_500Medium' }}>Done</Text>
+                </Pressable>
+              </View>
+            </View>
             <DateTimePicker
               value={date}
               mode="date"
-              display="spinner"
+              display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
               onChange={(_: any, d?: Date) => d && setDate(d)}
               style={{ height: IOS_WHEEL_HEIGHT }}
               {...iosWheelProps}
             />
           </ModalSheet>
-        ) : (
-          showDate && (
-            <DateTimePicker
-              value={date}
-              mode="date"
-              onChange={(_: any, d?: Date) => {
-                setShowDate(false);
-                if (d) setDate(d);
-              }}
-            />
-          )
         )}
 
         {/* Time */}
         <FieldButton
           label="Time"
           value={time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-          onPress={() => setShowTime(true)}
+          onPress={() => setTimeGridVisible(true)}
         />
-        {Platform.OS === "ios" ? (
-          <ModalSheet visible={showTime} onClose={() => setShowTime(false)} title="Done">
-            <DateTimePicker
-              value={time}
-              mode="time"
-              display="spinner"
-              onChange={(_: any, d?: Date) => d && setTime(d)}
-              style={{ height: IOS_WHEEL_HEIGHT }}
-              {...iosWheelProps}
-            />
-          </ModalSheet>
-        ) : (
-          showTime && (
-            <DateTimePicker
-              value={time}
-              mode="time"
-              onChange={(_: any, d?: Date) => {
-                setShowTime(false);
-                if (d) setTime(d);
-              }}
-            />
-          )
-        )}
+        <TimeGridDialog visible={timeGridVisible} onClose={() => setTimeGridVisible(false)} />
 
         {/* Duration */}
         <FieldButton
@@ -401,31 +583,48 @@ export default function PlanScreen() {
           onPress={() => setShowDuration(true)}
         />
         <PickerModal
+          title="Select Duration"
           visible={showDuration}
           onClose={() => setShowDuration(false)}
           selectedValue={durationMin}
           onChange={v => setDurationMin(Number(v))}
         >
           {durationOptions.map(m => (
-            <Picker.Item key={m} label={`${m}`} value={m} />
+            <Picker.Item key={m} label={`${m}`} value={m} color={colors.text.primary} />
           ))}
         </PickerModal>
 
-        <Button
-          title={saving ? "Creating..." : "Create Plan"}
-          onPress={onCreatePlan}
-          disabled={saving}
-          loading={saving}
-          style={{ marginTop: spacing.s }}
-        />
+        <Animated.View
+          style={{
+            marginTop: spacing.s,
+            transform: [{ translateX: shakeX.interpolate({ inputRange: [-1, 1], outputRange: [-20, 20] }) }],
+          }}
+        >
+          <Button
+            title={saving ? "Creating..." : "Create Plan"}
+            onPress={() => {
+              if (!personId || !durationMin) {
+                Animated.sequence([
+                  Animated.timing(shakeX, { toValue: 1, duration: 50, useNativeDriver: true }),
+                  Animated.timing(shakeX, { toValue: -1, duration: 100, useNativeDriver: true }),
+                  Animated.timing(shakeX, { toValue: 1, duration: 100, useNativeDriver: true }),
+                  Animated.timing(shakeX, { toValue: 0, duration: 50, useNativeDriver: true }),
+                ]).start();
+                return;
+              }
+              setConfirmVisible(true);
+            }}
+            disabled={saving}
+            loading={saving}
+          />
+          {savedOk && (
+            <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, alignItems: 'center', justifyContent: 'center', opacity: successOpacity, transform: [{ scale: successScale }] }}>
+              <Text style={{ fontSize: 22, color: colors.text.inverse }}>✓</Text>
+            </Animated.View>
+          )}
+        </Animated.View>
 
-        <View style={{ gap: 10, marginTop: 12 }}>
-          <Button title="Add to Calendar" onPress={onRequestAddToCalendar} />
-
-          <Button title="Share Invite (Text)" onPress={onShareInvite} />
-
-          <Button title="Share Invite (.ics)" onPress={onShareInviteWithICS} variant="secondary" />
-        </View>
+        {/* Removed extra action buttons; these live in the confirm dialog */}
 
         <ModalSheet visible={confirmCalVisible} onClose={() => setConfirmCalVisible(false)} title="Add to Calendar?"
           footer={
@@ -441,7 +640,69 @@ export default function PlanScreen() {
             Time: {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} • {durationMin} min
           </Text>
         </ModalSheet>
-      </View>
+
+        {/* Confirm Plan Dialog */
+        }
+        <Dialog
+          visible={confirmVisible}
+          onClose={() => setConfirmVisible(false)}
+          title="Confirm Plan"
+          footer={
+            <View style={{ gap: spacing.m }}>
+              {/* Primary CTA first */}
+              <Button
+                title="+ Create Plan"
+                onPress={async () => {
+                  // Close dialog immediately so label doesn't show during checkmark animation
+                  setConfirmVisible(false);
+                  const ok = await onCreatePlan();
+                  if (ok) {
+                    // Give the checkmark animation a moment before navigating
+                    setTimeout(() => {
+                      navigation.navigate('History');
+                    }, 650);
+                    // ensure state is clean
+                    setTimeout(() => {
+                      setSaving(false);
+                      setConfirmCalVisible(false);
+                      setShowPreview(false);
+                    }, 0);
+                  }
+                }}
+              />
+              {/* Secondary options under primary, centered; tapping these should NOT close the dialog */}
+              <View style={{ flexDirection: 'row', justifyContent: 'center', gap: spacing.s, flexWrap: 'wrap' }}>
+                <Chip label="Calendar" onPress={onCalendarChip} />
+                <Chip label="Text" onPress={onShareInvite} />
+                <Chip label="ICS" onPress={onShareInviteWithICS} />
+              </View>
+              {showPreview ? (
+                <Animated.View style={{ opacity: previewOpacity }}>
+                  <View style={{ marginTop: spacing.s }}>
+                    <PlanCard
+                      title={`Plan with ${personName}`}
+                      personName={personName}
+                      dateLabel={`${fmtDate(date)} • ${fmtTime(time)}`}
+                      durationMin={durationMin}
+                      status={'scheduled'}
+                    />
+                  </View>
+                </Animated.View>
+              ) : null}
+            </View>
+          }
+        >
+          <View style={{ alignItems: 'center', marginBottom: spacing.s }}>
+            <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: colors.accent.primary + '22', alignItems: 'center', justifyContent: 'center', marginBottom: spacing.s }}>
+              <Ionicons name="calendar" size={28} color={colors.accent.primary} />
+            </View>
+            <Text style={{ color: colors.text.secondary, textAlign: 'center' }}>
+              {fmtDate(date)} • {fmtTime(time)} • {durationMin} min
+            </Text>
+          </View>
+        </Dialog>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

@@ -1,5 +1,7 @@
-import React, { useEffect, useRef } from 'react';
-import { Animated, Modal, Pressable, View, AccessibilityInfo } from 'react-native';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { Animated, Modal, Pressable, View, AccessibilityInfo, PanResponder } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme';
 
 export type ModalSheetProps = {
@@ -12,14 +14,17 @@ export type ModalSheetProps = {
 
 export const ModalSheet: React.FC<ModalSheetProps> = ({ visible, title, onClose, footer, children }) => {
   const { colors, radii, spacing, motion, reducedMotion } = useTheme();
+  const insets = useSafeAreaInsets();
   const backdrop = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(1)).current; // 1 -> offscreen, 0 -> onscreen
+  const dragY = useRef(new Animated.Value(0)).current; // gesture offset
 
   useEffect(() => {
     if (visible) {
       if (reducedMotion) {
         backdrop.setValue(1);
         translateY.setValue(0);
+        dragY.setValue(0);
       } else {
         Animated.parallel([
           Animated.timing(backdrop, { toValue: 1, duration: motion.durations.base, useNativeDriver: true }),
@@ -35,6 +40,7 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({ visible, title, onClose,
       if (reducedMotion) {
         backdrop.setValue(0);
         translateY.setValue(1);
+        dragY.setValue(0);
       } else {
         Animated.parallel([
           Animated.timing(backdrop, { toValue: 0, duration: motion.durations.fast, useNativeDriver: true }),
@@ -42,14 +48,44 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({ visible, title, onClose,
         ]).start();
       }
     }
-  }, [visible, reducedMotion, backdrop, translateY, motion.durations]);
+  }, [visible, reducedMotion, backdrop, translateY, dragY, motion.durations]);
 
+  const panResponder = useMemo(
+    () =>
+      PanResponder.create({
+        // Only start a dismiss pan on more intentional drags to avoid stealing ScrollView gestures
+        onMoveShouldSetPanResponder: (_e, g) => g.dy > 12 && Math.abs(g.vy) > 0.3,
+        onPanResponderMove: Animated.event([null, { dy: dragY }], { useNativeDriver: false }),
+        onPanResponderRelease: (_e, g) => {
+          if (g.dy > 120) {
+            Animated.parallel([
+              Animated.timing(backdrop, { toValue: 0, duration: motion.durations.fast, useNativeDriver: true }),
+              Animated.timing(translateY, { toValue: 1, duration: motion.durations.fast, useNativeDriver: true }),
+            ]).start(onClose);
+          } else {
+            Animated.timing(dragY, { toValue: 0, duration: motion.durations.fast, useNativeDriver: false }).start();
+          }
+        },
+      }),
+    [backdrop, dragY, motion.durations.fast, onClose, translateY]
+  );
+
+  const interpolatedY = translateY.interpolate({ inputRange: [0, 1], outputRange: [0, 400] });
   const sheetStyle = {
     backgroundColor: colors.background.surface,
     borderTopLeftRadius: radii.lg,
     borderTopRightRadius: radii.lg,
-    padding: spacing.m,
-    transform: [{ translateY: translateY.interpolate({ inputRange: [0, 1], outputRange: [0, 400] }) }],
+    paddingBottom: spacing.m + Math.max(0, insets.bottom - 8),
+    paddingHorizontal: spacing.m,
+    paddingTop: spacing.m,
+    maxHeight: 360,
+    // shadow.md
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+    transform: [{ translateY: Animated.add(interpolatedY, dragY) }],
   } as const;
 
   return (
@@ -57,20 +93,24 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({ visible, title, onClose,
       <Animated.View
         style={{
           flex: 1,
-          backgroundColor: backdrop.interpolate({ inputRange: [0, 1], outputRange: ['rgba(0,0,0,0)', 'rgba(0,0,0,0.4)'] }),
+          backgroundColor: backdrop.interpolate({ inputRange: [0, 1], outputRange: ['rgba(0,0,0,0)', 'rgba(0,0,0,0.35)'] }),
           justifyContent: 'flex-end',
         }}
       >
         <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={onClose} style={{ flex: 1 }} />
-        <Animated.View style={sheetStyle}>
+        <Animated.View style={sheetStyle} {...panResponder.panHandlers}>
           {title && (
-            <View accessible accessibilityRole="header" style={{ marginBottom: spacing.s }}>
-              {/* Using Text without importing type to keep file focused */}
+            <View accessible accessibilityRole="header" style={{ marginBottom: spacing.s, flexDirection: 'row', alignItems: 'center' }}>
               {/* eslint-disable-next-line react-native/no-raw-text */}
-              <Animated.Text style={{ fontSize: 18, fontWeight: '700', color: colors.text.primary }}>{title}</Animated.Text>
+              <Animated.Text style={{ flex: 1, fontSize: 18, lineHeight: 24, fontWeight: '600', color: colors.text.primary, fontFamily: 'Poppins_600SemiBold' }}>{title}</Animated.Text>
+              <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={onClose} hitSlop={8} style={{ padding: 4 }}>
+                <Ionicons name="close" size={22} color={colors.text.secondary} />
+              </Pressable>
             </View>
           )}
-          <View>{children}</View>
+          <View style={{ flexShrink: 1 }}>
+            {children}
+          </View>
           {footer && <View style={{ marginTop: spacing.m }}>{footer}</View>}
         </Animated.View>
       </Animated.View>

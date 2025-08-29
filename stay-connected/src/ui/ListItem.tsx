@@ -1,5 +1,5 @@
-import React from 'react';
-import { Pressable, View, Text, ViewStyle } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Pressable, View, Text, ViewStyle, Animated } from 'react-native';
 import { useTheme } from '@/theme';
 
 export type ListItemProps = {
@@ -13,10 +13,19 @@ export type ListItemProps = {
 };
 
 export const ListItem: React.FC<ListItemProps> = ({ title, subtitle, meta, leading, trailing, onPress, style }) => {
-  const { colors, spacing, typography } = useTheme();
+  const { colors, spacing, typography, motion, reducedMotion } = useTheme();
+  const opacity = useRef(new Animated.Value(0)).current;
+  const y = useRef(new Animated.Value(6)).current;
+  useEffect(() => {
+    if (reducedMotion) { opacity.setValue(1); y.setValue(0); return; }
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 1, duration: motion.durations.base, useNativeDriver: true }),
+      Animated.timing(y, { toValue: 0, duration: motion.durations.base, useNativeDriver: true }),
+    ]).start();
+  }, [opacity, y, motion.durations, reducedMotion]);
 
   const content = (
-    <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.s }}>
+    <Animated.View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.s, opacity, transform: [{ translateY: y }] }}>
       {leading && <View style={{ marginRight: spacing.s }}>{leading}</View>}
       <View style={{ flex: 1 }}>
         <Text style={{ color: colors.text.primary, fontSize: typography.body.fontSize, fontWeight: '500' }}>{title}</Text>
@@ -26,7 +35,7 @@ export const ListItem: React.FC<ListItemProps> = ({ title, subtitle, meta, leadi
         {!!meta && <View style={{ marginTop: 4 }}>{meta}</View>}
       </View>
       {trailing && <View style={{ marginLeft: spacing.s }}>{trailing}</View>}
-    </View>
+    </Animated.View>
   );
 
   if (!onPress) {

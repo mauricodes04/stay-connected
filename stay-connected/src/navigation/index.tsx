@@ -9,6 +9,8 @@ import HistoryScreen from '../screens/HistoryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import GooberDetailScreen from '../screens/GooberDetailScreen';
 import { usePeople } from '@/hooks/usePeople';
+import { useTheme } from '@/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -16,6 +18,8 @@ const Tab = createBottomTabNavigator();
 function Tabs() {
   const { people } = usePeople();
   const count = people.length;
+  const { colors, spacing, typography } = useTheme();
+  const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -27,6 +31,20 @@ function Tabs() {
           else if (route.name === 'Settings') icon = 'settings';
           return <Ionicons name={icon} size={size} color={color} />;
         },
+        tabBarActiveTintColor: colors.accent.primary,
+        tabBarInactiveTintColor: colors.text.tertiary,
+        tabBarLabelStyle: {
+          fontFamily: 'Poppins_500Medium',
+          fontSize: typography.label.fontSize,
+        },
+        tabBarStyle: {
+          backgroundColor: colors.background.surface,
+          borderTopWidth: 0,
+          paddingBottom: insets.bottom,
+          paddingTop: 6,
+          height: 49 + insets.bottom,
+        },
+        headerShown: false,
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />

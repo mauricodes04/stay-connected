@@ -10,6 +10,7 @@ import { usePeople } from '@/hooks/usePeople';
 import { Field } from '@/ui/Field';
 import { ListItem } from '@/ui/ListItem';
 import { Avatar } from '@/ui/Avatar';
+import Banner from '@/ui/Banner';
 
 type Nav = NavigationProp<{ GooberDetail: { gooberId: string } }>;
 
@@ -35,6 +36,7 @@ export default function ContactsScreen() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [denied, setDenied] = useState(false);
   const [info, setInfo] = useState<{ added: number; skipped: number } | null>(null);
+  const [addError, setAddError] = useState<string | null>(null);
 
   const importContacts = async () => {
     const granted = await requestContactsPermission();
@@ -106,6 +108,7 @@ export default function ContactsScreen() {
       setSelected(new Set());
     } catch (e: any) {
       console.warn('Add selected failed:', e);
+      setAddError(e?.message || 'Could not add selected contacts');
     }
   };
 
@@ -115,6 +118,18 @@ export default function ContactsScreen() {
 
   return (
     <Section title="Contacts">
+      <Banner
+        visible={denied}
+        message="Contacts permission denied. Tap to try again."
+        variant="warning"
+        onDismiss={() => setDenied(false)}
+      />
+      <Banner
+        visible={!!addError}
+        message={addError || ''}
+        variant="error"
+        onDismiss={() => setAddError(null)}
+      />
       <View style={styles.buttons}>
         <Button title="Import from device" onPress={importContacts} />
       </View>
@@ -123,15 +138,17 @@ export default function ContactsScreen() {
           Imported {info.added}, skipped {info.skipped} duplicates
         </Text>
       )}
+      {/* Banner handles denied messaging; keep retry button for redundancy */}
       {denied && (
         <View style={styles.denied}>
-          <Text>Permission denied.</Text>
           <Button title="Try again" onPress={importContacts} />
         </View>
       )}
       {contacts.length > 0 && (
         <>
-          <Field label="Search" value={query} onChangeText={setQuery} />
+          <View style={{ alignSelf: 'center', width: '100%', maxWidth: 360 }}>
+            <Field label="Search" value={query} onChangeText={setQuery} />
+          </View>
           <FlatList
             data={filtered}
             keyExtractor={item => item.id}
@@ -145,6 +162,8 @@ export default function ContactsScreen() {
                 style={styles.item}
               />
             )}
+            nestedScrollEnabled
+            style={{ maxHeight: 360 }}
           />
           <Button title="Add selected" onPress={addSelected} />
         </>
@@ -162,6 +181,7 @@ export default function ContactsScreen() {
           />
         )}
         ListHeaderComponent={<Text style={styles.listTitle}>Stored Goobers</Text>}
+        nestedScrollEnabled
       />
     </Section>
   );

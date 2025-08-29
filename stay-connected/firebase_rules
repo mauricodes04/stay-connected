@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Authorize access to a user's subtree by comparing auth uid to the path uid.
+    match /users/{uid} {
+      // Root doc under /users/{uid} (if used)
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+
+      // Contacts (aka goobers)
+      match /contacts/{contactId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      // Plans
+      match /plans/{planId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+
+      // If you have deeper nested collections, this grants the same policy recursively.
+      match /{document=**} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
+    }
+  }
+}
+
