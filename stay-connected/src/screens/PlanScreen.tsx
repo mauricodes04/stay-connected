@@ -1,5 +1,5 @@
 // screens/PlanScreen.tsx
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Platform,
   SafeAreaView,
@@ -15,13 +15,15 @@ import {
   ScrollView,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import DateTimePicker from "@react-native-community/datetimepicker";
+// Replaced native spinner with custom 3-col DatePickerWheel
+// import DateTimePicker from "@react-native-community/datetimepicker";
+import DatePickerWheel from "@/components/DatePickerWheel";
 import * as Calendar from "expo-calendar";
 // @ts-ignore - may be unavailable during development
 import * as FileSystem from "expo-file-system";
 // @ts-ignore - may be unavailable during development
 import * as Sharing from "expo-sharing";
-import { addDoc, collection, serverTimestamp, Timestamp } from "firebase/firestore"; // ⬅️ add Timestamp
+import { addDoc, collection, serverTimestamp, Timestamp } from "firebase/firestore"; // 
 import { db } from "@/lib/firebase";
 import { ensureSignedIn } from "@/lib/ensureAuth";
 import { usePeople } from "@/hooks/usePeople";
@@ -31,8 +33,10 @@ import Header from "@/ui/Header";
 import ModalSheet from "@/ui/ModalSheet";
 import Dialog from "@/ui/Dialog";
 import Ionicons from '@expo/vector-icons/Ionicons';
+import SelectableChip from "@/components/buttons/SelectableChip";
 import { useNavigation } from '@react-navigation/native';
 import PlanCard from '@/ui/PlanCard';
+import PrimaryButton from '@/components/buttons/PrimaryButton';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const IOS_WHEEL_HEIGHT = 220;
@@ -96,6 +100,9 @@ function Chip({ label, onPress }: { label: string; onPress: () => void | Promise
     </Pressable>
   );
 }
+
+// Persistent selectable chip with label→check crossfade
+// SelectableChip now imported from '@/components/buttons/SelectableChip'
 
 const fmtDate = (d: Date) => d.toLocaleDateString();
 const fmtTime = (d: Date) =>
@@ -235,15 +242,6 @@ function PickerModal<T extends string | number>({
   const { colors } = useTheme();
   return (
     <ModalSheet visible={visible} onClose={onClose} title={title}>
-      <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-        <Pressable
-          accessibilityRole="button"
-          onPress={onClose}
-          style={{ paddingVertical: 6, paddingHorizontal: 12, borderRadius: 9999, borderWidth: 1, borderColor: colors.text.secondary + '33', alignSelf: "flex-end" }}
-        >
-          <Text style={{ color: colors.text.primary, fontFamily: "Poppins_500Medium" }}>Done</Text>
-        </Pressable>
-      </View>
       <Picker
         selectedValue={selectedValue}
         onValueChange={(v: any) => onChange(v as T)}
@@ -277,11 +275,14 @@ export default function PlanScreen() {
   const [showDate, setShowDate] = useState(false);
   const [showTime, setShowTime] = useState(false);
   const [confirmVisible, setConfirmVisible] = useState(false);
+  const [confirmBusy, setConfirmBusy] = useState(false);
   const [timeGridVisible, setTimeGridVisible] = useState(false);
   const [confirmCalVisible, setConfirmCalVisible] = useState(false);
   // Inline success preview inside Confirm dialog
   const [showPreview, setShowPreview] = useState(false);
   const previewOpacity = React.useRef(new Animated.Value(0)).current;
+  // Persist selections for integrations
+  const [selectedIntegrations, setSelectedIntegrations] = useState<{ calendar: boolean; text: boolean; ics: boolean }>({ calendar: false, text: false, ics: false });
 
   useEffect(() => {
     if (!personId && people.length) setPersonId(people[0].id);
@@ -422,8 +423,8 @@ export default function PlanScreen() {
   const TimeGridDialog = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
     const { colors, radii, spacing } = useTheme();
     return (
-      <Dialog visible={visible} onClose={onClose} title="Select Time">
-        <View style={{ width: 320, maxWidth: '100%', maxHeight: 420 }}>
+      <ModalSheet visible={visible} onClose={onClose} title="Select Time">
+        <View style={{ width: '100%', maxHeight: 420 }}>
           <ScrollView contentContainerStyle={{ paddingBottom: 8 }}>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -6 }}>
               {gridTimes.map((d) => {
@@ -463,7 +464,7 @@ export default function PlanScreen() {
             </View>
           </ScrollView>
         </View>
-      </Dialog>
+      </ModalSheet>
     );
   };
 
@@ -550,21 +551,9 @@ export default function PlanScreen() {
         </Text>
         {showDate && (
           <ModalSheet visible={showDate} onClose={() => setShowDate(false)} title="Select Date">
-            <View style={{ paddingHorizontal: 4, paddingBottom: 8 }}>
-              <View style={{ alignItems: 'flex-end' }}>
-                <Pressable onPress={() => setShowDate(false)} style={{ paddingHorizontal: 14, height: 36, borderRadius: 999, borderWidth: 1.5, borderColor: '#00000022', alignItems: 'center', justifyContent: 'center' }}>
-                  <Text style={{ fontFamily: 'Poppins_500Medium' }}>Done</Text>
-                </Pressable>
-              </View>
+            <View style={{ height: IOS_WHEEL_HEIGHT, justifyContent: 'center' }}>
+              <DatePickerWheel date={date} onChange={(d) => setDate(d)} />
             </View>
-            <DateTimePicker
-              value={date}
-              mode="date"
-              display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
-              onChange={(_: any, d?: Date) => d && setDate(d)}
-              style={{ height: IOS_WHEEL_HEIGHT }}
-              {...iosWheelProps}
-            />
           </ModalSheet>
         )}
 
@@ -641,41 +630,65 @@ export default function PlanScreen() {
           </Text>
         </ModalSheet>
 
-        {/* Confirm Plan Dialog */
-        }
+        {/* Confirm Plan Dialog */}
         <Dialog
           visible={confirmVisible}
           onClose={() => setConfirmVisible(false)}
           title="Confirm Plan"
           footer={
             <View style={{ gap: spacing.m }}>
-              {/* Primary CTA first */}
-              <Button
+              {/* Integration selection buttons ABOVE final CTA */}
+              <View style={{ flexDirection: 'row', justifyContent: 'center', gap: spacing.s, flexWrap: 'wrap' }}>
+                <SelectableChip
+                  label="Calendar"
+                  selected={selectedIntegrations.calendar}
+                  onToggle={() => setSelectedIntegrations(s => ({ ...s, calendar: !s.calendar }))}
+                />
+                <SelectableChip
+                  label="Text"
+                  selected={selectedIntegrations.text}
+                  onToggle={() => setSelectedIntegrations(s => ({ ...s, text: !s.text }))}
+                />
+                <SelectableChip
+                  label="ICS"
+                  selected={selectedIntegrations.ics}
+                  onToggle={() => setSelectedIntegrations(s => ({ ...s, ics: !s.ics }))}
+                />
+              </View>
+              {/* Final CTA below selection group */}
+              <PrimaryButton
                 title="+ Create Plan"
+                busy={confirmBusy}
                 onPress={async () => {
-                  // Close dialog immediately so label doesn't show during checkmark animation
-                  setConfirmVisible(false);
+                  if (confirmBusy) return;
+                  setConfirmBusy(true);
                   const ok = await onCreatePlan();
                   if (ok) {
-                    // Give the checkmark animation a moment before navigating
+                    try {
+                      if (selectedIntegrations.calendar) {
+                        await onCalendarChip();
+                      }
+                      if (selectedIntegrations.text) {
+                        await onShareInvite();
+                      }
+                      if (selectedIntegrations.ics) {
+                        await onShareInviteWithICS();
+                      }
+                    } catch {
+                      /* ignore individual integration failures */
+                    }
+                    // brief success dwell, then close and navigate
                     setTimeout(() => {
+                      setConfirmVisible(false);
                       navigation.navigate('History');
-                    }, 650);
-                    // ensure state is clean
-                    setTimeout(() => {
-                      setSaving(false);
-                      setConfirmCalVisible(false);
-                      setShowPreview(false);
-                    }, 0);
+                      setSelectedIntegrations({ calendar: false, text: false, ics: false });
+                      setConfirmBusy(false);
+                    }, 700);
+                  } else {
+                    setConfirmBusy(false);
                   }
                 }}
               />
-              {/* Secondary options under primary, centered; tapping these should NOT close the dialog */}
-              <View style={{ flexDirection: 'row', justifyContent: 'center', gap: spacing.s, flexWrap: 'wrap' }}>
-                <Chip label="Calendar" onPress={onCalendarChip} />
-                <Chip label="Text" onPress={onShareInvite} />
-                <Chip label="ICS" onPress={onShareInviteWithICS} />
-              </View>
               {showPreview ? (
                 <Animated.View style={{ opacity: previewOpacity }}>
                   <View style={{ marginTop: spacing.s }}>

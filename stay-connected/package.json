@@ -9,7 +9,7 @@
     "web": "expo start --web",
     "lint": "eslint . --ext .ts,.tsx",
     "scan:auth": "node -e \"const fs=require('fs');const gl=require('glob');const files=gl.sync('**/*.{ts,tsx}',{ignore:['node_modules/**','android/**','ios/**','.expo/**','dist/**','build/**','nvm-windows/**','**/*.d.ts']});let bad=[];for(const f of files){const s=fs.readFileSync(f,'utf8');if(/firebase\\/auth\\/react-native/i.test(s)) bad.push(f);if(/\\bgetAuth\\s*\\(/.test(s)&&f!=='src/lib/firebase.ts'&&f!=='src/lib/debugAuth.ts') bad.push(f);if(/\\binitializeAuth\\s*\\(/.test(s)&&f!=='src/lib/firebase.ts') bad.push(f);}if(bad.length){console.error('Banned auth init found in:',bad);process.exit(1);}console.log('Auth scan clean');\"",
-    "test": "echo \"No tests yet\" && exit 0"
+    "test": "jest"
   },
   "dependencies": {
     "@expo-google-fonts/poppins": "^0.4.0",
@@ -46,6 +46,11 @@
     "eslint-plugin-react-native": "^5.0.0",
     "firebase": "^10.14.1",
     "glob": "^11.0.3",
+    "jest": "^29.7.0",
+    "jest-expo": "^53.0.4",
+    "@testing-library/react-native": "^12.6.1",
+    "@testing-library/jest-native": "^5.4.3",
+    "react-test-renderer": "19.0.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.40.0"
   }

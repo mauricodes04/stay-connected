@@ -103,8 +103,24 @@ export const ModalSheet: React.FC<ModalSheetProps> = ({ visible, title, onClose,
             <View accessible accessibilityRole="header" style={{ marginBottom: spacing.s, flexDirection: 'row', alignItems: 'center' }}>
               {/* eslint-disable-next-line react-native/no-raw-text */}
               <Animated.Text style={{ flex: 1, fontSize: 18, lineHeight: 24, fontWeight: '600', color: colors.text.primary, fontFamily: 'Poppins_600SemiBold' }}>{title}</Animated.Text>
-              <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={onClose} hitSlop={8} style={{ padding: 4 }}>
-                <Ionicons name="close" size={22} color={colors.text.secondary} />
+              {/* Replace close icon with a right-aligned Done button */}
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Done"
+                onPress={onClose}
+                style={{
+                  paddingHorizontal: 14,
+                  height: 44,
+                  minWidth: 64,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 999,
+                  borderWidth: 1,
+                  borderColor: colors.text.secondary + '33',
+                }}
+              >
+                {/* eslint-disable-next-line react-native/no-raw-text */}
+                <Animated.Text style={{ color: colors.text.primary, fontFamily: 'Poppins_500Medium' }}>Done</Animated.Text>
               </Pressable>
             </View>
           )}
