@@ -93,9 +93,9 @@ export default function HistoryScreen() {
     const onDelete = async () => {
       if (removed) return;
       setRemoved(true);
-      // animate collapse
+      // animate collapse (avoid native driver when animating height)
       Animated.parallel([
-        Animated.timing(opacity, { toValue: 0, duration: 180, useNativeDriver: true }),
+        Animated.timing(opacity, { toValue: 0, duration: 180, useNativeDriver: false }),
         Animated.timing(h, { toValue: 0, duration: 220, useNativeDriver: false }),
       ]).start(async () => {
         try {

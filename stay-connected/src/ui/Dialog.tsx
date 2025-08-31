@@ -86,10 +86,10 @@ export default function Dialog({ visible, title, onClose, children, footer }: Di
             accessibilityRole="button"
             accessibilityLabel="Close dialog"
             onPress={onClose}
-            style={{ position: 'absolute', top: 8, right: 8, padding: 8, borderRadius: 999 }}
-            hitSlop={8}
+            style={{ position: 'absolute', top: 8, right: 8, padding: 10, borderRadius: 999 }}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
-            <Ionicons name="close" size={20} color={colors.text.secondary} />
+            <Ionicons name="close" size={24} color={colors.text.secondary} />
           </Pressable>
           {title ? (
             <View style={{ marginBottom: spacing.s }} accessibilityRole="header">

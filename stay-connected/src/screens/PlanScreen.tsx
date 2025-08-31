@@ -33,10 +33,10 @@ import Header from "@/ui/Header";
 import ModalSheet from "@/ui/ModalSheet";
 import Dialog from "@/ui/Dialog";
 import Ionicons from '@expo/vector-icons/Ionicons';
-import SelectableChip from "@/components/buttons/SelectableChip";
 import { useNavigation } from '@react-navigation/native';
 import PlanCard from '@/ui/PlanCard';
 import PrimaryButton from '@/components/buttons/PrimaryButton';
+import Toast from '@/ui/Toast';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const IOS_WHEEL_HEIGHT = 220;
@@ -91,9 +91,9 @@ function Chip({ label, onPress }: { label: string; onPress: () => void | Promise
           runSuccess();
         }
       }}
-      style={{ paddingHorizontal: 12, height: 36, borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
+      style={{ paddingHorizontal: 12, height: 40, borderRadius: 999, alignItems: 'center', justifyContent: 'center' }}
     >
-      <Animated.View style={{ paddingHorizontal: 12, height: 36, borderRadius: 999, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6, backgroundColor, borderColor }}>
+      <Animated.View style={{ paddingHorizontal: 18, minWidth: 128, height: 40, borderRadius: 999, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6, backgroundColor, borderColor }}>
         <Animated.Text style={{ fontFamily: 'Poppins_500Medium', color: textColor }}>{label}</Animated.Text>
         <Animated.Text style={{ color: '#FFFFFF', opacity: checkOpacity }}>✓</Animated.Text>
       </Animated.View>
@@ -264,6 +264,10 @@ export default function PlanScreen() {
   const [date, setDate] = useState<Date>(new Date());
   const [time, setTime] = useState<Date>(new Date());
   const [durationMin, setDurationMin] = useState<number>(60);
+  // touched flags to control placeholders
+  const [touchedDate, setTouchedDate] = useState(false);
+  const [touchedTime, setTouchedTime] = useState(false);
+  const [touchedDuration, setTouchedDuration] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savedOk, setSavedOk] = useState(false);
   const shakeX = React.useRef(new Animated.Value(0)).current; // -1..1
@@ -283,6 +287,9 @@ export default function PlanScreen() {
   const previewOpacity = React.useRef(new Animated.Value(0)).current;
   // Persist selections for integrations
   const [selectedIntegrations, setSelectedIntegrations] = useState<{ calendar: boolean; text: boolean; ics: boolean }>({ calendar: false, text: false, ics: false });
+  // Toast state
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMsg, setToastMsg] = useState('');
 
   useEffect(() => {
     if (!personId && people.length) setPersonId(people[0].id);
@@ -369,6 +376,9 @@ export default function PlanScreen() {
         notes: "Created from Stay Connected",
       });
       await openNativeCalendarAt(start);
+      // toast feedback
+      setToastMsg('Added to Calendar');
+      setToastVisible(true);
     } catch (e: any) {
       Alert.alert("Could not add calendar event", e?.message ?? String(e));
     }
@@ -403,6 +413,9 @@ export default function PlanScreen() {
           Animated.timing(previewOpacity, { toValue: 0, duration: 180, useNativeDriver: true }).start(() => setShowPreview(false));
         }, 900);
       });
+      // toast feedback
+      setToastMsg('Added to Calendar');
+      setToastVisible(true);
     } catch (e: any) {
       Alert.alert('Could not add calendar event', e?.message ?? String(e));
     }
@@ -543,8 +556,9 @@ export default function PlanScreen() {
         {/* Date */}
         <FieldButton
           label="Date"
-          value={date.toLocaleDateString()}
+          value={touchedDate ? date.toLocaleDateString() : 'Select Date'}
           onPress={() => setShowDate(true)}
+          placeholder={!touchedDate}
         />
         <Text style={{ marginTop: 6, marginBottom: 18, color: colors.text.secondary }}>
           {fmtWeekday(date)}
@@ -552,7 +566,7 @@ export default function PlanScreen() {
         {showDate && (
           <ModalSheet visible={showDate} onClose={() => setShowDate(false)} title="Select Date">
             <View style={{ height: IOS_WHEEL_HEIGHT, justifyContent: 'center' }}>
-              <DatePickerWheel date={date} onChange={(d) => setDate(d)} />
+              <DatePickerWheel date={date} onChange={(d) => { setDate(d); setTouchedDate(true); }} />
             </View>
           </ModalSheet>
         )}
@@ -560,23 +574,25 @@ export default function PlanScreen() {
         {/* Time */}
         <FieldButton
           label="Time"
-          value={time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          value={touchedTime ? time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : 'Select Time'}
           onPress={() => setTimeGridVisible(true)}
+          placeholder={!touchedTime}
         />
-        <TimeGridDialog visible={timeGridVisible} onClose={() => setTimeGridVisible(false)} />
+        <TimeGridDialog visible={timeGridVisible} onClose={() => { setTimeGridVisible(false); setTouchedTime(true); }} />
 
         {/* Duration */}
         <FieldButton
           label="Duration (min)"
-          value={`${durationMin}`}
+          value={touchedDuration ? `${durationMin}` : 'Select Duration'}
           onPress={() => setShowDuration(true)}
+          placeholder={!touchedDuration}
         />
         <PickerModal
           title="Select Duration"
           visible={showDuration}
           onClose={() => setShowDuration(false)}
           selectedValue={durationMin}
-          onChange={v => setDurationMin(Number(v))}
+          onChange={v => { setDurationMin(Number(v)); setTouchedDuration(true); }}
         >
           {durationOptions.map(m => (
             <Picker.Item key={m} label={`${m}`} value={m} color={colors.text.primary} />
@@ -639,21 +655,9 @@ export default function PlanScreen() {
             <View style={{ gap: spacing.m }}>
               {/* Integration selection buttons ABOVE final CTA */}
               <View style={{ flexDirection: 'row', justifyContent: 'center', gap: spacing.s, flexWrap: 'wrap' }}>
-                <SelectableChip
-                  label="Calendar"
-                  selected={selectedIntegrations.calendar}
-                  onToggle={() => setSelectedIntegrations(s => ({ ...s, calendar: !s.calendar }))}
-                />
-                <SelectableChip
-                  label="Text"
-                  selected={selectedIntegrations.text}
-                  onToggle={() => setSelectedIntegrations(s => ({ ...s, text: !s.text }))}
-                />
-                <SelectableChip
-                  label="ICS"
-                  selected={selectedIntegrations.ics}
-                  onToggle={() => setSelectedIntegrations(s => ({ ...s, ics: !s.ics }))}
-                />
+                <Chip label="Calendar" onPress={onCalendarChip} />
+                <Chip label="Text" onPress={onShareInvite} />
+                <Chip label="ICS" onPress={onShareInviteWithICS} />
               </View>
               {/* Final CTA below selection group */}
               <PrimaryButton
@@ -664,24 +668,11 @@ export default function PlanScreen() {
                   setConfirmBusy(true);
                   const ok = await onCreatePlan();
                   if (ok) {
-                    try {
-                      if (selectedIntegrations.calendar) {
-                        await onCalendarChip();
-                      }
-                      if (selectedIntegrations.text) {
-                        await onShareInvite();
-                      }
-                      if (selectedIntegrations.ics) {
-                        await onShareInviteWithICS();
-                      }
-                    } catch {
-                      /* ignore individual integration failures */
-                    }
+                    // integrations now execute immediately via chips above
                     // brief success dwell, then close and navigate
                     setTimeout(() => {
                       setConfirmVisible(false);
                       navigation.navigate('History');
-                      setSelectedIntegrations({ calendar: false, text: false, ics: false });
                       setConfirmBusy(false);
                     }, 700);
                   } else {
@@ -714,6 +705,14 @@ export default function PlanScreen() {
             </Text>
           </View>
         </Dialog>
+        {/* Toast feedback */}
+        <Toast
+          visible={toastVisible}
+          message={toastMsg}
+          variant="success"
+          onDismiss={() => setToastVisible(false)}
+          autoDismissMs={2200}
+        />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

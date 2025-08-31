@@ -9,8 +9,11 @@ const config: ExpoConfig = {
   orientation: 'portrait',
   userInterfaceStyle: 'automatic',
   // Splash and adaptive icon assets removed (no assets/ directory present)
-  ios: { supportsTablet: true },
-  android: { adaptiveIcon: { backgroundColor: '#ffffff' } },
+  ios: { supportsTablet: true, bundleIdentifier: 'com.anonymous.stayconnected' },
+  android: {
+    package: 'com.anonymous.stayconnected',
+    adaptiveIcon: { backgroundColor: '#ffffff' },
+  },
   web: { bundler: 'metro' },
 
   extra: {
@@ -21,6 +24,9 @@ const config: ExpoConfig = {
       storageBucket: process.env.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET,
       messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
       appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+    },
+    eas: {
+      projectId: '4fdde5d4-75b8-472a-9f2e-1464fd16bfad',
     },
   },
 };
