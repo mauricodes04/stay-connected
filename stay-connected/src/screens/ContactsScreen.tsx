@@ -23,7 +23,18 @@ export default function ContactsScreen() {
       StyleSheet.create({
         buttons: { flexDirection: 'row', justifyContent: 'space-between' },
         input: { borderWidth: 1, padding: spacing.s, marginVertical: spacing.m },
-        item: { paddingVertical: spacing.s },
+        // List item styling with darker surface and 308°-ish shadow
+        item: {
+          paddingVertical: spacing.s,
+          backgroundColor: '#FFFFFF',
+          borderRadius: 12,
+          shadowColor: '#000',
+          shadowOpacity: 0.16,
+          shadowRadius: 12,
+          shadowOffset: { width: 4, height: -5 },
+          elevation: 6,
+          marginBottom: spacing.s,
+        },
         listTitle: { marginTop: spacing.l, fontWeight: 'bold' },
         denied: { marginVertical: spacing.m },
         info: { marginVertical: spacing.s },

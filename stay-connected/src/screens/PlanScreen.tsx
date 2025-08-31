@@ -17,25 +17,28 @@ import {
 import { Picker } from "@react-native-picker/picker";
 // Replaced native spinner with custom 3-col DatePickerWheel
 // import DateTimePicker from "@react-native-community/datetimepicker";
-import DatePickerWheel from "@/components/DatePickerWheel";
+// Use native DateTimePicker for date selection per request
+import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Calendar from "expo-calendar";
 // @ts-ignore - may be unavailable during development
 import * as FileSystem from "expo-file-system";
 // @ts-ignore - may be unavailable during development
 import * as Sharing from "expo-sharing";
-import { addDoc, collection, serverTimestamp, Timestamp } from "firebase/firestore"; // 
+import { addDoc, serverTimestamp, Timestamp } from "firebase/firestore"; // 
 import { db } from "@/lib/firebase";
 import { ensureSignedIn } from "@/lib/ensureAuth";
+import { plansCol } from "@/lib/userCollections";
 import { usePeople } from "@/hooks/usePeople";
 import { useTheme } from "@/theme";
 import Button from "@/ui/Button";
 import Header from "@/ui/Header";
 import ModalSheet from "@/ui/ModalSheet";
 import Dialog from "@/ui/Dialog";
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { User, Calendar as LucideCalendar, Clock, Timer, ChevronRight } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import PlanCard from '@/ui/PlanCard';
 import PrimaryButton from '@/components/buttons/PrimaryButton';
+import SelectableChip from '@/components/buttons/SelectableChip';
 import Toast from '@/ui/Toast';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -108,8 +111,12 @@ const fmtDate = (d: Date) => d.toLocaleDateString();
 const fmtTime = (d: Date) =>
   d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-const fmtWeekday = (d: Date) =>
-  d.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
+const fmtWeekday = (d: Date) => {
+  const weekday = d.toLocaleDateString(undefined, { weekday: 'long' });
+  const month = d.toLocaleDateString(undefined, { month: 'long' });
+  const day = d.toLocaleDateString(undefined, { day: 'numeric' });
+  return `${weekday}, ${month} ${day}`;
+};
 
 // Seconds between Unix epoch (1970-01-01) and Cocoa epoch (2001-01-01)
 const COCOA_UNIX_OFFSET_SEC = 978307200; // 31 years in seconds, incl. leap years
@@ -189,36 +196,49 @@ function FieldButton({
   value,
   onPress,
   placeholder,
+  Icon,
+  iconBg,
+  iconColor,
 }: {
   label: string;
   value: string;
   onPress: () => void;
   placeholder?: boolean;
+  Icon?: React.ComponentType<{ color?: string; size?: number; strokeWidth?: number }>;
+  iconBg?: string;
+  iconColor?: string;
 }) {
   const { colors, spacing, radii, typography } = useTheme();
+  const leadingBg = iconBg ?? '#E7F0FF'; // soft blue
+  const leadingColor = iconColor ?? '#2D7BF2'; // brand blue
   return (
     <View style={{ marginBottom: spacing.s }}>
       <Text style={{ fontSize: 13, lineHeight: 18, fontFamily: 'Poppins_500Medium', color: colors.text.secondary, marginBottom: spacing.xs }}>{label}</Text>
       <Pressable
         onPress={onPress}
         style={{
-          borderRadius: radii.lg,
-          backgroundColor: '#FFFFFF',
-          // shadow.sm
-          shadowColor: '#000',
-          shadowOpacity: 0.08,
-          shadowRadius: 6,
-          shadowOffset: { width: 0, height: 2 },
-          elevation: 2,
-          paddingHorizontal: 16,
-          minHeight: 48,
+          backgroundColor: colors.background.elevated,
+          borderRadius: radii.md,
+          // subtle card lift (theme token)
+          ...(useTheme().shadows?.small ?? { shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 2 }),
+          paddingHorizontal: 14,
+          minHeight: 56,
           alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}
       >
-        <Text style={{ fontSize: 16, lineHeight: 22, fontFamily: 'Poppins_500Medium', color: placeholder ? colors.text.tertiary : colors.text.primary }}>{value}</Text>
-        <Ionicons name="chevron-forward" size={20} color={colors.text.tertiary} />
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>
+          {Icon ? (
+            <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: leadingBg, alignItems: 'center', justifyContent: 'center' }}>
+              <Icon size={16} color={leadingColor} strokeWidth={2} />
+            </View>
+          ) : null}
+          <Text style={{ fontSize: 16, lineHeight: 22, fontFamily: 'Poppins_500Medium', color: placeholder ? colors.text.tertiary : colors.text.primary }} numberOfLines={1}>
+            {value}
+          </Text>
+        </View>
+        <ChevronRight size={20} color={colors.text.tertiary} strokeWidth={2} />
       </Pressable>
     </View>
   );
@@ -282,10 +302,7 @@ export default function PlanScreen() {
   const [confirmBusy, setConfirmBusy] = useState(false);
   const [timeGridVisible, setTimeGridVisible] = useState(false);
   const [confirmCalVisible, setConfirmCalVisible] = useState(false);
-  // Inline success preview inside Confirm dialog
-  const [showPreview, setShowPreview] = useState(false);
-  const previewOpacity = React.useRef(new Animated.Value(0)).current;
-  // Persist selections for integrations
+  // Persist selections for integrations (stay green until Create Plan)
   const [selectedIntegrations, setSelectedIntegrations] = useState<{ calendar: boolean; text: boolean; ics: boolean }>({ calendar: false, text: false, ics: false });
   // Toast state
   const [toastVisible, setToastVisible] = useState(false);
@@ -299,6 +316,13 @@ export default function PlanScreen() {
     () => Array.from({ length: 16 }, (_, i) => (i + 1) * 15),
     []
   );
+  const fmtDuration = useCallback((mins: number) => {
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    if (h === 0) return `${m}min`;
+    if (m === 0) return `${h}hr`;
+    return `${h}hr${m}`;
+  }, []);
 
   const personName =
     people.find(p => p.id === personId)?.displayName ?? "Select person";
@@ -306,7 +330,7 @@ export default function PlanScreen() {
   const onCreatePlan = useCallback(async (): Promise<boolean> => {
     try {
       setSaving(true);
-      const uid = await ensureSignedIn(); // 🔒 ensure auth first
+      await ensureSignedIn(); // 🔒 ensure auth first
 
       if (!personId || !durationMin) {
         // error shake
@@ -320,8 +344,7 @@ export default function PlanScreen() {
       }
       const { start, end } = toStartEnd(date, time, durationMin);
 
-      const col = collection(db, "users", uid, "plans");
-      await addDoc(col, {
+      await addDoc(plansCol(db), {
         personId,
         personName,
         startAt: Timestamp.fromDate(start), // ✅ use Firestore Timestamp
@@ -376,7 +399,8 @@ export default function PlanScreen() {
         notes: "Created from Stay Connected",
       });
       await openNativeCalendarAt(start);
-      // toast feedback
+      // feedback
+      Alert.alert('Added to Calendar');
       setToastMsg('Added to Calendar');
       setToastVisible(true);
     } catch (e: any) {
@@ -385,40 +409,9 @@ export default function PlanScreen() {
   };
 
   // Direct calendar flow used from Confirm dialog without stacking another modal
-  const onCalendarChip = async () => {
-    try {
-      const { start, end } = toStartEnd(date, time, durationMin);
-      const { status } = await Calendar.requestCalendarPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Calendar permission denied');
-        return;
-      }
-      const cals = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-      const calId = cals.find(c => c.allowsModifications)?.id ?? cals[0]?.id;
-      if (!calId) {
-        Alert.alert('No calendar found');
-        return;
-      }
-      await Calendar.createEventAsync(calId, {
-        title: `Plan with ${personName}`,
-        startDate: start,
-        endDate: end,
-        notes: 'Created from Stay Connected',
-      });
-      // Small success animation: show a preview PlanCard fade-in
-      setShowPreview(true);
-      previewOpacity.setValue(0);
-      Animated.timing(previewOpacity, { toValue: 1, duration: 180, useNativeDriver: true }).start(() => {
-        setTimeout(() => {
-          Animated.timing(previewOpacity, { toValue: 0, duration: 180, useNativeDriver: true }).start(() => setShowPreview(false));
-        }, 900);
-      });
-      // toast feedback
-      setToastMsg('Added to Calendar');
-      setToastVisible(true);
-    } catch (e: any) {
-      Alert.alert('Could not add calendar event', e?.message ?? String(e));
-    }
+  // Calendar chip now only toggles selection; integrations execute after final Create Plan
+  const toggleIntegration = (key: 'calendar' | 'text' | 'ics') => {
+    setSelectedIntegrations((s) => ({ ...s, [key]: !s[key] }));
   };
 
   // Build a 3-column time grid (every 30 minutes) for the current day
@@ -518,7 +511,7 @@ export default function PlanScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background.app }}>
-      <Header title="Plan" />
+      <Header title="Plan It!" />
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={insets.top + 56} style={{ flex: 1 }}>
         <ScrollView
           style={{ flex: 1 }}
@@ -533,11 +526,11 @@ export default function PlanScreen() {
           }}
         >
         <Text style={{ textAlign: 'center', color: colors.text.secondary, fontSize: typography.body.fontSize, lineHeight: typography.body.lineHeight, marginBottom: spacing.m, fontFamily: 'Poppins_400Regular' }}>
-          Build your plan by choosing a person, date, time, and duration.
+          Let’s make something awesome happen ✨
         </Text>
 
         {/* Person */}
-        <FieldButton label="Person" value={personName} onPress={() => setShowPerson(true)} placeholder={!personId} />
+        <FieldButton label="Person" value={personName} onPress={() => setShowPerson(true)} placeholder={!personId} Icon={User} />
         <PickerModal
           visible={showPerson}
           onClose={() => setShowPerson(false)}
@@ -553,20 +546,41 @@ export default function PlanScreen() {
           )}
         </PickerModal>
 
-        {/* Date */}
+        {/* Date (native) */}
         <FieldButton
           label="Date"
-          value={touchedDate ? date.toLocaleDateString() : 'Select Date'}
+          value={touchedDate ? fmtWeekday(date) : 'Select Date'}
           onPress={() => setShowDate(true)}
           placeholder={!touchedDate}
+          Icon={LucideCalendar}
         />
         <Text style={{ marginTop: 6, marginBottom: 18, color: colors.text.secondary }}>
           {fmtWeekday(date)}
         </Text>
         {showDate && (
           <ModalSheet visible={showDate} onClose={() => setShowDate(false)} title="Select Date">
-            <View style={{ height: IOS_WHEEL_HEIGHT, justifyContent: 'center' }}>
-              <DatePickerWheel date={date} onChange={(d) => { setDate(d); setTouchedDate(true); }} />
+            <View style={{ justifyContent: 'center' }}>
+              <DateTimePicker
+                value={date}
+                mode="date"
+                display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
+                // Respect theme text color on iOS spinner
+                // @ts-ignore iOS only
+                textColor={colors.text.primary}
+                onChange={(event, selectedDate) => {
+                  if (Platform.OS === 'android') {
+                    // Android returns undefined on cancel
+                    if (selectedDate) {
+                      setDate(selectedDate);
+                      setTouchedDate(true);
+                    }
+                  } else if (selectedDate) {
+                    setDate(selectedDate);
+                    setTouchedDate(true);
+                  }
+                }}
+                style={{ height: IOS_WHEEL_HEIGHT }}
+              />
             </View>
           </ModalSheet>
         )}
@@ -577,15 +591,17 @@ export default function PlanScreen() {
           value={touchedTime ? time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : 'Select Time'}
           onPress={() => setTimeGridVisible(true)}
           placeholder={!touchedTime}
+          Icon={Clock}
         />
         <TimeGridDialog visible={timeGridVisible} onClose={() => { setTimeGridVisible(false); setTouchedTime(true); }} />
 
         {/* Duration */}
         <FieldButton
-          label="Duration (min)"
-          value={touchedDuration ? `${durationMin}` : 'Select Duration'}
+          label="Duration"
+          value={touchedDuration ? fmtDuration(durationMin) : 'Select Duration'}
           onPress={() => setShowDuration(true)}
           placeholder={!touchedDuration}
+          Icon={Timer}
         />
         <PickerModal
           title="Select Duration"
@@ -595,7 +611,7 @@ export default function PlanScreen() {
           onChange={v => { setDurationMin(Number(v)); setTouchedDuration(true); }}
         >
           {durationOptions.map(m => (
-            <Picker.Item key={m} label={`${m}`} value={m} color={colors.text.primary} />
+            <Picker.Item key={m} label={fmtDuration(m)} value={m} color={colors.text.primary} />
           ))}
         </PickerModal>
 
@@ -605,8 +621,8 @@ export default function PlanScreen() {
             transform: [{ translateX: shakeX.interpolate({ inputRange: [-1, 1], outputRange: [-20, 20] }) }],
           }}
         >
-          <Button
-            title={saving ? "Creating..." : "Create Plan"}
+          <PrimaryButton
+            title={saving ? "Creating..." : "+ Create Plan"}
             onPress={() => {
               if (!personId || !durationMin) {
                 Animated.sequence([
@@ -620,13 +636,9 @@ export default function PlanScreen() {
               setConfirmVisible(true);
             }}
             disabled={saving}
-            loading={saving}
+            busy={confirmBusy}
           />
-          {savedOk && (
-            <Animated.View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, alignItems: 'center', justifyContent: 'center', opacity: successOpacity, transform: [{ scale: successScale }] }}>
-              <Text style={{ fontSize: 22, color: colors.text.inverse }}>✓</Text>
-            </Animated.View>
-          )}
+          {/* Removed overlay check to align with PrimaryButton animation behavior */}
         </Animated.View>
 
         {/* Removed extra action buttons; these live in the confirm dialog */}
@@ -653,11 +665,11 @@ export default function PlanScreen() {
           title="Confirm Plan"
           footer={
             <View style={{ gap: spacing.m }}>
-              {/* Integration selection buttons ABOVE final CTA */}
+              {/* Persistent integration selection chips (centered) */}
               <View style={{ flexDirection: 'row', justifyContent: 'center', gap: spacing.s, flexWrap: 'wrap' }}>
-                <Chip label="Calendar" onPress={onCalendarChip} />
-                <Chip label="Text" onPress={onShareInvite} />
-                <Chip label="ICS" onPress={onShareInviteWithICS} />
+                <SelectableChip label="Calendar" selected={selectedIntegrations.calendar} onToggle={() => toggleIntegration('calendar')} minWidth={118} height={40} />
+                <SelectableChip label="Text" selected={selectedIntegrations.text} onToggle={() => toggleIntegration('text')} minWidth={69} height={40} />
+                <SelectableChip label="ICS" selected={selectedIntegrations.ics} onToggle={() => toggleIntegration('ics')} minWidth={64} height={40} />
               </View>
               {/* Final CTA below selection group */}
               <PrimaryButton
@@ -668,11 +680,40 @@ export default function PlanScreen() {
                   setConfirmBusy(true);
                   const ok = await onCreatePlan();
                   if (ok) {
-                    // integrations now execute immediately via chips above
+                    // Execute selected integrations now
+                    try {
+                      const { start, end } = toStartEnd(date, time, durationMin);
+                      if (selectedIntegrations.calendar) {
+                        const { status } = await Calendar.requestCalendarPermissionsAsync();
+                        if (status === 'granted') {
+                          const cals = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+                          const calId = cals.find(c => c.allowsModifications)?.id ?? cals[0]?.id;
+                          if (calId) {
+                            await Calendar.createEventAsync(calId, {
+                              title: `Plan with ${personName}`,
+                              startDate: start,
+                              endDate: end,
+                              notes: 'Created from Stay Connected',
+                            });
+                            Alert.alert('Added to Calendar');
+                          }
+                        }
+                      }
+                      if (selectedIntegrations.text) {
+                        await onShareInvite();
+                      }
+                      if (selectedIntegrations.ics) {
+                        await onShareInviteWithICS();
+                      }
+                    } catch (e) {
+                      // ignore integration errors here; plan was created successfully
+                    }
                     // brief success dwell, then close and navigate
                     setTimeout(() => {
                       setConfirmVisible(false);
                       navigation.navigate('History');
+                      // Reset integration selections for next plan
+                      setSelectedIntegrations({ calendar: false, text: false, ics: false });
                       setConfirmBusy(false);
                     }, 700);
                   } else {
@@ -680,25 +721,12 @@ export default function PlanScreen() {
                   }
                 }}
               />
-              {showPreview ? (
-                <Animated.View style={{ opacity: previewOpacity }}>
-                  <View style={{ marginTop: spacing.s }}>
-                    <PlanCard
-                      title={`Plan with ${personName}`}
-                      personName={personName}
-                      dateLabel={`${fmtDate(date)} • ${fmtTime(time)}`}
-                      durationMin={durationMin}
-                      status={'scheduled'}
-                    />
-                  </View>
-                </Animated.View>
-              ) : null}
             </View>
           }
         >
           <View style={{ alignItems: 'center', marginBottom: spacing.s }}>
             <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: colors.accent.primary + '22', alignItems: 'center', justifyContent: 'center', marginBottom: spacing.s }}>
-              <Ionicons name="calendar" size={28} color={colors.accent.primary} />
+              <LucideCalendar size={28} color={colors.accent.primary} strokeWidth={2} />
             </View>
             <Text style={{ color: colors.text.secondary, textAlign: 'center' }}>
               {fmtDate(date)} • {fmtTime(time)} • {durationMin} min

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Modal, Pressable, View } from 'react-native';
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { X } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/theme';
 
@@ -47,20 +47,23 @@ export default function Dialog({ visible, title, onClose, children, footer }: Di
     }
   }, [visible, reducedMotion, backdrop, scale, opacity, motion]);
 
-  const cardShadow = {
+  const themed = useTheme();
+  const cardShadow = themed.shadows?.card308 ?? {
     shadowColor: '#000',
-    shadowOpacity: 0.18,
+    shadowOpacity: 0.16,
     shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
+    shadowOffset: { width: 4, height: -5 },
     elevation: 6,
-  } as const;
+  } as {
+    shadowColor: string; shadowOpacity: number; shadowRadius: number; shadowOffset: { width: number; height: number }; elevation: number;
+  };
 
   return (
     <Modal visible={visible} transparent onRequestClose={onClose} animationType="none">
       <Animated.View
         style={{
           flex: 1,
-          backgroundColor: backdrop.interpolate({ inputRange: [0, 1], outputRange: ['rgba(0,0,0,0)', 'rgba(0,0,0,0.35)'] }),
+          backgroundColor: backdrop.interpolate({ inputRange: [0, 1], outputRange: ['rgba(0,0,0,0)', themed.colors.backdrop || 'rgba(0,0,0,0.5)'] }),
           justifyContent: 'center',
           alignItems: 'center',
           paddingTop: insets.top + 12,
@@ -89,7 +92,7 @@ export default function Dialog({ visible, title, onClose, children, footer }: Di
             style={{ position: 'absolute', top: 8, right: 8, padding: 10, borderRadius: 999 }}
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
-            <Ionicons name="close" size={24} color={colors.text.secondary} />
+            <X size={24} color={colors.text.secondary} strokeWidth={2} />
           </Pressable>
           {title ? (
             <View style={{ marginBottom: spacing.s }} accessibilityRole="header">

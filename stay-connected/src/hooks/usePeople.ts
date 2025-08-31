@@ -1,15 +1,8 @@
 import { useEffect, useState } from "react";
-import {
-  collection,
-  onSnapshot,
-  orderBy,
-  query,
-  setDoc,
-  doc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { onSnapshot, orderBy, query, setDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { ensureSignedIn } from "@/lib/ensureAuth";
+import { authReady } from "@/lib/authReady";
+import { contactsCol, contactDoc } from "@/lib/userCollections";
 
 export type Person = {
   id: string;
@@ -25,7 +18,6 @@ export type Person = {
 };
 
 export function usePeople() {
-  const [uid, setUid] = useState<string | null>(null);
   const [people, setPeople] = useState<Person[]>([]);
 
   useEffect(() => {
@@ -33,11 +25,10 @@ export function usePeople() {
     let canceled = false;
 
     (async () => {
-      const _uid = await ensureSignedIn();
+      await authReady; // wait for auth resolution
       if (canceled) return;
-      setUid(_uid);
       const q = query(
-        collection(db, "users", _uid, "contacts"),
+        contactsCol(db),
         orderBy("name", "asc")
       );
       unsub = onSnapshot(
@@ -101,15 +92,13 @@ export function usePeople() {
     relationship_type?: string;
     notes?: string;
   }) => {
-    const effectiveUid = uid ?? (await ensureSignedIn());
     const email = normEmail(p.email);
     const phone = normPhone(p.phone);
     const name = p.name?.trim();
     if (!name) throw new Error("Contact name is required");
 
     const contactId = stableIdFor({ id: p.id, email, phone, name });
-    if (!uid) setUid(effectiveUid);
-    const ref = doc(db, "users", effectiveUid, "contacts", contactId);
+    const ref = contactDoc(db, contactId);
     const payload = {
       name,
       nickname: p.nickname?.trim() || null,
@@ -121,7 +110,7 @@ export function usePeople() {
       createdAt: serverTimestamp(),
     };
 
-    console.log("[upsertPerson]", { effectiveUid, contactId, payload });
+    if (__DEV__) console.log("[contacts][upsert]", { contactId, payload });
     await setDoc(ref, payload, { merge: true });
   };
 

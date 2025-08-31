@@ -25,17 +25,27 @@ export const PlanCard: React.FC<PlanCardProps> = ({ title, personName, dateLabel
     ]).start();
   }, [translateY, opacity, reducedMotion, motion.durations]);
   const statusVariant = status === 'completed' ? 'success' : status === 'pending' ? 'warning' : 'info';
+  // Shadow approx at 308° (north-west): negative y, positive x
+  const shadow308 = {
+    shadowColor: '#000',
+    shadowOpacity: 0.16,
+    shadowRadius: 12,
+    shadowOffset: { width: 4, height: -5 },
+    elevation: 6,
+  } as const;
+  // Slightly darker surface
+  const surfaceDarker = colors.background?.surface || '#FFFFFF';
   return (
     <Animated.View style={{ opacity, transform: [{ translateY }] }}>
-      <Card onPress={onPress} elevated style={{ gap: spacing.s }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text style={{ color: colors.text.primary, fontSize: typography.subtitle.fontSize, fontWeight: typography.subtitle.fontWeight }}>{title}</Text>
-        <Badge label={status === 'completed' ? 'Completed' : status === 'pending' ? 'Pending' : 'Scheduled'} variant={statusVariant as any} />
-      </View>
-      <Text style={{ color: colors.text.secondary, fontSize: typography.body.fontSize }}>{personName}</Text>
-      <Text style={{ color: colors.text.tertiary, fontSize: typography.label.fontSize }}>
-        {dateLabel}{durationMin ? ` • ${durationMin} min` : ''}
-      </Text>
+      <Card onPress={onPress} elevated style={{ gap: spacing.s, backgroundColor: surfaceDarker, ...shadow308 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text style={{ color: colors.text.primary, fontSize: typography.subtitle.fontSize, fontWeight: typography.subtitle.fontWeight }}>{title}</Text>
+          <Badge label={status === 'completed' ? 'Completed' : status === 'pending' ? 'Pending' : 'Scheduled'} variant={statusVariant as any} />
+        </View>
+        <Text style={{ color: colors.text.secondary, fontSize: typography.body.fontSize }}>{personName}</Text>
+        <Text style={{ color: colors.text.tertiary, fontSize: typography.label.fontSize }}>
+          {dateLabel}{durationMin ? ` • ${durationMin} min` : ''}
+        </Text>
       </Card>
     </Animated.View>
   );

@@ -10,9 +10,9 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { usePeople } from '@/hooks/usePeople';
-import { ensureSignedIn } from '@/lib/ensureAuth';
 import { db } from '@/lib/firebase';
-import { doc, deleteDoc } from 'firebase/firestore';
+import { deleteDoc } from 'firebase/firestore';
+import { contactDoc } from '@/lib/userCollections';
 import { useTheme } from '@/theme';
 import { Button } from '@/ui/Button';
 import EditGooberForm from './components/EditGooberForm';
@@ -108,8 +108,7 @@ export default function GooberDetailScreen() {
 
   const confirmDelete = async () => {
     try {
-      const uid = await ensureSignedIn();
-      await deleteDoc(doc(db, 'users', uid, 'contacts', params.gooberId));
+      await deleteDoc(contactDoc(db, params.gooberId));
     } catch (e) {
       console.warn('delete failed', e);
     }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -11,6 +11,10 @@ import GooberDetailScreen from '../screens/GooberDetailScreen';
 import { usePeople } from '@/hooks/usePeople';
 import { useTheme } from '@/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import WelcomeScreen from '@/screens/WelcomeScreen';
+import SignInScreen from '@/screens/SignInScreen';
+import { onAuthStateChanged, type User } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -61,6 +65,20 @@ function Tabs() {
 }
 
 export default function Navigation() {
+  const [user, setUser] = useState<User | null>(auth.currentUser);
+  const [ready, setReady] = useState(!!auth.currentUser);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      setReady(true);
+    });
+    return () => unsub();
+  }, []);
+
+  if (!ready) return null;
+
+  const isAuthed = !!user;
   return (
     <Stack.Navigator
       screenOptions={{
@@ -70,8 +88,17 @@ export default function Navigation() {
         headerTitleAlign: 'center',
       }}
     >
-      <Stack.Screen name="Root" component={Tabs} options={{ headerShown: false }} />
-      <Stack.Screen name="GooberDetail" component={GooberDetailScreen} options={{ title: 'Goober' }} />
+      {isAuthed ? (
+        <>
+          <Stack.Screen name="Root" component={Tabs} options={{ headerShown: false }} />
+          <Stack.Screen name="GooberDetail" component={GooberDetailScreen} options={{ title: 'Goober' }} />
+        </>
+      ) : (
+        <>
+          <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="SignIn" component={SignInScreen} options={{ title: 'Sign In' }} />
+        </>
+      )}
     </Stack.Navigator>
   );
 }

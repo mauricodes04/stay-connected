@@ -1,13 +1,15 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, Text, View } from 'react-native';
 import { Section } from '../components/Section';
-import { collection, deleteDoc, doc, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore';
+import { deleteDoc, orderBy, query, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { ensureSignedIn } from '@/lib/ensureAuth';
+import { planDoc, plansCol } from '@/lib/userCollections';
+import { useUserScopedSnapshot } from '@/hooks/useUserScopedCollection';
 import { useTheme } from '@/theme';
 import PlanCard from '@/ui/PlanCard';
 import EmptyState from '@/ui/EmptyState';
 import { Swipeable } from 'react-native-gesture-handler';
+import { useIsFocused } from '@react-navigation/native';
 
 type FireDate = Timestamp | string;
 const toJsDate = (v: FireDate): Date | null => {
@@ -39,32 +41,15 @@ type Plan = {
 export default function HistoryScreen() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const { spacing, colors, radii } = useTheme();
-  const uidRef = useRef<string | null>(null);
 
+  // Stable query + factory; only enable when screen focused
+  const isFocused = useIsFocused();
+  const plansQuery = useMemo(() => query(plansCol(db), orderBy('startAt', 'desc')), [db]);
+  const qFactory = useCallback(() => plansQuery, [plansQuery]);
+  const scoped = useUserScopedSnapshot<Plan>(qFactory, { enabled: isFocused });
   useEffect(() => {
-    let unsub: undefined | (() => void);
-    let canceled = false;
-
-    (async () => {
-      try {
-        const uid = await ensureSignedIn();
-        uidRef.current = uid;
-        if (canceled) return;
-        const col = collection(db, 'users', uid, 'plans');
-        const q = query(col, orderBy('startAt', 'desc'));
-        unsub = onSnapshot(q, snap => {
-          setPlans(snap.docs.map(d => ({ id: d.id, ...(d.data() as any) })));
-        });
-      } catch {
-        // no-op
-      }
-    })();
-
-    return () => {
-      canceled = true;
-      if (unsub) unsub();
-    };
-  }, []);
+    setPlans((scoped.data as any as Plan[]) ?? []);
+  }, [scoped.data]);
 
   const renderRightActions = (onDelete: () => void) => (
     <View style={{ justifyContent: 'center', alignItems: 'flex-end' }}>
@@ -99,9 +84,7 @@ export default function HistoryScreen() {
         Animated.timing(h, { toValue: 0, duration: 220, useNativeDriver: false }),
       ]).start(async () => {
         try {
-          const uid = uidRef.current || (await ensureSignedIn());
-          if (!uid) return;
-          await deleteDoc(doc(db, 'users', uid, 'plans', p.id));
+          await deleteDoc(planDoc(db, p.id));
         } catch {
           // fail silently; snapshot will re-render if needed
         }

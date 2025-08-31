@@ -4,7 +4,7 @@
 
 import { getApps, getApp, initializeApp } from 'firebase/app';
 import { getFirestore, setLogLevel } from 'firebase/firestore';
-import { initializeAuth, getReactNativePersistence, getAuth } from 'firebase/auth';
+import { getAuth, type Auth } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirebaseEnv } from '@/lib/env';
 
@@ -16,12 +16,21 @@ declare global {
   var __STAY_CONNECTED_AUTH_INIT__: boolean | undefined;
 }
 
-let authInstance;
+let authInstance: Auth;
 
 if (!globalThis.__STAY_CONNECTED_AUTH_INIT__) {
-  authInstance = initializeAuth(app, {
-    persistence: getReactNativePersistence(AsyncStorage),
-  });
+  try {
+    // Try the RN subpath first (preferred). Build path dynamically to avoid Metro static resolution.
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const rnPath = 'firebase/auth/' + 'react-native';
+    const rnAuth = require(rnPath);
+    authInstance = rnAuth.initializeAuth(app, {
+      persistence: rnAuth.getReactNativePersistence(AsyncStorage),
+    });
+  } catch (_e) {
+    // Fallback: web initialize (works but without explicit RN persistence)
+    authInstance = getAuth(app);
+  }
   globalThis.__STAY_CONNECTED_AUTH_INIT__ = true;
 } else {
   authInstance = getAuth(app);
