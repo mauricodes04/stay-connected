@@ -1,0 +1,271 @@
+component:
+name: AnimatedWelcomeBackground
+description: >
+Loopable, parallax-scrolling scenic hero background with a silhouetted
+character walking to the right while the “camera” follows via layered pans.
+Built for React Native + Expo using NativeWind (styling) and Moti/Reanimated
+(animation). Fills vertical phone orientations (9:19 / 6:19 friendly) and
+resizes gracefully.
+dependencies:
+styling: NativeWind
+animation: Moti (Reanimated 3+)
+environment:
+expo: true
+platforms: \[iOS, Android, Web]
+rendering:
+composition: absolute-stacked-layers
+colorSpace: sRGB
+frameRateTarget: 60
+
+layers:
+
+* id: sky
+  role: furthest
+  zIndex: 0
+  asset: props.assets.sky
+  parallaxMultiplier: props.parallax.sky # e.g., 0.2 (slowest)
+  tiling:
+  mode: horizontal-infinite
+  requirement: seamless-edge # image should tile cleanly L↔R
+  technique: dual-sprite-wrap # render two copies; wrap when offscreen
+  overscanPx: 40 # prevents white seams on resize/rotation
+  sizing:
+  fit: coverWidth # width >= container width + overscan
+  heightPolicy: matchContainer
+  motion:
+  axis: x
+  baseSpeedPxPerSec: (containerWidth / (props.durationMs/1000)) \* parallaxMultiplier
+  loop: hard # resets exactly at duration boundary
+  visualTreatment:
+  skyTintAllowed: true # optional subtle tint via opacity layer
+
+* id: mid
+  role: hills\_mountains
+  zIndex: 1
+  asset: props.assets.mid
+  parallaxMultiplier: props.parallax.mid # e.g., 0.6
+  tiling:
+  mode: horizontal-infinite
+  requirement: seamless-edge
+  technique: dual-sprite-wrap
+  overscanPx: 60
+  sizing:
+  fit: coverWidth
+  heightPolicy: aspectPreserve
+  motion:
+  axis: x
+  baseSpeedPxPerSec: (containerWidth / (props.durationMs/1000)) \* parallaxMultiplier
+  loop: hard
+
+* id: fg
+  role: foreground\_grass\_ground
+  zIndex: 2
+  asset: props.assets.fg
+  parallaxMultiplier: props.parallax.fg # e.g., 1.0 (fastest)
+  tiling:
+  mode: horizontal-infinite
+  requirement: seamless-edge
+  technique: dual-sprite-wrap
+  overscanPx: 80
+  sizing:
+  fit: coverWidth
+  heightPolicy: fixedOrAspect # ensure ground line stays below midline
+  verticalAnchor: bottom
+  motion:
+  axis: x
+  baseSpeedPxPerSec: (containerWidth / (props.durationMs/1000)) \* parallaxMultiplier
+  loop: hard
+  collisionAvoidance:
+  noZFighting: true
+
+* id: character
+  role: silhouette\_person
+  zIndex: 3
+  asset: props.assets.character
+  placement:
+  anchor: bottomCenter
+  groundSnap: true # sits on fg baseline
+  safeAreaPaddingBottomPx: 0
+  walkCycle:
+  mode: spriteSheet # preferred for smooth loop
+  fallback: singleFrameWithBobbing # if sprite sheet not provided
+  frames: 8..16 # guidance; exact from asset metadata
+  frameRate: autoFromDurationOr(10..14) # fps tuned to duration
+  loop: seamless
+  motion:
+  axis: x
+  speedPxPerSec: props.characterSpeed # constant world speed
+  cameraFollow: centerLock # layers pan to keep character near center
+  easing: linear
+  shadow:
+  enabled: true
+  type: ovalDrop
+  opacity: 0.15
+  scaleWithStep: subtle
+
+motion:
+global:
+durationMsDefault: 8000 # 6–10s acceptable; default 8s
+easing: linear
+clock: sharedReanimatedClock
+reducedMotion:
+prop: props.reducedMotion
+behavior:
+\- freezeLayersAtX0
+\- showFirstCharacterFrameOnly
+\- keepAccessibilityLabels
+parallaxMath:
+\# Camera follow is implicit: background layers translate left while the character advances right;
+\# net effect keeps character centered.
+forEachLayer:
+translateX(t) = - (t / durationMs) \* containerWidth \* parallaxMultiplier  # wraps with modulo(layerWidth)
+wrapping:
+strategy: moduloWithThreshold
+thresholdPx: 1 # snap to avoid subpixel seams
+loopIntegrity:
+requirement:
+\- (sumOfLayerOffsetsAtT0 == sumAtTend) within 0.5px
+\- characterWalkCycle completes integer frame counts per loop
+method:
+\- chooseFrameRateSo: (frameCount \* 1000 / fps) == durationMs OR nearest with crossfade < 33ms
+cameraFraming:
+horizontal:
+keepCharacterWithinPct: \[0.45, 0.55] # soft center band
+correction:
+spring: disabled
+easing: linear
+vertical:
+lock: bottomGroundLine
+parallaxY: none # avoid vertical nausea
+responsiveness:
+fillMode: cover
+minScale: computeFromShortestSide
+rotation:
+onOrientationChange:
+\- recomputeContainerMetrics
+\- remeasureAssets
+\- reinitWrapOffsets atomically (no visible jump)
+safeArea:
+respectInsets: true
+density:
+adaptImageResolution: prefer @2x/@3x if available
+
+props:
+interface:
+durationMs:
+type: number
+default: 8000
+constraints: \[6000..10000]
+description: Total loop length for one complete parallax cycle.
+parallax:
+type: object
+shape:
+sky: number # 0.1–0.4 recommended
+mid: number # 0.4–0.8 recommended
+fg: number  # 0.8–1.4 recommended
+default: { sky: 0.2, mid: 0.6, fg: 1.0 }
+description: Multipliers relative to camera pan distance.
+characterSpeed:
+type: number
+units: pxPerSec
+default: 60
+constraints: \[30..120]
+description: Horizontal world speed for character advance.
+assets:
+type: object
+required: \[sky, mid, fg, character]
+shape:
+sky: ImageSourcePropType
+mid: ImageSourcePropType
+fg: ImageSourcePropType
+character: ImageSourcePropType # sprite sheet or single silhouette
+notes:
+\- Prefer seamless sky/mid/fg textures of width >= deviceWidth.
+\- Provide characterSprite metadata (frameCount, frameWidth, frameHeight) via Image.getSize or manifest.
+reducedMotion:
+type: boolean
+optional: true
+default: undefined
+description: Disables animations when true or when OS prefers-reduced-motion is detected (if not explicitly set).
+typescript:
+file: AnimatedWelcomeBackground.tsx
+exports:
+\- default Component
+\- Props interface typed per above
+generics: none
+strict: true
+
+a11y:
+accessibilityLabel: "Scenic animated background"
+accessibilityHint: "Looped parallax landscape with a walking figure"
+role: image
+importantForAccessibility: no-hide-descendants # underlying UI remains focusable
+flickerPolicy:
+noFlashing: true
+luminanceChangePerFrameMax: 5%
+reducedMotionSupport: providedViaPropAndOS
+
+acceptance\_tests:
+performance:
+\- name: "Sustained 60fps on mid-tier device"
+method: profile-with-DevTools
+passIf:
+averageFps >= 58
+droppedFramesPerMinute <= 5
+seams:
+\- name: "No white seams during full loop"
+method: runFor(3 \* durationMs) on 6:19 and 9:19 devices
+passIf: zeroVisibleGaps # including rotation during playback
+loop\_exactness:
+\- name: "Start/End frame match"
+method: record 2 loops; compare first and last frames
+passIf: pixelDelta <= 0.5 and characterPoseMatches == true
+expo\_go:
+\- name: "Runs in Expo Go"
+method: launch-on-iOS-and-Android Expo Go
+passIf: noNativeModuleErrors && visualsMatch
+responsiveness:
+\- name: "Orientation change without jump"
+method: rotate portrait↔landscape mid-loop
+passIf: no visible jump; offsets rewrap atomically
+typings:
+\- name: "TypeScript passes"
+method: tsc --noEmit
+passIf: zeroErrors
+accessibility:
+\- name: "Screen reader metadata"
+method: inspect accessibility tree
+passIf: label==Scenic animated background && hint==Looped parallax landscape with a walking figure
+\- name: "Reduced-motion"
+method: set OS prefers-reduced-motion && prop undefined
+passIf: animationsDisabled && visualsStatic
+
+notes:
+asset\_guidance:
+\- Provide sky/mid/fg with seamless horizontal edges; avoid strong vertical contrast at edges.
+\- Prefer widths: >= 1.5× largest expected device width; height can be cropped to fit.
+\- Character sprite: silhouette with 8–16 frames; neutral stride; include evenly spaced frames.
+tiling\_strategy\_details:
+\- Render two copies per layer (A and B). When A.x <= -A.width, move A.x += 2\*A.width (and same for B).
+\- Use integer rounding at wrap boundaries to avoid subpixel seams.
+camera\_model:
+\- Character advances at characterSpeed; background layers translate left at baseSpeedPxPerSec \* layerMultiplier.
+\- With default multipliers, apparent character stays near center without directly translating character container.
+reduced\_motion\_behavior:
+\- Freeze translateX at 0 for all layers; show first character frame; keep drop-shadow.
+styling\_with\_nativewind:
+containerClasses: "absolute inset-0 overflow-hidden bg-\[#a9cbe3]" # subtle backdrop under sky
+layerBaseClasses: "absolute top-0 bottom-0"
+characterClasses: "absolute bottom-0"
+safety\_and\_memory:
+\- Use Image.prefetch for all assets prior to play; begin loop after onLoadAll.
+\- Avoid large (>8k px) textures to reduce memory; prefer @2x/@3x variants per density.
+\- Enable shouldRasterizeIOS / renderToHardwareTextureAndroid for character only if profiling shows benefit.
+configuration\_examples:
+presets:
+calmSunset: { durationMs: 9000, parallax: { sky: 0.15, mid: 0.55, fg: 0.95 }, characterSpeed: 50 }
+briskMorning: { durationMs: 7000, parallax: { sky: 0.25, mid: 0.7, fg: 1.2 }, characterSpeed: 80 }
+testing\_matrix:
+devices: \["iPhone 13", "Pixel 6", "low-end Android 720p"]
+orientations: \["portrait 9:19", "tall 6:19"]
+themes: \["light", "dark"]
