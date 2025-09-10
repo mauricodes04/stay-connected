@@ -1,0 +1,2271 @@
+[
+  {
+    "name": "Algo Dulce",
+    "type": [
+      "study",
+      "shopping"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Artisan bakery offering Japanese cheesecakes and baked goods in a cozy cafe setting, perfect for relaxed conversation or a study date.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Algo+Dulce+McAllen+TX",
+    "price_signal": "Pastries and coffee under $10",
+    "evidence_snippets": [
+      "The cafe offers Japanese cheesecakes and baked goods\u3010864058253327949\u2020L114-L129\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Bonhomia",
+    "type": [
+      "study",
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Stylish cafe serving artisanal coffee and gourmet pastries; great for quiet chats or working over a cup of coffee.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Bonhomia+McAllen+TX",
+    "price_signal": "Artisanal coffee shop with menu $5\u2013$15",
+    "evidence_snippets": [
+      "Bonhomia offers artisanal coffee and gourmet pastries\u3010864058253327949\u2020L114-L129\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "City Cafe and Catering",
+    "type": [
+      "study",
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Local cafe and catering service with homestyle meals and baked goods; comfortable tables for lunch dates and small meetings.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=City+Cafe+and+Catering+McAllen+TX",
+    "price_signal": "Typical entree $10\u2013$15",
+    "evidence_snippets": [
+      "List of McAllen cafes includes City Cafe and Catering\u3010864058253327949\u2020L114-L129\u3011"
+    ],
+    "confidence": 0.6
+  },
+  {
+    "name": "Another Broken Egg Cafe",
+    "type": [
+      "study",
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 3,
+    "description": "Upscale brunch spot serving Southern classics like shrimp & grits, with comfortable seating for brunch dates.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Another+Broken+Egg+McAllen+TX",
+    "price_signal": "Brunch dishes around $12\u2013$20",
+    "evidence_snippets": [
+      "The cafe is described as an upscale brunch spot with dishes like shrimp n\u2019 grits\u3010864058253327949\u2020L114-L129\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Quinta Mazatlan",
+    "type": [
+      "scenery",
+      "adventure"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 2,
+    "description": "Urban sanctuary with trails and bird habitats where visitors can stroll among native plants and see wildlife.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Quinta+Mazatlan+McAllen+TX",
+    "price_signal": "Low-cost nature center (small admission fee)",
+    "evidence_snippets": [
+      "Quinta Mazatlan is an urban sanctuary with bird habitat and walking trails\u301081927184996685\u2020L85-L95\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "McAllen Nature Center",
+    "type": [
+      "scenery",
+      "adventure"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 2,
+    "description": "Native habitat with one\u2011mile trails through woodlands and meadows; a $1 donation is suggested but not required.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=McAllen+Nature+Center+McAllen+TX",
+    "price_signal": "Suggested donation $1 for one-mile trails\u301015202486339567\u2020L206-L214\u3011",
+    "evidence_snippets": [
+      "One-mile trails meander through native habitat at the McAllen Nature Center, with a suggested $1 donation\u301015202486339567\u2020L206-L214\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Fireman's Park",
+    "type": [
+      "scenery",
+      "adventure"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 3,
+    "description": "City park featuring a barbecue pavilion, playground, and sand volleyball courts\u2014ideal for picnic gatherings and casual games.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Fireman%27s+Park+McAllen+TX",
+    "price_signal": "Free public park\u301015202486339567\u2020L161-L170\u3011",
+    "evidence_snippets": [
+      "Fireman\u2019s Park has a barbecue pavilion, playground and sand volleyball courts\u301015202486339567\u2020L161-L170\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Anzalduas Park",
+    "type": [
+      "scenery",
+      "adventure"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 3,
+    "description": "Riverside park on the Rio Grande with picnic and fishing areas; law enforcement presence provides safety for visitors.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Anzalduas+Park+McAllen+TX",
+    "price_signal": "Free public park",
+    "evidence_snippets": [
+      "Anzalduas Park offers picnic and fishing areas near the Rio Grande with law enforcement presence\u301015202486339567\u2020L133-L137\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Bentsen\u2013RGV State Park",
+    "type": [
+      "scenery",
+      "adventure"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 3,
+    "description": "Part of the World Birding Center network, this state park is ideal for bird watchers and hikers with scenic trails.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Bentsen+RGV+State+Park+TX",
+    "price_signal": "State park day-use fee around $5",
+    "evidence_snippets": [
+      "Bentsen\u2013RGV State Park is part of the World Birding Center network of birding sites\u301015202486339567\u2020L150-L154\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Green Jay Disc Golf Facility",
+    "type": [
+      "adventure",
+      "scenery"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 3,
+    "description": "18\u2011hole disc golf course open daily from 6\u00a0a.m. to dusk, with distances ranging from 6,641 to 8,786\u00a0ft.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Green+Jay+Disc+Golf+Facility+McAllen+TX",
+    "price_signal": "Free public disc golf course\u3010532244598501063\u2020L258-L262\u3011",
+    "evidence_snippets": [
+      "The Green Jay Disc Golf Facility has an 18\u2011hole course ranging 6,641\u20138,786\u00a0ft and is open daily from 6\u00a0a.m. to dusk\u3010532244598501063\u2020L258-L262\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "McAllen Dog Park",
+    "type": [
+      "scenery"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 2,
+    "description": "Fenced park with separate areas for large and small dogs and water fountains, perfect for pet-friendly meetups.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=McAllen+Dog+Park+TX",
+    "price_signal": "Free public park\u301015202486339567\u2020L191-L199\u3011",
+    "evidence_snippets": [
+      "The McAllen Dog Park has fenced areas for big and small dogs and water fountains\u301015202486339567\u2020L191-L199\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "National Butterfly Center",
+    "type": [
+      "scenery"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 2,
+    "description": "Conservation facility dedicated to butterflies with gardens and educational exhibits; visitors can stroll paths to observe butterflies.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=National+Butterfly+Center+Mission+TX",
+    "price_signal": "Admission fee about $10 per adult",
+    "evidence_snippets": [
+      "The National Butterfly Center focuses on butterfly conservation and education\u301015202486339567\u2020L215-L230\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Riverside Dreamers River Cruise",
+    "type": [
+      "entertainment",
+      "scenery"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 3,
+    "description": "Guided boat cruise along the Rio Grande offering views of wildlife and scenery; couples and small groups can relax on the water.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Riverside+Dreamers+River+Cruise+McAllen+TX",
+    "price_signal": "Ticketed boat rides (approx $25 per person)",
+    "evidence_snippets": [
+      "The Riverside Dreamers River Cruise offers a river cruise on the Rio Grande with scenic views\u301015202486339567\u2020L253-L267\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Airport Park",
+    "type": [
+      "scenery",
+      "adventure"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 3,
+    "description": "Neighborhood park with picnic areas, a playground, basketball courts, sand volleyball and softball/baseball fields.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Airport+Park+McAllen+TX",
+    "price_signal": "Free public park\u3010893491968758333\u2020L133-L138\u3011",
+    "evidence_snippets": [
+      "Airport Park has a picnic area with playground, basketball and sand volleyball, plus softball/baseball fields\u3010893491968758333\u2020L133-L138\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Archer Park",
+    "type": [
+      "scenery"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 2,
+    "description": "Historic park with a gazebo that hosts community events like the Candlelight Posada; shaded benches for quiet chats.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Archer+Park+McAllen+TX",
+    "price_signal": "Free public park\u3010893491968758333\u2020L151-L155\u3011",
+    "evidence_snippets": [
+      "Archer Park is a historic park with a gazebo and hosts events like the Candlelight Posada\u3010893491968758333\u2020L151-L155\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Balboa Park (McAllen)",
+    "type": [
+      "scenery"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 2,
+    "description": "Neighborhood park featuring picnic tables and playground equipment\u2014a simple gathering spot for families and friends.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Balboa+Park+McAllen+TX",
+    "price_signal": "Free public park\u3010893491968758333\u2020L166-L170\u3011",
+    "evidence_snippets": [
+      "Balboa Park offers picnic tables and playground equipment\u3010893491968758333\u2020L166-L170\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Bill Schupp Park",
+    "type": [
+      "scenery",
+      "adventure"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 3,
+    "description": "Expansive park with swings, slides, merry-go-rounds, a fitness trail, and shaded picnic areas\u2014great for family gatherings.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Bill+Schupp+Park+McAllen+TX",
+    "price_signal": "Free public park\u3010893491968758333\u2020L182-L185\u3011",
+    "evidence_snippets": [
+      "Bill Schupp Park features swings, slides, merry-go-rounds, a fitness trail and picnic areas\u3010893491968758333\u2020L182-L185\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Cascade Park",
+    "type": [
+      "scenery",
+      "adventure"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 3,
+    "description": "Park with a playground, sand volleyball court and adjacent pool; there\u2019s also a softball/baseball field and barbecue pavilion.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Cascade+Park+McAllen+TX",
+    "price_signal": "Free public park\u3010893491968758333\u2020L196-L201\u3011",
+    "evidence_snippets": [
+      "Cascade Park has a playground, sand volleyball court and adjacent pool plus a softball/baseball field and barbecue pavilion\u3010893491968758333\u2020L196-L201\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Daffodil Park",
+    "type": [
+      "scenery"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "small_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 2,
+    "description": "Developing neighborhood park with playground equipment\u2014good for simple outdoor meetups and casual play.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Daffodil+Park+McAllen+TX",
+    "price_signal": "Free public park\u3010893491968758333\u2020L203-L214\u3011",
+    "evidence_snippets": [
+      "Daffodil Park is a developing neighborhood park with playground equipment\u3010893491968758333\u2020L203-L214\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Doc Neuhaus Park",
+    "type": [
+      "scenery"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 2,
+    "description": "Park shaded by mesquite trees with picnic-friendly spaces and playground equipment\u2014peaceful setting for family picnics.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Doc+Neuhaus+Park+McAllen+TX",
+    "price_signal": "Free public park\u3010893491968758333\u2020L226-L231\u3011",
+    "evidence_snippets": [
+      "Doc Neuhaus Park offers mesquite trees, picnic-friendly spaces and playground equipment\u3010893491968758333\u2020L226-L231\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Escandon Skate Park",
+    "type": [
+      "adventure",
+      "scenery"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 3,
+    "description": "Skate park with a dedicated skate area, play center, sand volleyball court, picnic tables and grills; ideal for energetic outings.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Escandon+Skate+Park+McAllen+TX",
+    "price_signal": "Free public park\u3010893491968758333\u2020L241-L245\u3011",
+    "evidence_snippets": [
+      "Escandon Skate Park features a skate area, play center, sand volleyball, picnic tables and grills\u3010893491968758333\u2020L241-L245\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Frontage Park",
+    "type": [
+      "scenery"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 2,
+    "description": "Tiny 1\u2011acre park with a basketball court and playground; a simple spot for short meetups or letting kids play.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Frontage+Park+McAllen+TX",
+    "price_signal": "Free public park\u3010893491968758333\u2020L276-L277\u3011",
+    "evidence_snippets": [
+      "Frontage Park is a small 1\u2011acre park with a basketball court and playground\u3010893491968758333\u2020L276-L277\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Hackberry Park",
+    "type": [
+      "scenery"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 2,
+    "description": "Neighborhood park with a tennis court, playground equipment, picnic tables and grills; good for casual meetups.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Hackberry+Park+McAllen+TX",
+    "price_signal": "Free public park\u3010893491968758333\u2020L279-L292\u3011",
+    "evidence_snippets": [
+      "Hackberry Park includes a tennis court, playground equipment, picnic tables and grills\u3010893491968758333\u2020L279-L292\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Idela Park",
+    "type": [
+      "scenery",
+      "adventure"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 3,
+    "description": "Community park offering sand volleyball and basketball courts, playgrounds, picnic tables, barbecue grills and a pavilion\u2014great for gatherings.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Idela+Park+McAllen+TX",
+    "price_signal": "Free public park\u3010893491968758333\u2020L299-L307\u3011",
+    "evidence_snippets": [
+      "Idela Park offers sand volleyball, basketball, playgrounds, picnic tables, a barbecue grill and a pavilion\u3010893491968758333\u2020L299-L307\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "La Vista Park",
+    "type": [
+      "scenery",
+      "adventure"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 3,
+    "description": "Park with play equipment, jogging trail, picnic tables, barbecue grills and a rental pavilion; ideal for group picnics or workouts.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=La+Vista+Park+McAllen+TX",
+    "price_signal": "Free public park\u3010893491968758333\u2020L310-L323\u3011",
+    "evidence_snippets": [
+      "La Vista Park features play equipment, a jogging trail, picnic tables, barbecue grills and a rental pavilion\u3010893491968758333\u2020L310-L323\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Las Palmas Park",
+    "type": [
+      "scenery",
+      "adventure"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 2,
+    "description": "Park that houses a Senior Citizens Center and includes soccer fields, volleyball courts and a jogging trail; good for group activities.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Las+Palmas+Park+McAllen+TX",
+    "price_signal": "Free public park\u3010893491968758333\u2020L325-L338\u3011",
+    "evidence_snippets": [
+      "Las Palmas Park features a Senior Citizens\u2019 Center, soccer fields, volleyball courts and a jogging trail\u3010893491968758333\u2020L325-L338\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Lions Park",
+    "type": [
+      "scenery"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "small_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 2,
+    "description": "Small neighborhood park used by Scouts and neighbors with a grassy area and trees; quiet spot for a quick meet.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Lions+Park+McAllen+TX",
+    "price_signal": "Free public park\u3010893491968758333\u2020L341-L353\u3011",
+    "evidence_snippets": [
+      "Lions Park is a small park used by Scout groups and the community\u3010893491968758333\u2020L341-L353\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Los Encinos Community Park",
+    "type": [
+      "scenery",
+      "adventure"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 3,
+    "description": "Large community park featuring lighted sports fields, tennis courts, volleyball courts, aquatic facilities and a playground.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Los+Encinos+Community+Park+McAllen+TX",
+    "price_signal": "Free public park\u3010893491968758333\u2020L360-L370\u3011",
+    "evidence_snippets": [
+      "Los Encinos Community Park has lighted sports fields, tennis and volleyball courts, aquatic facilities and a playground\u3010893491968758333\u2020L360-L370\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "McAllen Food Park",
+    "type": [
+      "farmers_market",
+      "entertainment"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 3,
+    "description": "Outdoor food truck park with local vendors, live music and crafts; free admission and open for community events.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=McAllen+Food+Park+TX",
+    "price_signal": "Free admission; pay per food vendor",
+    "evidence_snippets": [
+      "The McAllen Food Park hosts food trucks, music and crafts with free admission\u3010893491968758333\u2020L386-L402\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Municipal Park (McAllen)",
+    "type": [
+      "scenery",
+      "adventure"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 3,
+    "description": "Large park with sports fields, a swimming pool, playground, picnic tables and barbecue grills; ideal for family gatherings and sports.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Municipal+Park+McAllen+TX",
+    "price_signal": "Free public park\u3010893491968758333\u2020L415-L418\u3011",
+    "evidence_snippets": [
+      "Municipal Park features sports fields, a swimming pool, playground and picnic areas\u3010893491968758333\u2020L415-L418\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Old Hidalgo Pumphouse Museum",
+    "type": [
+      "entertainment",
+      "scenery"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Museum and gardens showcasing steam-driven irrigation pumps and local history; includes birding trails in the gardens.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Old+Hidalgo+Pumphouse+Museum+TX",
+    "price_signal": "Museum admission $3\u2013$5",
+    "evidence_snippets": [
+      "The Old Hidalgo Pumphouse museum and gardens focus on steam-driven irrigation pumps and are part of the World Birding Center\u3010893491968758333\u2020L430-L438\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Palm City Park",
+    "type": [
+      "scenery"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 2,
+    "description": "Park shaded by mesquite trees with play equipment and picnic tables; quiet area for relaxing and conversation.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Palm+City+Park+McAllen+TX",
+    "price_signal": "Free public park\u3010893491968758333\u2020L440-L452\u3011",
+    "evidence_snippets": [
+      "Palm City Park has mesquite trees, play equipment and picnic tables\u3010893491968758333\u2020L440-L452\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Palm View Golf Course",
+    "type": [
+      "adventure",
+      "scenery"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 3,
+    "description": "Public 18\u2011hole golf course with a driving range and clubhouse; great for small golf outings or work team bonding.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Palm+View+Golf+Course+McAllen+TX",
+    "price_signal": "Green fees around $25 per person",
+    "evidence_snippets": [
+      "Palm View Golf Course is listed as a public golf course with a phone contact\u3010893491968758333\u2020L454-L461\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Fantasyland Skate Center",
+    "type": [
+      "entertainment"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 3,
+    "description": "Retro roller-skating rink with a maple wood floor for smooth skating; hosts family-friendly sessions and themed nights.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Fantasyland+Skate+Center+McAllen+TX",
+    "price_signal": "Admission around $5\u2013$10 per session\u3010745001278010696\u2020L125-L134\u3011",
+    "evidence_snippets": [
+      "Fantasyland Skate Center has a retro roller rink with affordable prices\u3010745001278010696\u2020L125-L134\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Helium Trampoline Park",
+    "type": [
+      "entertainment",
+      "adventure"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 4,
+    "description": "High-energy trampoline park featuring a ninja course, foam pits and other attractions; buy\u2011one\u2011hour\u2011get\u2011one\u2011free deals encourage longer play.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Helium+Trampoline+Park+McAllen+TX",
+    "price_signal": "Hourly jump sessions with specials\u3010745001278010696\u2020L138-L143\u3011",
+    "evidence_snippets": [
+      "Helium Trampoline Park offers a ninja course, foam pits and buy\u2011one\u2011hour\u2011get\u2011one\u2011free deals\u3010745001278010696\u2020L138-L143\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Xtreme Jump Trampoline Park",
+    "type": [
+      "entertainment",
+      "adventure"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 4,
+    "description": "Indoor trampoline park with interconnected trampolines and fun zones; Tuesday specials offer affordable all\u2011you\u2011can\u2011jump sessions.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Xtreme+Jump+Trampoline+Park+McAllen+TX",
+    "price_signal": "All\u2011you\u2011can\u2011jump deals from $8\u3010745001278010696\u2020L144-L148\u3011",
+    "evidence_snippets": [
+      "Xtreme Jump Trampoline Park offers an all\u2011you\u2011can\u2011jump special for $8 on Tuesdays\u3010745001278010696\u2020L144-L148\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "The Flux Arcade",
+    "type": [
+      "entertainment",
+      "adventure"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "small_group",
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 4,
+    "description": "Retro arcade where a small cover fee grants unlimited play on classic arcade games; great for nostalgic fun.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Flux+Arcade+McAllen+TX",
+    "price_signal": "Unlimited play for about $6\u3010745001278010696\u2020L152-L155\u3011",
+    "evidence_snippets": [
+      "The Flux Arcade lets guests play unlimited classic arcade games for about $6\u3010745001278010696\u2020L152-L155\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Azul Ultra Lounge",
+    "type": [
+      "entertainment"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 4,
+    "description": "Stylish lounge with karaoke nights and a full bar; patrons can sing with friends and enjoy cocktails.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Azul+Ultra+Lounge+McAllen+TX",
+    "price_signal": "Moderate bar pricing",
+    "evidence_snippets": [
+      "Azul Ultra Lounge is described as a stylish bar with karaoke\u3010745001278010696\u2020L159-L163\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "The Dive on 495",
+    "type": [
+      "entertainment"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 4,
+    "description": "Neighborhood bar offering nightly karaoke from 8\u00a0PM; a relaxed spot to sing and socialize.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=The+Dive+on+495+Pharr+TX",
+    "price_signal": "Moderate bar pricing",
+    "evidence_snippets": [
+      "The Dive on 495 is a karaoke bar open every night from 8\u00a0PM\u3010745001278010696\u2020L165-L168\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "The Flying Walrus",
+    "type": [
+      "entertainment"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 3,
+    "description": "Bar and eatery offering karaoke along with food and drinks; sign\u2011ups typically start in the evening for lively sing\u2011alongs.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=The+Flying+Walrus+McAllen+TX",
+    "price_signal": "Moderate food and drink prices",
+    "evidence_snippets": [
+      "The Flying Walrus offers karaoke with food and drinks and sign\u2011ups at 8\u00a0PM\u3010745001278010696\u2020L170-L173\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Kreative Grounds Cafe",
+    "type": [
+      "study",
+      "entertainment"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Mid\u2011century modern coffee shop with local art, outdoor patio and a flex room for art classes; hosts karaoke and creative events.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Kreative+Grounds+Cafe+Edinburg+TX",
+    "price_signal": "Specialty coffee and light meals approx $5\u2013$12",
+    "evidence_snippets": [
+      "Kreative Grounds features a mid\u2011century modern interior, local art, outdoor patio, and a flex room for art classes\u30107406838830656\u2020L88-L102\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Remenace Vintage",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Vintage shop specializing in curated clothing and accessories; perfect for thrift treasure hunts with a friend.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Remenace+Vintage+McAllen+TX",
+    "price_signal": "Affordable vintage clothing shop",
+    "evidence_snippets": [
+      "Remenace Vintage is listed as a vintage store with unique finds in the McAllen area\u3010745001278010696\u2020L180-L199\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Unique Thrift",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Thrift store offering clothing and accessories along with a cafe serving matcha; features fill\u2011a\u2011bag specials.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Unique+Thrift+McAllen+TX",
+    "price_signal": "Low-cost thrift store with specials\u3010745001278010696\u2020L180-L199\u3011",
+    "evidence_snippets": [
+      "Unique Thrift offers a matcha drink bar and a \u2018fill\u2011a\u2011bag\u2019 special\u3010745001278010696\u2020L180-L199\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Treasure Bins Thrift Store",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Thrift store where shoppers sift through bins for discounted goods; a fun budget hunt with friends.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Treasure+Bins+Thrift+Store+McAllen+TX",
+    "price_signal": "Low-cost thrift store\u3010745001278010696\u2020L180-L199\u3011",
+    "evidence_snippets": [
+      "Treasure Bins Thrift Store is mentioned among vintage and thrift options\u3010745001278010696\u2020L180-L199\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "J\u2019Aime Les Livres",
+    "type": [
+      "study",
+      "shopping"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 1,
+    "description": "Independent bookstore housed in a 100\u2011year\u2011old home offering new and used books, gifts and complimentary tea or coffee in cozy rooms.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=J%27Aime+Les+Livres+McAllen+TX",
+    "price_signal": "Browsing is free; books and gifts vary in price",
+    "evidence_snippets": [
+      "The bookstore sells new and used books, gifts and offers complimentary tea and coffee\u3010242462710892739\u2020L104-L132\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "McAllen Heritage Center",
+    "type": [
+      "entertainment",
+      "study"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Local history museum located in the former post office building featuring memorabilia, photos and artwork; admission is free.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=McAllen+Heritage+Center+TX",
+    "price_signal": "Free admission museum\u3010323289746776936\u2020L85-L90\u3011",
+    "evidence_snippets": [
+      "The McAllen Heritage Center displays memorabilia and photos about the city\u2019s history and offers free admission\u3010323289746776936\u2020L85-L90\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "International Museum of Arts & Science",
+    "type": [
+      "entertainment",
+      "study"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 3,
+    "description": "Smithsonian-affiliated museum with 50,000 sq.\u00a0ft. of exhibits combining hands-on science and art collections; admission fees apply.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=International+Museum+of+Arts+and+Science+McAllen+TX",
+    "price_signal": "Admission: adults $7, seniors/students $5, children $4\u301044430420913828\u2020L86-L97\u3011\u301044430420913828\u2020L112-L151\u3011",
+    "evidence_snippets": [
+      "IMAS is a Smithsonian Affiliate with 50,000\u00a0sq.\u00a0ft. of exhibits and admission fees for adults and children\u301044430420913828\u2020L86-L97\u3011\u301044430420913828\u2020L112-L151\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Main Event Pharr",
+    "type": [
+      "entertainment",
+      "adventure"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 4,
+    "description": "Family entertainment center offering multi\u2011level laser tag, arcade games, bowling lanes and a full\u2011service restaurant and bar.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Main+Event+Pharr+TX",
+    "price_signal": "Play packages and food combos from $20 per person\u3010846928117602117\u2020L225-L235\u3011",
+    "evidence_snippets": [
+      "Main Event Pharr features multi\u2011level laser tag, an arcade with over 100 games and professional bowling lanes\u3010846928117602117\u2020L225-L235\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Dave & Buster's McAllen",
+    "type": [
+      "entertainment",
+      "adventure"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 4,
+    "description": "High\u2011tech entertainment venue featuring immersive games, darts, social shuffleboard and a sports bar with big screens.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Dave+&+Buster%27s+McAllen+TX",
+    "price_signal": "Game & entr\u00e9e combos start around $19.99\u3010336975683211579\u2020L169-L187\u3011\u3010336975683211579\u2020L189-L199\u3011",
+    "evidence_snippets": [
+      "Dave & Buster\u2019s offers high\u2011tech darts, Social Shuffle and combos that include an entr\u00e9e and game card starting at $19.99\u3010336975683211579\u2020L169-L187\u3011\u3010336975683211579\u2020L189-L199\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Tres Lagos Farmers Market",
+    "type": [
+      "farmers_market",
+      "scenery"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 3,
+    "description": "Monthly farmers market with more than 40 vendors selling fresh produce, local products and food; live yoga and lakeside seating create a relaxed vibe.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Tres+Lagos+Farmers+Market+McAllen+TX",
+    "price_signal": "Free admission; vendor goods priced individually\u3010235050507338396\u2020L24-L44\u3011",
+    "evidence_snippets": [
+      "The farmers market at Tres\u00a0Lagos features over 40 vendors, fresh produce, food trucks and family\u2011friendly activities\u3010235050507338396\u2020L24-L44\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Veterans War Memorial of Texas",
+    "type": [
+      "scenery",
+      "study"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 1,
+    "description": "Outdoor memorial park dedicated to 1.4\u00a0million American service members who sacrificed their lives; visitors walk among monuments and learn about history.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Veterans+War+Memorial+of+Texas+McAllen+TX",
+    "price_signal": "Free memorial park\u3010390046309654114\u2020screenshot\u3011",
+    "evidence_snippets": [
+      "The Veterans War Memorial provides an educational and cultural space honoring fallen U.S. service members\u3010390046309654114\u2020screenshot\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Hands In Art Studio",
+    "type": [
+      "entertainment",
+      "adventure"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 3,
+    "description": "Sip\u2011and\u2011paint studio offering guided painting, pottery and crafting workshops; guests can bring their own drinks and snacks and host parties.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Hands+In+Art+Studio+McAllen+TX",
+    "price_signal": "Workshop fees around $25\u2013$40 per person",
+    "evidence_snippets": [
+      "Artists guide participants through creating art; guests can bring drinks and snacks, and the studio hosts DIY parties\u3010988819462266141\u2020screenshot\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Semilla Coffee Lab",
+    "type": [
+      "study",
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Specialty coffee shop brewing high\u2011quality beans from Ethiopia, Colombia, Rwanda and Peru with a focus on sustainability and meticulous brewing.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Semilla+Coffee+Lab+McAllen+TX",
+    "price_signal": "Specialty coffee $5\u2013$10 per drink",
+    "evidence_snippets": [
+      "The shop offers high\u2011quality beans from Ethiopia, Colombia, Rwanda and Peru, focusing on exceptional coffee\u3010172341533099274\u2020L47-L53\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "MoonBeans Coffee",
+    "type": [
+      "study",
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "mixed",
+    "inferred_excitement": 2,
+    "description": "Cozy community coffee shop with indoor and outdoor seating, lots of plants and art; hosts art nights and provides a welcoming space for work or casual chats.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=MoonBeans+Coffee+McAllen+TX",
+    "price_signal": "Handcrafted drinks around $5\u2013$8\u3010568705378084627\u2020L54-L64\u3011",
+    "evidence_snippets": [
+      "MoonBeans is described as a cozy community hub with handcrafted drinks, art nights and indoor and outdoor seating\u3010568705378084627\u2020L54-L64\u3011\u3010568705378084627\u2020L86-L97\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Dulcerias Pinkis",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Bulk candy store offering affordable Mexican sweets, savory snacks and spicy treats; ideal for grabbing treats before a movie or meetup.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Dulcerias+Pinkis+McAllen+TX",
+    "price_signal": "Inexpensive bulk candy\u3010366100338761230\u2020L108-L119\u3011",
+    "evidence_snippets": [
+      "Dulcerias Pinkis offers affordable Mexican candy in bulk with sweet, savory and spicy selections\u3010366100338761230\u2020L108-L119\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Pica Pica Candy Bar",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Colorful candy store featuring a vast selection of candies, gummies and sweet treats for all ages.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Pica+Pica+Candy+Bar+McAllen+TX",
+    "price_signal": "Affordable candy shop\u3010366100338761230\u2020L129-L131\u3011",
+    "evidence_snippets": [
+      "Pica Pica Candy Bar has a vast selection of colorful candies and sweet treats\u3010366100338761230\u2020L129-L131\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Rocky Mountain Chocolate Factory",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Chocolate shop selling truffles, caramel apples and chocolate\u2011covered fruit; ideal for a sweet date or gift shopping.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Rocky+Mountain+Chocolate+Factory+McAllen+TX",
+    "price_signal": "Boxed chocolates and treats $10\u2013$25\u3010366100338761230\u2020L136-L145\u3011",
+    "evidence_snippets": [
+      "Rocky Mountain Chocolate Factory sells chocolates such as truffles and chocolate\u2011covered fruit\u3010366100338761230\u2020L136-L145\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Gotta Lotta Sweets",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Shop specializing in freeze\u2011dried candies packaged for easy snacking; an inexpensive stop for unique sweets.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Gotta+Lotta+Sweets+McAllen+TX",
+    "price_signal": "Affordable candy shop\u3010366100338761230\u2020L149-L155\u3011",
+    "evidence_snippets": [
+      "Gotta Lotta Sweets offers freeze\u2011dried candies conveniently packaged for sweet cravings\u3010366100338761230\u2020L149-L155\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Snack Franks",
+    "type": [
+      "shopping",
+      "entertainment"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "mixed",
+    "inferred_excitement": 3,
+    "description": "Snack stand serving corn in a cup, chicharr\u00f3n preparado, mangonadas, nachos and other authentic Mexican treats\u2014great for casual snacks while strolling.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Snack+Franks+McAllen+TX",
+    "price_signal": "Low-cost Mexican snacks\u3010366100338761230\u2020L159-L165\u3011",
+    "evidence_snippets": [
+      "Snack Franks serves corn in a cup, chicharr\u00f3n preparado, mangonadas, nachos and more\u3010366100338761230\u2020L159-L165\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Xquinkles Snack Land",
+    "type": [
+      "shopping",
+      "entertainment"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 3,
+    "description": "Colorful snack shop with frozen treats, drinks and Mexican street snacks like Gansito Polar and tostilocos; lively atmosphere for quick meetups.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Xquinkles+Snack+Land+McAllen+TX",
+    "price_signal": "Inexpensive snacks\u3010366100338761230\u2020L167-L176\u3011",
+    "evidence_snippets": [
+      "Xquinkles Snack Land features frozen treats, drinks and snacks like Gansito Polar and tostilocos\u3010366100338761230\u2020L167-L176\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Los Che Snacks",
+    "type": [
+      "shopping",
+      "entertainment"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "mixed",
+    "inferred_excitement": 3,
+    "description": "Snack shop selling sweet and savory snacks catering to various cravings; perfect for grabbing a treat before walking downtown.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Los+Che+Snacks+McAllen+TX",
+    "price_signal": "Low-cost snacks\u3010366100338761230\u2020L188-L190\u3011",
+    "evidence_snippets": [
+      "Los Che Snacks sells sweet and savory snacks for every craving\u3010366100338761230\u2020L188-L190\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Lerita\u2019s Snacks",
+    "type": [
+      "shopping",
+      "entertainment"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "mixed",
+    "inferred_excitement": 3,
+    "description": "Family-owned snack stand serving ice cream, fruit snacks, snow cones and drinks; ideal for cooling off on hot days.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Lerita%27s+Snacks+McAllen+TX",
+    "price_signal": "Inexpensive treats\u3010366100338761230\u2020L194-L202\u3011",
+    "evidence_snippets": [
+      "Lerita\u2019s Snacks offers ice cream, fruit snacks, snow cones and drinks\u3010366100338761230\u2020L194-L202\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Lark Community Center",
+    "type": [
+      "entertainment",
+      "home-based"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "large_group",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Community center offering cultural programs, after-school programs and rentals for events; features classrooms and a gym.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Lark+Community+Center+McAllen+TX",
+    "price_signal": "Low program fees and space rentals\u3010323611784021053\u2020L91-L108\u3011\u3010323611784021053\u2020L140-L153\u3011",
+    "evidence_snippets": [
+      "The Lark Community Center offers indoor/outdoor cultural and leisure programs and rents space for social events\u3010323611784021053\u2020L91-L108\u3011\u3010323611784021053\u2020L140-L153\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Las Palmas Community Center",
+    "type": [
+      "entertainment",
+      "home-based"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "large_group",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Community center hosting youth programs like volleyball, ballet and art plus senior programs and camps; affordable activities for families.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Las+Palmas+Community+Center+McAllen+TX",
+    "price_signal": "Low program fees (e.g., $45 camp fee)\u3010268931725155886\u2020L88-L130\u3011\u3010268931725155886\u2020L164-L167\u3011",
+    "evidence_snippets": [
+      "Las Palmas Community Center offers youth programs (volleyball, ballet, tumbling, art) and senior programs and charges modest fees for camps\u3010268931725155886\u2020L88-L130\u3011\u3010268931725155886\u2020L164-L167\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Palm View Community Center",
+    "type": [
+      "entertainment",
+      "home-based"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "large_group",
+      "small_group"
+    ],
+    "indoor_outdoor": "mixed",
+    "inferred_excitement": 2,
+    "description": "Community center with a covered pavilion, walking trail, picnic tables, splash pad and open green space; offers youth and senior programs and rents space for events.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Palm+View+Community+Center+McAllen+TX",
+    "price_signal": "Low-cost programs and room rentals\u3010981653009459517\u2020L107-L115\u3011\u3010981653009459517\u2020L151-L161\u3011",
+    "evidence_snippets": [
+      "Palm View Community Center provides indoor/outdoor programs, splash pad and rentals, plus youth and senior classes\u3010981653009459517\u2020L107-L115\u3011\u3010981653009459517\u2020L151-L161\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Trapped RGV Escape Rooms",
+    "type": [
+      "entertainment",
+      "adventure"
+    ],
+    "budget_range": "splurge",
+    "suitable_for": [
+      "small_group",
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 4,
+    "description": "Live 60\u2011minute escape games where participants find clues and solve puzzles to complete themed missions; features rooms like Project Omega and Mission Moscow.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Trapped+RGV+Escape+Rooms+Pharr+TX",
+    "price_signal": "Escape room price $19.95\u2013$31.95 per person\u301097923707359207\u2020L51-L59\u3011\u3010327860944750202\u2020L31-L95\u3011",
+    "evidence_snippets": [
+      "The facility offers live 60\u2011minute escape adventures with various themed rooms\u301097923707359207\u2020L51-L59\u3011\u301097923707359207\u2020L65-L76\u3011",
+      "Pricing ranges from $19.95 to $31.95 per person depending on day and room\u3010327860944750202\u2020L31-L95\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Cinemark Movies 6 McAllen",
+    "type": [
+      "entertainment"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 3,
+    "description": "Movie theater offering first\u2011run films and special discount days like $5 Tuesdays; comfortable seating for date nights or group outings.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Cinemark+Movies+6+McAllen+TX",
+    "price_signal": "Discounted tickets on Tuesdays\u301098402286364584\u2020L79-L97\u3011",
+    "evidence_snippets": [
+      "Cinemark offers discounted movie tickets for all moviegoers every Tuesday\u301098402286364584\u2020L79-L97\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "McAllen Public Library",
+    "type": [
+      "study",
+      "home-based"
+    ],
+    "budget_range": "free",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 1,
+    "description": "Award\u2011winning public library system offering free internet, books, meeting rooms and classes for all ages; ideal for studying or quiet conversation.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=McAllen+Public+Library+TX",
+    "price_signal": "Free use of library resources\u3010188575877892687\u2020L115-L124\u3011",
+    "evidence_snippets": [
+      "The McAllen Public Library offers events and classes for all ages, free internet and spaces for individuals and groups\u3010188575877892687\u2020L115-L124\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Rise & Shine Caf\u00e9",
+    "type": [
+      "study",
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Caf\u00e9 located in the main library lobby serving freshly made coffee, espresso drinks, teas, sandwiches and light meals; offers catering for events.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Rise+and+Shine+Cafe+McAllen+TX",
+    "price_signal": "Coffee and sandwiches around $5\u2013$12\u301059001327187431\u2020L102-L127\u3011",
+    "evidence_snippets": [
+      "Rise &\u00a0Shine Caf\u00e9, located inside the library, offers coffee, espresso drinks, teas, sandwiches and light meals\u301059001327187431\u2020L102-L127\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Terra Caf\u00e9 Company",
+    "type": [
+      "study",
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "mixed",
+    "inferred_excitement": 2,
+    "description": "Modern, cozy cafe serving handcrafted coffee, espresso drinks, teas and specialty beverages; friendly staff and good vibes.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Terra+Cafe+Company+McAllen+TX",
+    "price_signal": "Specialty drinks around $4\u2013$8\u3010649312684655172\u2020L128-L132\u3011",
+    "evidence_snippets": [
+      "Terra Cafe is a modern, cozy cafe serving handcrafted coffee, espresso and specialty drinks with friendly service\u3010649312684655172\u2020L128-L132\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Town Lake at Firemen\u2019s Park",
+    "type": [
+      "adventure",
+      "scenery"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 3,
+    "description": "3\u2011acre lake with a paved trail, playground and picnic areas; visitors can rent pedal boats, kayaks or paddleboards and fishing poles.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Town+Lake+at+Firemen%27s+Park+McAllen+TX",
+    "price_signal": "Pedal boats and kayaks from $15; fishing pole rentals $10\u3010465114904860878\u2020L115-L121\u3011",
+    "evidence_snippets": [
+      "Town Lake at Firemen\u2019s Park features a 3\u2011acre lake with a paved trail, playground and picnic areas; boat rentals start at $15 and fishing poles cost $10\u3010465114904860878\u2020L115-L121\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Jurassic Karts",
+    "type": [
+      "entertainment",
+      "adventure"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 5,
+    "description": "Indoor drift karting experience where participants ride karts around an exciting track; toddler karts available for younger racers.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Jurassic+Karts+McAllen+TX",
+    "price_signal": "Kart rides priced per session\u3010696788863595148\u2020L20-L23\u3011",
+    "evidence_snippets": [
+      "Jurassic Karts offers drift karting with an indoor track and toddler karts\u3010696788863595148\u2020L20-L23\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Kids Wonderland",
+    "type": [
+      "entertainment",
+      "adventure"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 4,
+    "description": "Indoor play center with interactive games, slides, climbing structures and imaginative play zones; parents can relax while children explore.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Kids+Wonderland+McAllen+TX",
+    "price_signal": "Entry fees around $10\u2013$15 per child\u3010924544322688652\u2020L34-L47\u3011",
+    "evidence_snippets": [
+      "Kids Wonderland is an indoor play center with interactive games, slides, climbing structures and imaginative play zones\u3010924544322688652\u2020L34-L47\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Sky Park Trampoline Park",
+    "type": [
+      "entertainment",
+      "adventure"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 4,
+    "description": "High\u2011energy trampoline park with interconnected trampolines, foam pits and obstacle courses; great for group outings and parties.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Sky+Park+Trampoline+Park+McAllen+TX",
+    "price_signal": "Jump sessions around $15 per hour\u3010458884054844665\u2020L134-L138\u3011",
+    "evidence_snippets": [
+      "Sky Park Trampoline Park features interconnected trampolines, foam pits and obstacle courses\u3010458884054844665\u2020L134-L138\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Killers Golf",
+    "type": [
+      "entertainment",
+      "adventure"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 3,
+    "description": "Indoor golf facility using simulators and putting greens; guests can play virtual courses and practice their swing.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Killers+Golf+McAllen+TX",
+    "price_signal": "Simulator sessions around $20 per hour\u3010458884054844665\u2020L149-L153\u3011",
+    "evidence_snippets": [
+      "Killers Golf offers an innovative indoor golf facility with simulators and putting greens\u3010458884054844665\u2020L149-L153\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Flamingo Bowl",
+    "type": [
+      "entertainment"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 4,
+    "description": "Retro-inspired bowling alley with classic lanes, an arcade and neon lights; features a full-service bar for adult gatherings.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Flamingo+Bowl+McAllen+TX",
+    "price_signal": "Bowling games and shoe rental around $10\u2013$15\u3010458884054844665\u2020L162-L166\u3011",
+    "evidence_snippets": [
+      "Flamingo Bowl is a retro-inspired bowling alley with classic lanes, an arcade, neon lights and a full-service bar\u3010458884054844665\u2020L162-L166\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Kickin' Axes",
+    "type": [
+      "entertainment",
+      "adventure"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 4,
+    "description": "Indoor axe\u2011throwing venue that prioritizes safety while providing a fun, competitive experience; ideal for groups looking to try something new.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Kickin%27+Axe+McAllen+TX",
+    "price_signal": "Axe\u2011throwing sessions around $20\u2013$25\u3010458884054844665\u2020L170-L180\u3011",
+    "evidence_snippets": [
+      "Kickin\u2019 Axes provides an indoor axe\u2011throwing entertainment venue focused on safety and friendly competition\u3010458884054844665\u2020L170-L180\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "National Laser Tag and Games",
+    "type": [
+      "entertainment",
+      "adventure"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 5,
+    "description": "Entertainment venue offering laser tag, virtual reality games, NERF wars, mini golf and party packages; also serves pizza and baked goods.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=National+Laser+Tag+and+Games+McAllen+TX",
+    "price_signal": "Pricing varies by activity, typical entry $15\u2013$25\u3010804895519651194\u2020L97-L103\u3011",
+    "evidence_snippets": [
+      "National Laser Tag and Games features VR games, laser tag, NERF war games, mini golf and party packages with food like pizza\u3010804895519651194\u2020L97-L103\u3011"
+    ],
+    "confidence": 0.9
+  },
+  {
+    "name": "Valley\u2019s Drive-In Theater",
+    "type": [
+      "entertainment",
+      "scenery"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "outdoor",
+    "inferred_excitement": 3,
+    "description": "Old-fashioned drive\u2011in theater where guests watch movies under the stars from their cars; some nights offer discounted vehicle pricing.",
+    "weather_suitability": "good_weather_only",
+    "google_maps_url": "https://maps.google.com/?q=Valley%27s+Drive-In+Theater+McAllen+TX",
+    "price_signal": "$20 per vehicle, $10 on Tuesdays\u3010745001278010696\u2020L118-L121\u3011\u3010458884054844665\u2020L199-L208\u3011",
+    "evidence_snippets": [
+      "The Valley Drive-In offers $20 per vehicle admission and $10 on Tuesdays for watching movies under the stars\u3010745001278010696\u2020L118-L121\u3011\u3010458884054844665\u2020L199-L208\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Best Buy (Trenton Crossing)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Electronics retailer selling computers, smartphones, appliances and accessories; convenient meeting spot to shop for gadgets together.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Best+Buy+Trenton+Crossing+McAllen+TX",
+    "price_signal": "Moderate pricing on electronics\u3010588778137593592\u2020L85-L175\u3011",
+    "evidence_snippets": [
+      "Trenton Crossing lists Best Buy among its stores offering tech gadgets and electronics\u3010588778137593592\u2020L85-L175\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Kohl\u2019s (Trenton Crossing)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Department store carrying clothing, shoes and accessories for the family; shoppers can browse deals together.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Kohl%27s+Trenton+Crossing+McAllen+TX",
+    "price_signal": "Moderate family clothing store\u3010588778137593592\u2020L85-L175\u3011",
+    "evidence_snippets": [
+      "Kohl\u2019s is listed among the stores at Trenton Crossing offering family clothing and accessories\u3010588778137593592\u2020L85-L175\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Shoe Carnival (Trenton Crossing)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Footwear retailer selling a variety of shoes at discounted prices; convenient place to shop for sneakers or boots.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Shoe+Carnival+Trenton+Crossing+McAllen+TX",
+    "price_signal": "Moderately priced shoes\u3010588778137593592\u2020L85-L175\u3011",
+    "evidence_snippets": [
+      "Shoe Carnival at Trenton Crossing offers a wide selection of footwear\u3010588778137593592\u2020L85-L175\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Old Navy (Trenton Crossing)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Casual clothing store known for affordable basics and seasonal fashion; good for a budget-friendly shopping meetup.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Old+Navy+Trenton+Crossing+McAllen+TX",
+    "price_signal": "Affordable clothing\u3010588778137593592\u2020L85-L175\u3011",
+    "evidence_snippets": [
+      "Old Navy is one of the stores at Trenton Crossing, offering clothing for the family\u3010588778137593592\u2020L85-L175\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "PetSmart (Trenton Crossing)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Pet supply store with products for dogs, cats and small animals as well as grooming services; a practical meetup for pet owners.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=PetSmart+Trenton+Crossing+McAllen+TX",
+    "price_signal": "Moderately priced pet supplies\u3010588778137593592\u2020L85-L175\u3011",
+    "evidence_snippets": [
+      "PetSmart is a pet supplies and grooming store listed at Trenton Crossing\u3010588778137593592\u2020L85-L175\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Hobby Lobby (Trenton Crossing)",
+    "type": [
+      "shopping",
+      "study"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Arts and crafts retailer offering supplies, home d\u00e9cor and DIY kits; a creative place for couples or friends to browse materials.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Hobby+Lobby+Trenton+Crossing+McAllen+TX",
+    "price_signal": "Moderate pricing on craft supplies\u3010588778137593592\u2020L85-L175\u3011",
+    "evidence_snippets": [
+      "Hobby Lobby is listed among the stores at Trenton Crossing, providing arts and crafts supplies\u3010588778137593592\u2020L85-L175\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Dollar Tree (Trenton Crossing)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Discount store where most items cost around a dollar; quick stop for snacks, party supplies and household goods.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Dollar+Tree+Trenton+Crossing+McAllen+TX",
+    "price_signal": "Most items around $1\u3010588778137593592\u2020L85-L175\u3011",
+    "evidence_snippets": [
+      "Dollar Tree at Trenton Crossing sells snacks, housewares and seasonal items at low prices\u3010588778137593592\u2020L85-L175\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Ross Dress for Less (Trenton Crossing)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Discount clothing and home goods store offering brand\u2011name apparel and housewares at reduced prices.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Ross+Dress+for+Less+Trenton+Crossing+McAllen+TX",
+    "price_signal": "Low-priced apparel and home goods\u3010588778137593592\u2020L85-L175\u3011",
+    "evidence_snippets": [
+      "Ross is listed among the stores at Trenton Crossing with affordable clothing options\u3010588778137593592\u2020L85-L175\u3011"
+    ],
+    "confidence": 0.8
+  },
+  {
+    "name": "Rack Room Shoes (Trenton Crossing)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Footwear retailer offering shoes for men, women and kids including athletic shoes and casual styles.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Rack+Room+Shoes+Trenton+Crossing+McAllen+TX",
+    "price_signal": "Moderately priced shoes\u3010588778137593592\u2020L85-L175\u3011",
+    "evidence_snippets": [
+      "Rack Room Shoes is part of the Trenton Crossing shopping center, offering footwear for the family\u3010588778137593592\u2020L85-L175\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Foxy Nails (Trenton Crossing)",
+    "type": [
+      "shopping",
+      "entertainment"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Nail salon providing manicures and pedicures; a relaxed self\u2011care outing for friends or couples.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Foxy+Nails+Trenton+Crossing+McAllen+TX",
+    "price_signal": "Moderate nail salon prices\u3010588778137593592\u2020L85-L175\u3011",
+    "evidence_snippets": [
+      "Foxy Nails is listed at Trenton Crossing among retail and service businesses\u3010588778137593592\u2020L85-L175\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Claire\u2019s (Trenton Crossing)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Accessories and jewelry boutique popular with teens and young adults; sells earrings, hair accessories and playful trinkets.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Claire%27s+Trenton+Crossing+McAllen+TX",
+    "price_signal": "Affordable accessories\u3010588778137593592\u2020L85-L175\u3011",
+    "evidence_snippets": [
+      "Claire\u2019s is included in the Trenton Crossing roster, offering accessories for teens\u3010588778137593592\u2020L85-L175\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "America\u2019s Best Contacts & Eyeglasses (Trenton Crossing)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Optical store providing eye exams, eyeglasses and contact lenses at value prices; convenient for eye care appointments together.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=America%27s+Best+Contacts+%26+Eyeglasses+Trenton+Crossing+McAllen+TX",
+    "price_signal": "Moderate pricing on eye care and glasses\u3010588778137593592\u2020L85-L175\u3011",
+    "evidence_snippets": [
+      "America\u2019s Best Contacts & Eyeglasses is among the stores at Trenton Crossing, offering eye care and eyewear\u3010588778137593592\u2020L85-L175\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Hallmark (La Plaza Mall)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 1,
+    "description": "Card and gift shop selling greeting cards, ornaments and keepsakes; quiet place to pick up a thoughtful gift.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Hallmark+La+Plaza+Mall+McAllen+TX",
+    "price_signal": "Affordable gifts and cards\u3010391099065033231\u2020L91-L97\u3011",
+    "evidence_snippets": [
+      "La Plaza Mall\u2019s new wing includes Hallmark among the stores\u3010391099065033231\u2020L91-L97\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Dallas Cowboys Shop (La Plaza Mall)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Official team store selling Dallas Cowboys apparel and memorabilia; sports fans can browse jerseys and accessories together.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Dallas+Cowboys+Shop+La+Plaza+Mall+McAllen+TX",
+    "price_signal": "Moderate sports merchandise prices\u3010391099065033231\u2020L91-L97\u3011",
+    "evidence_snippets": [
+      "The new wing at La Plaza Mall added stores like the Dallas Cowboys Shop\u3010391099065033231\u2020L91-L97\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Kendra Scott (La Plaza Mall)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "splurge",
+    "suitable_for": [
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Designer jewelry boutique known for statement earrings and elegant accessories; a chic shopping destination for special occasions.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Kendra+Scott+La+Plaza+Mall+McAllen+TX",
+    "price_signal": "Higher-end jewelry pricing\u3010391099065033231\u2020L91-L97\u3011",
+    "evidence_snippets": [
+      "Kendra Scott is among the stores added in La Plaza Mall\u2019s expansion\u3010391099065033231\u2020L91-L97\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Forever 21 (La Plaza Mall)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Large fashion retailer selling trendy clothing and accessories at affordable prices; fun for group shopping trips.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Forever+21+La+Plaza+Mall+McAllen+TX",
+    "price_signal": "Affordable fashion store\u3010391099065033231\u2020L91-L97\u3011",
+    "evidence_snippets": [
+      "Forever\u00a021 is one of the stores featured in La Plaza Mall\u2019s new wing\u3010391099065033231\u2020L91-L97\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Carlo\u2019s Bakery (La Plaza Mall)",
+    "type": [
+      "shopping",
+      "study"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Bakery run by the famous Cake Boss brand offering pastries, cakes and cookies; sweet treat stop while shopping.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Carlos+Bakery+La+Plaza+Mall+McAllen+TX",
+    "price_signal": "Bakery treats priced $5\u2013$10\u3010391099065033231\u2020L91-L97\u3011",
+    "evidence_snippets": [
+      "La Plaza Mall\u2019s expansion includes Carlo\u2019s Bakery among new vendors\u3010391099065033231\u2020L91-L97\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Casa Madre (La Plaza Mall)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Home d\u00e9cor store offering stylish furniture and decorative items; browse the latest trends for your living space.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Casa+Madre+La+Plaza+Mall+McAllen+TX",
+    "price_signal": "Moderate home decor prices\u3010391099065033231\u2020L91-L97\u3011",
+    "evidence_snippets": [
+      "Casa Madre is one of the shops added in the mall\u2019s new wing\u3010391099065033231\u2020L91-L97\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Yard House (La Plaza Mall)",
+    "type": [
+      "entertainment",
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "small_group",
+      "large_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 3,
+    "description": "Upscale casual restaurant and bar known for its extensive beer selection and American dishes; good meeting place after shopping.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Yard+House+La+Plaza+Mall+McAllen+TX",
+    "price_signal": "Entrees and drinks around $15\u2013$25\u3010391099065033231\u2020L91-L97\u3011",
+    "evidence_snippets": [
+      "Yard House is among the new stores and eateries in the mall\u2019s new wing\u3010391099065033231\u2020L91-L97\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "H&M (La Plaza Mall)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "low",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Fashion retailer offering affordable clothing and accessories for men, women and kids; popular stop for casual shopping.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=H&M+La+Plaza+Mall+McAllen+TX",
+    "price_signal": "Low-priced fashion\u3010391099065033231\u2020L104-L118\u3011",
+    "evidence_snippets": [
+      "H&M is listed among the favorite stores in La Plaza Mall\u3010391099065033231\u2020L104-L118\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Steve Madden (La Plaza Mall)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Fashion footwear and accessories boutique featuring trendy shoes and handbags; stylish spot for shoe shopping.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Steve+Madden+La+Plaza+Mall+McAllen+TX",
+    "price_signal": "Moderate pricing on fashion footwear\u3010391099065033231\u2020L104-L118\u3011",
+    "evidence_snippets": [
+      "Steve Madden is one of the picks at La Plaza Mall\u3010391099065033231\u2020L104-L118\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "ZARA (La Plaza Mall)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "International fashion retailer selling stylish clothing and accessories for men and women; ideal for updating wardrobes together.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=ZARA+La+Plaza+Mall+McAllen+TX",
+    "price_signal": "Moderate pricing on fashion\u3010391099065033231\u2020L104-L118\u3011",
+    "evidence_snippets": [
+      "ZARA is highlighted as one of the go\u2011to fashion stores in La Plaza Mall\u3010391099065033231\u2020L104-L118\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Swatch (La Plaza Mall)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Swiss watch boutique offering colorful and fun timepieces; unique place to browse for accessories.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Swatch+La+Plaza+Mall+McAllen+TX",
+    "price_signal": "Moderate pricing on watches\u3010391099065033231\u2020L104-L118\u3011",
+    "evidence_snippets": [
+      "Swatch appears on the list of La Plaza Mall\u2019s store picks\u3010391099065033231\u2020L104-L118\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "ALDO Shoes (La Plaza Mall)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Footwear and accessories retailer offering stylish shoes and bags at mid\u2011range prices; fun for a quick shopping stop.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=ALDO+Shoes+La+Plaza+Mall+McAllen+TX",
+    "price_signal": "Moderately priced shoes\u3010391099065033231\u2020L104-L118\u3011",
+    "evidence_snippets": [
+      "ALDO Shoes is among the mall\u2019s store picks\u3010391099065033231\u2020L104-L118\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Swarovski (La Plaza Mall)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "splurge",
+    "suitable_for": [
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Luxury crystal jewelry boutique offering sparkling necklaces, earrings and figurines; upscale destination for special gifts.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Swarovski+La+Plaza+Mall+McAllen+TX",
+    "price_signal": "Higher-end jewelry pricing\u3010391099065033231\u2020L104-L118\u3011",
+    "evidence_snippets": [
+      "Swarovski appears among the highlighted stores at La Plaza Mall\u3010391099065033231\u2020L104-L118\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Deutsch & Deutsch (La Plaza Mall)",
+    "type": [
+      "shopping"
+    ],
+    "budget_range": "splurge",
+    "suitable_for": [
+      "two"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Upscale jeweler offering fine watches and luxury jewelry; perfect for browsing high-end pieces or purchasing special gifts.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Deutsch+%26+Deutsch+La+Plaza+Mall+McAllen+TX",
+    "price_signal": "Premium jewelry store\u3010391099065033231\u2020L104-L118\u3011",
+    "evidence_snippets": [
+      "Deutsch & Deutsch is listed among La Plaza Mall\u2019s high-end stores\u3010391099065033231\u2020L104-L118\u3011"
+    ],
+    "confidence": 0.7
+  },
+  {
+    "name": "Sun & Ski Sports (La Plaza Mall)",
+    "type": [
+      "shopping",
+      "adventure"
+    ],
+    "budget_range": "moderate",
+    "suitable_for": [
+      "two",
+      "small_group"
+    ],
+    "indoor_outdoor": "indoor",
+    "inferred_excitement": 2,
+    "description": "Outdoor recreation retailer selling ski, snowboard, hiking and cycling gear; browse gear before planning adventures.",
+    "weather_suitability": "any_weather",
+    "google_maps_url": "https://maps.google.com/?q=Sun+%26+Ski+Sports+La+Plaza+Mall+McAllen+TX",
+    "price_signal": "Moderate pricing on sports gear\u3010391099065033231\u2020L104-L118\u3011",
+    "evidence_snippets": [
+      "Sun & Ski Sports is highlighted as a store within La Plaza Mall\u3010391099065033231\u2020L104-L118\u3011"
+    ],
+    "confidence": 0.7
+  }
+]

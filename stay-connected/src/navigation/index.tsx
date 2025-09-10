@@ -15,6 +15,8 @@ import WelcomeScreen from '@/screens/WelcomeScreen';
 import SignInScreen from '@/screens/SignInScreen';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import LocationsScreen from '@/screens/LocationsScreen';
+import LocationDetailsScreen from '@/screens/LocationDetailsScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -33,6 +35,7 @@ function Tabs() {
           else if (route.name === 'Plan') icon = 'calendar';
           else if (route.name === 'History') icon = 'time';
           else if (route.name === 'Settings') icon = 'settings';
+          else if (route.name === 'Locations') icon = 'location';
           return <Ionicons name={icon} size={size} color={color} />;
         },
         tabBarActiveTintColor: colors.accent.primary,
@@ -59,6 +62,7 @@ function Tabs() {
       />
       <Tab.Screen name="Plan" component={PlanScreen} />
       <Tab.Screen name="History" component={HistoryScreen} />
+      <Tab.Screen name="Locations" component={LocationsScreen} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   );
@@ -92,6 +96,7 @@ export default function Navigation() {
         <>
           <Stack.Screen name="Root" component={Tabs} options={{ headerShown: false }} />
           <Stack.Screen name="GooberDetail" component={GooberDetailScreen} options={{ title: 'Goober' }} />
+          <Stack.Screen name="LocationDetails" component={LocationDetailsScreen} options={{ title: 'Location' }} />
         </>
       ) : (
         <>
