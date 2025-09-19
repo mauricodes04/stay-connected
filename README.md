@@ -1,37 +1,25 @@
-# stay-connected
+# Stay Connected
 
-Stay Connected is a React Native app built with Expo that helps you plan and track meaningful interactions with the people in your life. It uses Firebase for authentication and data storage, React Navigation for app flow, and a modern theming system with custom typography.
+React Native + Expo app to plan and track meaningful interactions with people you care about. Uses Firebase Auth/Firestore, React Navigation, and a small theming system.
 
-## Features
-- Imports Contacts
-- Creates calendar invites and review history
-- Secure sign-in with Firebase Authentication
+## Quick Start
+1) Install
+```bash
+npm i
+```
+2) Configure env
+```bash
+cp .env.example .env
+# Fill the values from your Firebase Web App
+```
+3) Run
+```bash
+npx expo start -c --tunnel
+```
+Open iOS: `i` • Android: `a` • Web: `w`
 
-## Tech Stack
-- Expo SDK: `expo@53`
-- React Native: `0.79`
-- React: `19`
-- Navigation: `@react-navigation/*`
-- Firebase Web SDK: `^10`
-- State: `zustand`
-- UI: `expo-image`, `react-native-svg`, `moti`, custom theme
-- Testing: `jest-expo`, `@testing-library/react-native`
-
-## Requirements
-- Node.js 18+ (LTS recommended)
-- npm or yarn
-- Expo CLI (installed via `npx`, no global install required)
-- iOS Simulator (macOS) or Android Emulator/device
-- A Firebase project (Web app) with config values
-
-## Firebase Setup
-1. Create a Firebase project at https://console.firebase.google.com
-2. Add a Web App to obtain the config values above
-3. Enable Authentication (e.g., Email/Password) under Build → Authentication
-4. (Optional) Create a Firestore database under Build → Firestore Database
-5. Add the config values to `.env` as shown
-## Environment Variables (.env)
-This app expects Firebase config to be provided via Expo public env vars. Create a `.env` file in the project root with the following keys:
+## Configuration
+Create `.env` using `.env.example` with these keys (must be `EXPO_PUBLIC_` so they’re available at runtime and mapped in `app.config.ts` under `extra.firebase`):
 
 ```
 EXPO_PUBLIC_FIREBASE_API_KEY=your_api_key
@@ -42,14 +30,39 @@ EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 EXPO_PUBLIC_FIREBASE_APP_ID=your_web_app_id
 ```
 
-Notes:
-- The `EXPO_PUBLIC_` prefix is required so values are available at runtime. See mapping in `app.config.ts` under `extra.firebase`.
-- If any value is missing, the app will throw at startup from `src/lib/env.ts` with a helpful message.
+If any value is missing, startup will fail with a clear error from `src/lib/env.ts`.
 
+### EAS Project ID
+This repo omits the EAS project ID. To build with EAS:
+- Create/identify an EAS project: `npx expo whoami && npx expo init` (or via Expo dashboard)
+- Add to `app.config.ts` under `extra` when needed:
+```ts
+extra: {
+  firebase: { /* env mapping */ },
+  // Add your EAS project when applicable
+  // eas: { projectId: "YOUR-EAS-PROJECT-ID" },
+}
+```
 
-## How to run
+## Scripts
+- `npm run start` — start Metro bundler
+- `npm run web` — run web target
+- `npm run typecheck` — TypeScript check
+- `npm run lint` — ESLint
+- `npm test` — Jest
 
-npm i
+## Project Structure
+```
+src/
+  components/
+  hooks/
+  lib/          # env + firebase initialization
+  navigation/
+  screens/
+  state/
+  theme/
+```
 
-npx expo start -c --tunnel
-
+## Troubleshooting
+- Missing Firebase config: ensure all `EXPO_PUBLIC_FIREBASE_*` exist in `.env` and map in `app.config.ts`.
+- Cache issues: `npx expo start -c --tunnel`.
