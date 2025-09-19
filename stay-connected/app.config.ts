@@ -25,9 +25,6 @@ const config: ExpoConfig = {
       messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
       appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
     },
-    eas: {
-      projectId: '4fdde5d4-75b8-472a-9f2e-1464fd16bfad',
-    },
   },
 };
 
